@@ -1,0 +1,30 @@
+export interface Lead {
+  id: string
+  first_name: string
+  last_name: string
+  email: string
+  phone: string | null
+  sms_consent: boolean
+  sms_consent_at: string | null
+  ip_address: string | null
+  user_agent: string | null
+  utm_source: string | null
+  utm_medium: string | null
+  utm_campaign: string | null
+  utm_content: string | null
+  utm_term: string | null
+  landing_page_url: string | null
+  referrer: string | null
+  status: 'new' | 'contacted' | 'qualified' | 'converted' | 'unqualified'
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface LeadEvent {
+  id: string
+  lead_id: string
+  event_type: string
+  event_data: Record<string, unknown> | null
+  created_at: string
+}
