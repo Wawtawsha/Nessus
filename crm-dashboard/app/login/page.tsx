@@ -35,7 +35,7 @@ export default function LoginPage() {
     <main className="min-h-screen flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
         <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          CRM Dashboard
+          Nessus
         </h1>
 
         <form onSubmit={handleLogin} className="space-y-4">

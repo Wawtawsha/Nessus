@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Sidebar */}
       <aside className="w-64 bg-gray-900 text-white">
         <div className="p-4">
-          <h1 className="text-xl font-bold">CRM Dashboard</h1>
+          <h1 className="text-xl font-bold">Nessus</h1>
         </div>
         <nav className="mt-4">
           {navItems.map((item) => (
