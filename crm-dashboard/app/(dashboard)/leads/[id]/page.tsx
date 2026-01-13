@@ -158,6 +158,10 @@ export default function LeadDetailPage() {
                 </span>
               </div>
               <div>
+                <label className="block text-sm font-medium text-gray-500">Preferred Contact</label>
+                <span className="capitalize">{lead.preferred_contact || 'Email'}</span>
+              </div>
+              <div>
                 <label className="block text-sm font-medium text-gray-500">Created</label>
                 <span>{new Date(lead.created_at).toLocaleString()}</span>
               </div>

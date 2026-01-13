@@ -6,6 +6,7 @@ export interface Lead {
   phone: string | null
   sms_consent: boolean
   sms_consent_at: string | null
+  preferred_contact: 'email' | 'phone' | 'sms'
   ip_address: string | null
   user_agent: string | null
   utm_source: string | null

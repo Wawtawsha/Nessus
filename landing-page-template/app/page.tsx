@@ -10,6 +10,7 @@ interface FormData {
   last_name: string
   email: string
   phone: string
+  preferred_contact: 'email' | 'phone' | 'sms'
   sms_consent: boolean
 }
 
@@ -20,6 +21,7 @@ function LeadForm() {
     last_name: '',
     email: '',
     phone: '',
+    preferred_contact: 'email',
     sms_consent: false,
   })
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
@@ -157,6 +159,29 @@ function LeadForm() {
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Preferred Contact Method *
+          </label>
+          <div className="flex gap-4">
+            {(['email', 'phone', 'sms'] as const).map((method) => (
+              <label key={method} className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="preferred_contact"
+                  value={method}
+                  checked={formData.preferred_contact === method}
+                  onChange={handleChange}
+                  className="mr-2 h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">
+                  {method === 'sms' ? 'SMS' : method.charAt(0).toUpperCase() + method.slice(1)}
+                </span>
+              </label>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-start">
