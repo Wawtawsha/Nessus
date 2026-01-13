@@ -54,6 +54,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const navItems = [
     { href: '/leads', label: 'Leads', icon: '👥' },
+    { href: '/pipeline', label: 'Pipeline', icon: '📋' },
     { href: '/analytics', label: 'Analytics', icon: '📊' },
   ]
 
