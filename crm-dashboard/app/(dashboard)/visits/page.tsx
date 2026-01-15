@@ -170,7 +170,8 @@ export default function VisitsPage() {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [supabase, fetchStats])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   if (loading) {
     return <div className="text-center py-8">Loading...</div>
