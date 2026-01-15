@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useUser } from '@/contexts/UserContext'
 
 interface Stats {
   totalLeads: number
@@ -34,12 +35,21 @@ export default function AnalyticsPage() {
   const [dailyStats, setDailyStats] = useState<DailyStats[]>([])
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
+  const { isAdmin, currentClientId } = useUser()
 
   const fetchStats = useCallback(async () => {
+    // Helper to add client filter
+    const addClientFilter = <T,>(query: T): T => {
+      if (isAdmin && currentClientId) {
+        return (query as any).eq('client_id', currentClientId)
+      }
+      return query
+    }
+
     // Total leads by status
-    const { data: statusData } = await supabase
-      .from('leads')
-      .select('status')
+    let statusQuery = supabase.from('leads').select('status')
+    statusQuery = addClientFilter(statusQuery)
+    const { data: statusData } = await statusQuery
 
     if (statusData) {
       const total = statusData.length
@@ -59,9 +69,9 @@ export default function AnalyticsPage() {
     }
 
     // Leads by campaign
-    const { data: campaignData } = await supabase
-      .from('leads')
-      .select('utm_campaign')
+    let campaignQuery = supabase.from('leads').select('utm_campaign')
+    campaignQuery = addClientFilter(campaignQuery)
+    const { data: campaignData } = await campaignQuery
 
     if (campaignData) {
       const campaignCounts: Record<string, number> = {}
@@ -78,9 +88,9 @@ export default function AnalyticsPage() {
     }
 
     // Leads by source
-    const { data: sourceData } = await supabase
-      .from('leads')
-      .select('utm_source')
+    let sourceQuery = supabase.from('leads').select('utm_source')
+    sourceQuery = addClientFilter(sourceQuery)
+    const { data: sourceData } = await sourceQuery
 
     if (sourceData) {
       const sourceCounts: Record<string, number> = {}
@@ -99,10 +109,12 @@ export default function AnalyticsPage() {
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    const { data: timeData } = await supabase
+    let timeQuery = supabase
       .from('leads')
       .select('created_at')
       .gte('created_at', thirtyDaysAgo.toISOString())
+    timeQuery = addClientFilter(timeQuery)
+    const { data: timeData } = await timeQuery
 
     if (timeData) {
       const dateCounts: Record<string, number> = {}
@@ -118,7 +130,7 @@ export default function AnalyticsPage() {
     }
 
     setLoading(false)
-  }, [supabase])
+  }, [supabase, isAdmin, currentClientId])
 
   useEffect(() => {
     fetchStats()

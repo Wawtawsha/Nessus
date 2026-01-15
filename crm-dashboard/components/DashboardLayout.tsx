@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
+import { useUser } from '@/contexts/UserContext'
+import ClientAccordion from './ClientAccordion'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -14,6 +16,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter()
   const supabase = createClient()
   const [newLeadCount, setNewLeadCount] = useState(0)
+  const { isAdmin, currentClient, profile, loading } = useUser()
 
   // Subscribe to new leads for real-time notifications
   useEffect(() => {
@@ -52,42 +55,60 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const clearNewLeadCount = () => setNewLeadCount(0)
 
-  const navItems = [
-    { href: '/leads', label: 'Leads', icon: '👥' },
-    { href: '/pipeline', label: 'Pipeline', icon: '📋' },
-    { href: '/analytics', label: 'Analytics', icon: '📊' },
+  // Admin-only navigation items (management pages)
+  const adminNavItems = [
+    { href: '/clients', label: 'Manage Clients', icon: '⚙️' },
   ]
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white">
+      <aside className="w-64 bg-gray-900 text-white flex flex-col">
         <div className="p-4">
           <h1 className="text-xl font-bold">Nessus</h1>
+          {!isAdmin && profile && (
+            <p className="text-sm text-gray-400 mt-1">Client Portal</p>
+          )}
         </div>
-        <nav className="mt-4">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={item.href === '/leads' ? clearNewLeadCount : undefined}
-              className={`flex items-center px-4 py-3 text-sm ${
-                pathname.startsWith(item.href)
-                  ? 'bg-gray-800 border-l-4 border-blue-500'
-                  : 'hover:bg-gray-800'
-              }`}
-            >
-              <span className="mr-3">{item.icon}</span>
-              {item.label}
-              {item.href === '/leads' && newLeadCount > 0 && (
-                <span className="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  {newLeadCount}
-                </span>
-              )}
-            </Link>
-          ))}
+
+        {/* Client Accordion Navigation */}
+        <nav className="flex-1 overflow-y-auto">
+          <ClientAccordion
+            newLeadCount={newLeadCount}
+            onLeadsClick={clearNewLeadCount}
+          />
+
+          {/* Admin-only management items */}
+          {isAdmin && (
+            <>
+              <div className="border-t border-gray-700 my-4 mx-4" />
+              {adminNavItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center px-4 py-3 text-sm ${
+                    pathname.startsWith(item.href)
+                      ? 'bg-gray-800 border-l-4 border-blue-500'
+                      : 'hover:bg-gray-800'
+                  }`}
+                >
+                  <span className="mr-3">{item.icon}</span>
+                  {item.label}
+                </Link>
+              ))}
+            </>
+          )}
         </nav>
-        <div className="absolute bottom-0 w-64 p-4">
+
+        <div className="p-4">
           <button
             onClick={handleLogout}
             className="w-full text-left px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-800 rounded"
@@ -98,7 +119,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-8 bg-gray-100 overflow-y-auto">
         {children}
       </main>
     </div>

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import type { Lead } from '@/types/lead'
+import { useUser } from '@/contexts/UserContext'
 
 const PIPELINE_STAGES = [
   { id: 'new', label: 'New', color: 'bg-blue-500' },
@@ -18,12 +19,20 @@ export default function PipelineBoard() {
   const [loading, setLoading] = useState(true)
   const [draggedLead, setDraggedLead] = useState<Lead | null>(null)
   const supabase = createClient()
+  const { isAdmin, currentClientId } = useUser()
 
   const fetchLeads = useCallback(async () => {
-    const { data, error } = await supabase
+    let query = supabase
       .from('leads')
       .select('*')
       .order('created_at', { ascending: false })
+
+    // Admin filtering by selected client (client users filtered by RLS automatically)
+    if (isAdmin && currentClientId) {
+      query = query.eq('client_id', currentClientId)
+    }
+
+    const { data, error } = await query
 
     if (error) {
       console.error('Error fetching leads:', error)
@@ -31,7 +40,7 @@ export default function PipelineBoard() {
       setLeads(data || [])
     }
     setLoading(false)
-  }, [supabase])
+  }, [supabase, isAdmin, currentClientId])
 
   useEffect(() => {
     fetchLeads()

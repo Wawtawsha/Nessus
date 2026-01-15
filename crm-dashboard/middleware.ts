@@ -1,7 +1,12 @@
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
+  // Allow embed route without authentication
+  if (request.nextUrl.pathname.startsWith('/embed')) {
+    return NextResponse.next()
+  }
+
   return await updateSession(request)
 }
 

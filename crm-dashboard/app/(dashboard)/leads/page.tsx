@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import type { Lead } from '@/types/lead'
+import { useUser } from '@/contexts/UserContext'
 
 const STATUS_COLORS: Record<string, string> = {
   new: 'bg-blue-100 text-blue-800',
@@ -21,12 +22,18 @@ export default function LeadsPage() {
   const [campaignFilter, setCampaignFilter] = useState<string>('')
   const [campaigns, setCampaigns] = useState<string[]>([])
   const supabase = createClient()
+  const { isAdmin, currentClientId } = useUser()
 
   const fetchLeads = useCallback(async () => {
     let query = supabase
       .from('leads')
       .select('*')
       .order('created_at', { ascending: false })
+
+    // Admin filtering by selected client (client users filtered by RLS automatically)
+    if (isAdmin && currentClientId) {
+      query = query.eq('client_id', currentClientId)
+    }
 
     if (statusFilter) {
       query = query.eq('status', statusFilter)
@@ -48,20 +55,27 @@ export default function LeadsPage() {
       setLeads(data || [])
     }
     setLoading(false)
-  }, [supabase, statusFilter, campaignFilter, search])
+  }, [supabase, statusFilter, campaignFilter, search, isAdmin, currentClientId])
 
   // Fetch unique campaigns for filter
   const fetchCampaigns = useCallback(async () => {
-    const { data } = await supabase
+    let query = supabase
       .from('leads')
       .select('utm_campaign')
       .not('utm_campaign', 'is', null)
+
+    // Filter by client if admin has one selected
+    if (isAdmin && currentClientId) {
+      query = query.eq('client_id', currentClientId)
+    }
+
+    const { data } = await query
 
     if (data) {
       const uniqueCampaigns = [...new Set(data.map((d) => d.utm_campaign).filter(Boolean))]
       setCampaigns(uniqueCampaigns as string[])
     }
-  }, [supabase])
+  }, [supabase, isAdmin, currentClientId])
 
   useEffect(() => {
     fetchLeads()
