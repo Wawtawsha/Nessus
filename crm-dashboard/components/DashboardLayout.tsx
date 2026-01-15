@@ -16,7 +16,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter()
   const supabase = createClient()
   const [newLeadCount, setNewLeadCount] = useState(0)
-  const { isAdmin, currentClient, profile, loading } = useUser()
+  const { isAdmin, currentClient, currentClientId, setCurrentClientId, profile, loading } = useUser()
 
   // Subscribe to new leads for real-time notifications
   useEffect(() => {
@@ -79,8 +79,47 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           )}
         </div>
 
-        {/* Client Accordion Navigation */}
+        {/* Navigation */}
         <nav className="flex-1 overflow-y-auto">
+          {/* Admin Quick Access - All clients aggregate views */}
+          {isAdmin && (
+            <>
+              <div className="px-4 py-2 text-xs text-gray-500 uppercase tracking-wider">
+                All Clients
+              </div>
+              {[
+                { href: '/leads', label: 'All Leads', icon: '👥' },
+                { href: '/pipeline', label: 'All Pipeline', icon: '📋' },
+                { href: '/analytics', label: 'All Analytics', icon: '📊' },
+                { href: '/visits', label: 'All Visits', icon: '👁️' },
+              ].map((item) => (
+                <button
+                  key={item.href}
+                  onClick={() => {
+                    setCurrentClientId(null)
+                    if (item.href === '/leads') clearNewLeadCount()
+                    router.push(item.href)
+                  }}
+                  className={`w-full flex items-center px-4 py-3 text-sm text-left ${
+                    pathname.startsWith(item.href) && !currentClientId
+                      ? 'bg-gray-800 border-l-4 border-blue-500'
+                      : 'hover:bg-gray-800'
+                  }`}
+                >
+                  <span className="mr-3">{item.icon}</span>
+                  {item.label}
+                  {item.href === '/leads' && newLeadCount > 0 && (
+                    <span className="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                      {newLeadCount}
+                    </span>
+                  )}
+                </button>
+              ))}
+              <div className="border-t border-gray-700 my-4 mx-4" />
+            </>
+          )}
+
+          {/* Client Accordion Navigation */}
           <ClientAccordion
             newLeadCount={newLeadCount}
             onLeadsClick={clearNewLeadCount}

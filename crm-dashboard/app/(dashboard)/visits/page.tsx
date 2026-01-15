@@ -160,7 +160,8 @@ export default function VisitsPage() {
     return <div className="text-center py-8">Loading...</div>
   }
 
-  if (!currentClientId) {
+  // Non-admin users must have a client selected
+  if (!isAdmin && !currentClientId) {
     return (
       <div className="text-center py-8">
         <p className="text-gray-500">Select a client to view visitor analytics</p>

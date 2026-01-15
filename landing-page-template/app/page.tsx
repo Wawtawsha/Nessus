@@ -42,12 +42,19 @@ function LeadForm() {
     setErrorMessage('')
 
     try {
+      // Client ID is required - each landing page deployment must have this set
+      const clientId = process.env.NEXT_PUBLIC_CLIENT_ID
+      if (!clientId) {
+        throw new Error('Landing page configuration error')
+      }
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/submit-lead`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            client_id: clientId,
             ...formData,
             ...utmParams,
             landing_page_url: window.location.href,
