@@ -156,6 +156,22 @@ export default function VisitsPage() {
     fetchStats()
   }, [fetchStats])
 
+  // Real-time subscription for live updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('visits-changes')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'visits' },
+        () => fetchStats()
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [supabase, fetchStats])
+
   if (loading) {
     return <div className="text-center py-8">Loading...</div>
   }

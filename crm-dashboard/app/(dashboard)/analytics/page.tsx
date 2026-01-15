@@ -136,6 +136,22 @@ export default function AnalyticsPage() {
     fetchStats()
   }, [fetchStats])
 
+  // Real-time subscription for live updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('analytics-leads-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'leads' },
+        () => fetchStats()
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [supabase, fetchStats])
+
   if (loading) {
     return <div className="text-center py-8">Loading...</div>
   }
