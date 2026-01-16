@@ -82,23 +82,14 @@ export default function LeadsPage() {
     fetchCampaigns()
   }, [fetchLeads, fetchCampaigns])
 
-  // Subscribe to real-time changes
+  // Poll for updates every 30 seconds
   useEffect(() => {
-    const channel = supabase
-      .channel('leads-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'leads' },
-        () => {
-          fetchLeads()
-        }
-      )
-      .subscribe()
+    const interval = setInterval(() => {
+      fetchLeads()
+    }, 30000)
 
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [supabase, fetchLeads])
+    return () => clearInterval(interval)
+  }, [fetchLeads])
 
   const exportCSV = () => {
     const headers = ['First Name', 'Last Name', 'Email', 'Phone', 'Status', 'Source', 'Campaign', 'Created']

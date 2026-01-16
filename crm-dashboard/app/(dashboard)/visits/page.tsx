@@ -156,22 +156,14 @@ export default function VisitsPage() {
     fetchStats()
   }, [fetchStats])
 
-  // Real-time subscription for live updates
+  // Poll for updates every 30 seconds
   useEffect(() => {
-    const channel = supabase
-      .channel('visits-changes')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'visits' },
-        () => fetchStats()
-      )
-      .subscribe()
+    const interval = setInterval(() => {
+      fetchStats()
+    }, 30000)
 
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    return () => clearInterval(interval)
+  }, [fetchStats])
 
   if (loading) {
     return <div className="text-center py-8">Loading...</div>

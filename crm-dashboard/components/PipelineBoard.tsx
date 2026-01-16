@@ -46,21 +46,14 @@ export default function PipelineBoard() {
     fetchLeads()
   }, [fetchLeads])
 
-  // Real-time updates
+  // Poll for updates every 30 seconds
   useEffect(() => {
-    const channel = supabase
-      .channel('pipeline-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'leads' },
-        () => fetchLeads()
-      )
-      .subscribe()
+    const interval = setInterval(() => {
+      fetchLeads()
+    }, 30000)
 
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [supabase, fetchLeads])
+    return () => clearInterval(interval)
+  }, [fetchLeads])
 
   const handleDragStart = (e: React.DragEvent, lead: Lead) => {
     setDraggedLead(lead)

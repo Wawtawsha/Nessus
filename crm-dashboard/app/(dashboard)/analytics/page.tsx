@@ -136,22 +136,14 @@ export default function AnalyticsPage() {
     fetchStats()
   }, [fetchStats])
 
-  // Real-time subscription for live updates
+  // Poll for updates every 30 seconds
   useEffect(() => {
-    const channel = supabase
-      .channel('analytics-leads-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'leads' },
-        () => fetchStats()
-      )
-      .subscribe()
+    const interval = setInterval(() => {
+      fetchStats()
+    }, 30000)
 
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    return () => clearInterval(interval)
+  }, [fetchStats])
 
   if (loading) {
     return <div className="text-center py-8">Loading...</div>

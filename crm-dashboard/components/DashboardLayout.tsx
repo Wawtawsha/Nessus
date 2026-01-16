@@ -18,34 +18,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [newLeadCount, setNewLeadCount] = useState(0)
   const { isAdmin, currentClient, currentClientId, setCurrentClientId, profile, loading } = useUser()
 
-  // Subscribe to new leads for real-time notifications
-  useEffect(() => {
-    const channel = supabase
-      .channel('new-leads-notification')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'leads' },
-        (payload) => {
-          setNewLeadCount((prev) => prev + 1)
-          // Show browser notification if permitted
-          if (Notification.permission === 'granted') {
-            new Notification('New Lead!', {
-              body: `${payload.new.first_name} ${payload.new.last_name} just submitted`,
-            })
-          }
-        }
-      )
-      .subscribe()
-
-    // Request notification permission
-    if (Notification.permission === 'default') {
-      Notification.requestPermission()
-    }
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [supabase])
+  // Note: Real-time notifications disabled (Supabase Realtime not available)
+  // The newLeadCount badge won't update automatically until Realtime is enabled
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
