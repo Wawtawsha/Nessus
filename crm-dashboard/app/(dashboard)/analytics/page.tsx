@@ -28,11 +28,39 @@ interface DailyStats {
   count: number
 }
 
+interface RevenueStats {
+  totalRevenue: number
+  orderCount: number
+  avgOrderValue: number
+  totalTips: number
+  matchedOrders: number
+}
+
+interface PaymentStats {
+  type: string
+  cardType: string | null
+  count: number
+  amount: number
+}
+
+interface TopItem {
+  name: string
+  count: number
+  revenue: number
+}
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
+}
+
 export default function AnalyticsPage() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [campaignStats, setCampaignStats] = useState<CampaignStats[]>([])
   const [sourceStats, setSourceStats] = useState<SourceStats[]>([])
   const [dailyStats, setDailyStats] = useState<DailyStats[]>([])
+  const [revenueStats, setRevenueStats] = useState<RevenueStats | null>(null)
+  const [paymentStats, setPaymentStats] = useState<PaymentStats[]>([])
+  const [topItems, setTopItems] = useState<TopItem[]>([])
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
   const { isAdmin, currentClientId } = useUser()
@@ -129,6 +157,87 @@ export default function AnalyticsPage() {
       )
     }
 
+    // Revenue Stats from Toast Orders
+    let ordersQuery = supabase
+      .from('toast_orders')
+      .select('total_amount, tip_amount, lead_id')
+    ordersQuery = addClientFilter(ordersQuery)
+    const { data: ordersData } = await ordersQuery
+
+    if (ordersData && ordersData.length > 0) {
+      const totalRevenue = ordersData.reduce((sum, o) => sum + (o.total_amount || 0), 0)
+      const totalTips = ordersData.reduce((sum, o) => sum + (o.tip_amount || 0), 0)
+      const matchedOrders = ordersData.filter(o => o.lead_id).length
+
+      setRevenueStats({
+        totalRevenue,
+        orderCount: ordersData.length,
+        avgOrderValue: totalRevenue / ordersData.length,
+        totalTips,
+        matchedOrders,
+      })
+    }
+
+    // Payment breakdown
+    let paymentsQuery = supabase
+      .from('toast_payments')
+      .select('payment_type, card_type, amount')
+    paymentsQuery = addClientFilter(paymentsQuery)
+    const { data: paymentsData } = await paymentsQuery
+
+    if (paymentsData && paymentsData.length > 0) {
+      const paymentCounts: Record<string, { count: number; amount: number }> = {}
+      paymentsData.forEach((p) => {
+        const key = p.card_type ? `${p.payment_type} (${p.card_type})` : p.payment_type
+        if (!paymentCounts[key]) {
+          paymentCounts[key] = { count: 0, amount: 0 }
+        }
+        paymentCounts[key].count++
+        paymentCounts[key].amount += p.amount || 0
+      })
+      setPaymentStats(
+        Object.entries(paymentCounts)
+          .map(([key, data]) => ({
+            type: key,
+            cardType: null,
+            count: data.count,
+            amount: data.amount,
+          }))
+          .sort((a, b) => b.amount - a.amount)
+      )
+    }
+
+    // Top selling items
+    let itemsQuery = supabase
+      .from('toast_order_items')
+      .select('display_name, quantity, price')
+      .eq('is_modifier', false)
+      .eq('voided', false)
+    itemsQuery = addClientFilter(itemsQuery)
+    const { data: itemsData } = await itemsQuery
+
+    if (itemsData && itemsData.length > 0) {
+      const itemCounts: Record<string, { count: number; revenue: number }> = {}
+      itemsData.forEach((item) => {
+        const name = item.display_name || 'Unknown'
+        if (!itemCounts[name]) {
+          itemCounts[name] = { count: 0, revenue: 0 }
+        }
+        itemCounts[name].count += item.quantity || 1
+        itemCounts[name].revenue += item.price || 0
+      })
+      setTopItems(
+        Object.entries(itemCounts)
+          .map(([name, data]) => ({
+            name,
+            count: data.count,
+            revenue: data.revenue,
+          }))
+          .sort((a, b) => b.revenue - a.revenue)
+          .slice(0, 10)
+      )
+    }
+
     setLoading(false)
   }, [supabase, isAdmin, currentClientId])
 
@@ -153,7 +262,37 @@ export default function AnalyticsPage() {
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Analytics</h1>
 
-      {/* Overview Stats */}
+      {/* Revenue Stats */}
+      {revenueStats && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue Overview</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="bg-green-50 rounded-lg p-4">
+              <div className="text-2xl font-bold text-green-700">{formatCurrency(revenueStats.totalRevenue)}</div>
+              <div className="text-sm text-green-600">Total Revenue</div>
+            </div>
+            <div className="bg-blue-50 rounded-lg p-4">
+              <div className="text-2xl font-bold text-blue-700">{revenueStats.orderCount}</div>
+              <div className="text-sm text-blue-600">Orders</div>
+            </div>
+            <div className="bg-purple-50 rounded-lg p-4">
+              <div className="text-2xl font-bold text-purple-700">{formatCurrency(revenueStats.avgOrderValue)}</div>
+              <div className="text-sm text-purple-600">Avg Order</div>
+            </div>
+            <div className="bg-yellow-50 rounded-lg p-4">
+              <div className="text-2xl font-bold text-yellow-700">{formatCurrency(revenueStats.totalTips)}</div>
+              <div className="text-sm text-yellow-600">Tips</div>
+            </div>
+            <div className="bg-indigo-50 rounded-lg p-4">
+              <div className="text-2xl font-bold text-indigo-700">{revenueStats.matchedOrders}</div>
+              <div className="text-sm text-indigo-600">Matched to Leads</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lead Stats */}
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">Lead Overview</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
         <StatCard label="Total Leads" value={stats?.totalLeads || 0} />
         <StatCard label="New" value={stats?.newLeads || 0} color="blue" />
@@ -252,6 +391,63 @@ export default function AnalyticsPage() {
             </div>
           )}
         </div>
+
+        {/* Payment Breakdown */}
+        {paymentStats.length > 0 && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment Methods</h2>
+            <div className="space-y-3">
+              {paymentStats.map((stat) => (
+                <div key={stat.type} className="flex items-center">
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-gray-900">{stat.type}</div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                      <div
+                        className="bg-green-600 h-2 rounded-full"
+                        style={{
+                          width: `${(stat.amount / (paymentStats[0]?.amount || 1)) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="ml-4 text-right">
+                    <div className="text-sm font-semibold text-gray-900">{formatCurrency(stat.amount)}</div>
+                    <div className="text-xs text-gray-500">{stat.count} txns</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Top Selling Items */}
+        {topItems.length > 0 && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Top Selling Items</h2>
+            <div className="space-y-3">
+              {topItems.map((item, i) => (
+                <div key={item.name} className="flex items-center">
+                  <div className="w-6 text-sm font-medium text-gray-400">{i + 1}.</div>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-gray-900">{item.name}</div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                      <div
+                        className="bg-purple-600 h-2 rounded-full"
+                        style={{
+                          width: `${(item.revenue / (topItems[0]?.revenue || 1)) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="ml-4 text-right">
+                    <div className="text-sm font-semibold text-gray-900">{formatCurrency(item.revenue)}</div>
+                    <div className="text-xs text-gray-500">{item.count} sold</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

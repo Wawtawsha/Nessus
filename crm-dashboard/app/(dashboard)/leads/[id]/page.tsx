@@ -8,12 +8,32 @@ import type { Lead, LeadEvent } from '@/types/lead'
 
 const STATUS_OPTIONS = ['new', 'contacted', 'qualified', 'converted', 'unqualified'] as const
 
+interface LeadOrder {
+  id: string
+  display_number: string | null
+  business_date: number
+  total_amount: number
+  tip_amount: number
+  source: string | null
+}
+
+function formatBusinessDate(dateInt: number): string {
+  const str = String(dateInt)
+  if (str.length !== 8) return str
+  return `${str.slice(4, 6)}/${str.slice(6, 8)}/${str.slice(0, 4)}`
+}
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
+}
+
 export default function LeadDetailPage() {
   const { id } = useParams()
   const router = useRouter()
   const supabase = createClient()
   const [lead, setLead] = useState<Lead | null>(null)
   const [events, setEvents] = useState<LeadEvent[]>([])
+  const [orders, setOrders] = useState<LeadOrder[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [notes, setNotes] = useState('')
@@ -44,10 +64,21 @@ export default function LeadDetailPage() {
     if (data) setEvents(data)
   }, [supabase, id])
 
+  const fetchOrders = useCallback(async () => {
+    const { data } = await supabase
+      .from('toast_orders')
+      .select('id, display_number, business_date, total_amount, tip_amount, source')
+      .eq('lead_id', id)
+      .order('business_date', { ascending: false })
+
+    if (data) setOrders(data)
+  }, [supabase, id])
+
   useEffect(() => {
     fetchLead()
     fetchEvents()
-  }, [fetchLead, fetchEvents])
+    fetchOrders()
+  }, [fetchLead, fetchEvents, fetchOrders])
 
   const updateStatus = async (newStatus: string) => {
     if (!lead) return
@@ -207,6 +238,45 @@ export default function LeadDetailPage() {
               {saving ? 'Saving...' : 'Save Notes'}
             </button>
           </div>
+
+          {/* Orders */}
+          {orders.length > 0 && (
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Orders</h2>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-green-600">
+                    {formatCurrency(orders.reduce((sum, o) => sum + (o.total_amount || 0), 0))}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {orders.length} order{orders.length !== 1 ? 's' : ''} •
+                    {formatCurrency(orders.reduce((sum, o) => sum + (o.tip_amount || 0), 0))} tips
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                {orders.slice(0, 5).map((order) => (
+                  <div key={order.id} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                    <div>
+                      <span className="font-medium">#{order.display_number || order.id.slice(0, 8)}</span>
+                      <span className="text-gray-500 text-sm ml-2">{formatBusinessDate(order.business_date)}</span>
+                      {order.source && (
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded ml-2">
+                          {order.source}
+                        </span>
+                      )}
+                    </div>
+                    <div className="font-medium">{formatCurrency(order.total_amount)}</div>
+                  </div>
+                ))}
+                {orders.length > 5 && (
+                  <Link href="/orders" className="text-blue-600 hover:underline text-sm block text-center pt-2">
+                    View all {orders.length} orders →
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* UTM Data */}
           <div className="bg-white rounded-lg shadow p-6">

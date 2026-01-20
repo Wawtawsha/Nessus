@@ -32,6 +32,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   // Admin-only navigation items (management pages)
   const adminNavItems = [
     { href: '/clients', label: 'Manage Clients', icon: '⚙️' },
+    { href: '/settings/toast', label: 'Toast Integration', icon: '🍞' },
   ]
 
   if (loading) {
@@ -63,6 +64,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </div>
               {[
                 { href: '/leads', label: 'All Leads', icon: '👥' },
+                { href: '/orders', label: 'All Orders', icon: '🧾' },
                 { href: '/pipeline', label: 'All Pipeline', icon: '📋' },
                 { href: '/analytics', label: 'All Analytics', icon: '📊' },
                 { href: '/visits', label: 'All Visits', icon: '👁️' },

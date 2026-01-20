@@ -67,6 +67,7 @@ export default function ClientAccordion({ newLeadCount, onLeadsClick }: ClientAc
 
   const subNavItems = [
     { path: '/leads', label: 'Leads', icon: '👥' },
+    { path: '/orders', label: 'Orders', icon: '🧾' },
     { path: '/pipeline', label: 'Pipeline', icon: '📋' },
     { path: '/analytics', label: 'Analytics', icon: '📊' },
     { path: '/visits', label: 'Visits', icon: '👁️' },
