@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { LeadMatchingPanel } from './LeadMatchingPanel'
 
 interface ToastOrder {
   id: string
@@ -93,7 +94,33 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
   const [items, setItems] = useState<ToastOrderItem[]>([])
   const [payments, setPayments] = useState<ToastPayment[]>([])
   const [loading, setLoading] = useState(true)
+  const [isMatching, setIsMatching] = useState(false)
+  const [matchSuccess, setMatchSuccess] = useState(false)
   const supabase = createClient()
+
+  const handleMatch = async (leadId: string) => {
+    try {
+      const response = await fetch(`/api/orders/${order.id}/match`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leadId }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to match')
+      }
+
+      setMatchSuccess(true)
+      setIsMatching(false)
+
+      // Close modal after brief delay to show success
+      setTimeout(() => {
+        onClose()
+      }, 1500)
+    } catch (error) {
+      console.error('Match error:', error)
+    }
+  }
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -189,6 +216,19 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                   VOIDED
                 </span>
               )}
+              {!order.lead_id && !isMatching && !matchSuccess && (
+                <button
+                  onClick={() => setIsMatching(true)}
+                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Match to Lead
+                </button>
+              )}
+              {matchSuccess && (
+                <span className="px-3 py-1 text-sm bg-green-100 text-green-800 rounded-md">
+                  Matched!
+                </span>
+              )}
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-gray-600"
@@ -201,7 +241,17 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
           </div>
         </div>
 
-        {loading ? (
+        {isMatching ? (
+          <LeadMatchingPanel
+            orderId={order.id}
+            clientId={order.client_id}
+            customerName={[order.customer_first_name, order.customer_last_name].filter(Boolean).join(' ') || null}
+            customerEmail={order.customer_email}
+            customerPhone={order.customer_phone}
+            onMatch={handleMatch}
+            onCancel={() => setIsMatching(false)}
+          />
+        ) : loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : (
           <>
