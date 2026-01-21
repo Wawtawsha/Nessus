@@ -34,10 +34,10 @@ Plans:
   1. Unmatched orders show a visible "Match to Lead" action
   2. Matching UI suggests likely leads ranked by name/phone similarity
   3. User can confirm a match and see the order immediately linked to the lead
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 02-01: Lead matching UI with similarity suggestions
+- [ ] 02-01-PLAN.md - Lead matching panel with similarity scoring
 
 ### Phase 3: Sync Automation
 **Goal**: Orders sync automatically in the background without requiring manual trigger
@@ -68,12 +68,12 @@ Plans:
 
 ## Progress
 
-**Execution Order:** 1 → 2 → 3 → 4 (Phases 3-4 can run parallel after Phase 2)
+**Execution Order:** 1 -> 2 -> 3 -> 4 (Phases 3-4 can run parallel after Phase 2)
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Order Details | 1/1 | ✓ Complete | 2026-01-20 |
-| 2. Lead Matching | 0/TBD | Not started | - |
+| 1. Order Details | 1/1 | Complete | 2026-01-20 |
+| 2. Lead Matching | 0/1 | In Progress | - |
 | 3. Sync Automation | 0/TBD | Not started | - |
 | 4. Revenue Charts | 0/TBD | Not started | - |
 
