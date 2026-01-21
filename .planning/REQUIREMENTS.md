@@ -16,9 +16,9 @@ Requirements for Toast Enhancements milestone. Each maps to roadmap phases.
 
 ### Order Details
 
-- [ ] **ORD-01**: User can click order row to open detail modal
-- [ ] **ORD-02**: Detail modal shows all line items with nested modifiers
-- [ ] **ORD-03**: Detail modal shows payment breakdown (method, card type, tip)
+- [x] **ORD-01**: User can click order row to open detail modal
+- [x] **ORD-02**: Detail modal shows all line items with nested modifiers
+- [x] **ORD-03**: Detail modal shows payment breakdown (method, card type, tip)
 
 ### Lead Matching
 
@@ -60,9 +60,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ORD-01 | Phase 1 | Pending |
-| ORD-02 | Phase 1 | Pending |
-| ORD-03 | Phase 1 | Pending |
+| ORD-01 | Phase 1 | Complete |
+| ORD-02 | Phase 1 | Complete |
+| ORD-03 | Phase 1 | Complete |
 | MATCH-01 | Phase 2 | Pending |
 | MATCH-02 | Phase 2 | Pending |
 | MATCH-03 | Phase 2 | Pending |
