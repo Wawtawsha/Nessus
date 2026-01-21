@@ -60,25 +60,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SYNC-01 | — | Pending |
-| SYNC-02 | — | Pending |
-| SYNC-03 | — | Pending |
-| SYNC-04 | — | Pending |
-| ORD-01 | — | Pending |
-| ORD-02 | — | Pending |
-| ORD-03 | — | Pending |
-| MATCH-01 | — | Pending |
-| MATCH-02 | — | Pending |
-| MATCH-03 | — | Pending |
-| CHART-01 | — | Pending |
-| CHART-02 | — | Pending |
-| CHART-03 | — | Pending |
+| ORD-01 | Phase 1 | Pending |
+| ORD-02 | Phase 1 | Pending |
+| ORD-03 | Phase 1 | Pending |
+| MATCH-01 | Phase 2 | Pending |
+| MATCH-02 | Phase 2 | Pending |
+| MATCH-03 | Phase 2 | Pending |
+| SYNC-01 | Phase 3 | Pending |
+| SYNC-02 | Phase 3 | Pending |
+| SYNC-03 | Phase 3 | Pending |
+| SYNC-04 | Phase 3 | Pending |
+| CHART-01 | Phase 4 | Pending |
+| CHART-02 | Phase 4 | Pending |
+| CHART-03 | Phase 4 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13 (roadmap pending)
+- Mapped to phases: 13
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-20 after initial definition*
+*Last updated: 2026-01-20 after roadmap creation*
