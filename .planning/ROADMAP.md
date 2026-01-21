@@ -21,10 +21,10 @@ Milestone v1.1 enhances the existing Toast integration with four focused deliver
   1. User can click any order row to open a detail modal
   2. Modal displays all line items with nested modifiers visible
   3. Modal shows payment breakdown including method, card type, and tip amount
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 01-01: Order detail modal with line items and payments
+- [ ] 01-01-PLAN.md - Order detail modal with line items and payments
 
 ### Phase 2: Lead Matching
 **Goal**: Users can manually match unmatched orders to existing leads using smart suggestions
@@ -72,7 +72,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Order Details | 0/TBD | Not started | - |
+| 1. Order Details | 0/1 | Planned | - |
 | 2. Lead Matching | 0/TBD | Not started | - |
 | 3. Sync Automation | 0/TBD | Not started | - |
 | 4. Revenue Charts | 0/TBD | Not started | - |
