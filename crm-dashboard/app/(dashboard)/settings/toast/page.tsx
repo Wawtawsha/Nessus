@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useUser } from '@/contexts/UserContext'
+import { useSyncStatus } from '@/contexts/SyncContext'
 
 interface ToastIntegration {
   id: string
@@ -17,6 +18,7 @@ interface ToastIntegration {
 
 export default function ToastSettingsPage() {
   const { isAdmin, loading: userLoading, clients } = useUser()
+  const { status: syncStatus, syncNow } = useSyncStatus()
   const router = useRouter()
 
   // Selected client
@@ -34,7 +36,6 @@ export default function ToastSettingsPage() {
 
   // UI state
   const [saving, setSaving] = useState(false)
-  const [syncing, setSyncing] = useState(false)
   const [testing, setTesting] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
@@ -158,34 +159,24 @@ export default function ToastSettingsPage() {
   const handleSync = async () => {
     if (!selectedClientId || !integration) return
 
-    setSyncing(true)
     setMessage(null)
 
     try {
-      const response = await fetch('/api/toast/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId: selectedClientId }),
-      })
-      const data = await response.json()
+      // Trigger sync via context
+      await syncNow()
 
-      if (data.success) {
-        const stats = data.stats
-        setMessage({
-          type: 'success',
-          text: `Synced ${stats.ordersProcessed} orders, ${stats.itemsInserted || 0} items, ${stats.paymentsInserted || 0} payments. ${stats.leadsMatched} matched to leads.`
-        })
-        // Refresh integration status
-        const refreshResponse = await fetch(`/api/toast/setup?clientId=${selectedClientId}`)
-        const refreshData = await refreshResponse.json()
-        setIntegration(refreshData.integration)
-      } else {
-        setMessage({ type: 'error', text: data.error || 'Sync failed' })
-      }
+      // Show success message
+      setMessage({
+        type: 'success',
+        text: 'Sync triggered successfully. Check the status indicator in the sidebar.'
+      })
+
+      // Refresh integration status to show updated last_sync_at
+      const refreshResponse = await fetch(`/api/toast/setup?clientId=${selectedClientId}`)
+      const refreshData = await refreshResponse.json()
+      setIntegration(refreshData.integration)
     } catch (err) {
-      setMessage({ type: 'error', text: 'Network error' })
-    } finally {
-      setSyncing(false)
+      setMessage({ type: 'error', text: 'Failed to trigger sync' })
     }
   }
 
@@ -283,10 +274,10 @@ export default function ToastSettingsPage() {
               <div className="mt-4 flex gap-3">
                 <button
                   onClick={handleSync}
-                  disabled={syncing}
+                  disabled={syncStatus === 'syncing'}
                   className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed"
                 >
-                  {syncing ? 'Syncing...' : 'Sync Now'}
+                  {syncStatus === 'syncing' ? 'Syncing...' : 'Sync Now'}
                 </button>
                 <button
                   onClick={handleDelete}
