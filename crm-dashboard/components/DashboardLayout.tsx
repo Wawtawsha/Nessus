@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import { useUser } from '@/contexts/UserContext'
 import ClientAccordion from './ClientAccordion'
+import { SyncStatusIndicator } from './SyncStatusIndicator'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -122,6 +123,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </>
           )}
         </nav>
+
+        {isAdmin && <SyncStatusIndicator />}
 
         <div className="p-4">
           <button
