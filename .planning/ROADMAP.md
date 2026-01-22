@@ -48,10 +48,10 @@ Plans:
   2. Sync status indicator shows last sync time and in-progress state
   3. Sync gracefully backs off when rate limited (no error spam)
   4. Manual sync button remains available as fallback
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 03-01: Auto-sync with status indicator and rate limit handling
+- [ ] 03-01-PLAN.md - SyncContext with auto-polling, status indicator, rate limit handling
 
 ### Phase 4: Revenue Charts
 **Goal**: Users can visualize revenue trends over time with adjustable granularity
@@ -74,7 +74,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Order Details | 1/1 | Complete | 2026-01-20 |
 | 2. Lead Matching | 1/1 | Complete | 2026-01-22 |
-| 3. Sync Automation | 0/TBD | Not started | - |
+| 3. Sync Automation | 0/1 | Planned | - |
 | 4. Revenue Charts | 0/TBD | Not started | - |
 
 ---
