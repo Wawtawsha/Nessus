@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Connect marketing leads to actual revenue
-**Current focus:** Milestone v1.1 — Toast Enhancements, Phase 3 (Sync Automation)
+**Current focus:** Milestone v1.1 — Toast Enhancements, Phase 4 (Revenue Charts) COMPLETE
 
 ## Current Position
 
-Phase: 3 of 4 (Sync Automation)
+Phase: 4 of 4 (Revenue Charts)
 Plan: 1 of 1 in current phase
-Status: Phase complete
-Last activity: 2026-01-22 — Completed 03-01-PLAN.md (Automatic Background Sync)
+Status: Phase complete - MILESTONE v1.1 COMPLETE
+Last activity: 2026-01-22 — Completed 04-01-PLAN.md (Revenue Charts)
 
-Progress: [███████░░░] 75% (3 of 4 phases complete)
+Progress: [##########] 100% (4 of 4 phases complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 16.8 min
-- Total execution time: 0.84 hours
+- Total plans completed: 4
+- Average duration: 15.6 min
+- Total execution time: 1.04 hours
 
 **By Phase:**
 
@@ -30,10 +30,11 @@ Progress: [███████░░░] 75% (3 of 4 phases complete)
 | 01-order-details | 1 | 20 min | 20 min |
 | 02-lead-matching | 1 | 25 min | 25 min |
 | 03-sync-automation | 1 | 5.3 min | 5.3 min |
+| 04-revenue-charts | 1 | 12 min | 12 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (20min), 02-01 (25min), 03-01 (5.3min)
-- Trend: Accelerating velocity (last plan significantly faster)
+- Last 5 plans: 01-01 (20min), 02-01 (25min), 03-01 (5.3min), 04-01 (12min)
+- Trend: Stable velocity with efficient execution
 
 *Updated after each plan completion*
 
@@ -65,18 +66,28 @@ Recent decisions affecting current work:
 - Use Retry-After header first, fallback to exponential backoff
 - Persist lastSyncAt to localStorage for cross-session consistency
 
+**Phase 04-01 decisions:**
+- Manual shadcn/ui setup vs CLI for better control in automation
+- react-day-picker v9 API with Chevron component
+- Custom tooltip for type safety over generic wrapper
+- RPC aggregation for charts (better perf than client-side)
+
 ### Pending Todos
 
-None yet.
+None - milestone complete.
 
 ### Blockers/Concerns
 
-None yet.
+**User action required:** Apply database migration for revenue chart RPC:
+```bash
+supabase db push
+# or manually run: crm-dashboard/supabase/migrations/004_revenue_aggregation.sql
+```
 
 ## Session Continuity
 
 Last session: 2026-01-22
-Stopped at: Completed Phase 3 (Sync Automation) — ready for Phase 4 (Analytics Dashboard)
+Stopped at: Completed Phase 4 (Revenue Charts) — Milestone v1.1 COMPLETE
 Resume file: None
 
 ---
