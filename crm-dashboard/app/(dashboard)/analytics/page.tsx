@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useUser } from '@/contexts/UserContext'
+import { RevenueChart } from './components/RevenueChart'
+import { ChartControls } from './components/ChartControls'
 
 interface Stats {
   totalLeads: number
@@ -62,6 +64,17 @@ export default function AnalyticsPage() {
   const [paymentStats, setPaymentStats] = useState<PaymentStats[]>([])
   const [topItems, setTopItems] = useState<TopItem[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Revenue chart state
+  const [granularity, setGranularity] = useState<'day' | 'week' | 'month'>('day')
+  const [dateRange, setDateRange] = useState(() => {
+    const to = new Date()
+    const from = new Date()
+    from.setDate(from.getDate() - 30)
+    return { from, to }
+  })
+  const [revenueChartData, setRevenueChartData] = useState<{period: string; revenue: number; order_count: number}[]>([])
+
   const supabase = createClient()
   const { isAdmin, currentClientId } = useUser()
 
@@ -241,9 +254,31 @@ export default function AnalyticsPage() {
     setLoading(false)
   }, [supabase, isAdmin, currentClientId])
 
+  // Fetch revenue chart data via RPC
+  const fetchRevenueChartData = useCallback(async () => {
+    const clientIdParam = isAdmin && currentClientId ? currentClientId : null
+
+    const { data, error } = await supabase.rpc('get_revenue_by_period', {
+      p_granularity: granularity,
+      p_start_date: dateRange.from.toISOString().split('T')[0],
+      p_end_date: dateRange.to.toISOString().split('T')[0],
+      p_client_id: clientIdParam
+    })
+
+    if (!error && data) {
+      setRevenueChartData(data)
+    } else {
+      setRevenueChartData([])
+    }
+  }, [supabase, granularity, dateRange, isAdmin, currentClientId])
+
   useEffect(() => {
     fetchStats()
   }, [fetchStats])
+
+  useEffect(() => {
+    fetchRevenueChartData()
+  }, [fetchRevenueChartData])
 
   // Poll for updates every 30 seconds
   useEffect(() => {
@@ -290,6 +325,24 @@ export default function AnalyticsPage() {
           </div>
         </div>
       )}
+
+      {/* Revenue Over Time Chart */}
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">Revenue Over Time</h2>
+        </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <ChartControls
+            granularity={granularity}
+            onGranularityChange={setGranularity}
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
+          />
+          <div className="mt-4">
+            <RevenueChart data={revenueChartData} granularity={granularity} />
+          </div>
+        </div>
+      </div>
 
       {/* Lead Stats */}
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Lead Overview</h2>
