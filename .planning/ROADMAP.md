@@ -7,7 +7,7 @@ Milestone v1.1 enhances the existing Toast integration with four focused deliver
 ## Phases
 
 - [x] **Phase 1: Order Details** - Click any order to see line items, modifiers, and payments
-- [ ] **Phase 2: Lead Matching** - Connect unmatched orders to leads with smart suggestions
+- [x] **Phase 2: Lead Matching** - Connect unmatched orders to leads with smart suggestions
 - [ ] **Phase 3: Sync Automation** - Background sync with status indicator and rate limiting
 - [ ] **Phase 4: Revenue Charts** - Time-series revenue visualization with granularity controls
 
@@ -37,7 +37,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 02-01-PLAN.md - Lead matching panel with similarity scoring
+- [x] 02-01-PLAN.md - Lead matching panel with similarity scoring
 
 ### Phase 3: Sync Automation
 **Goal**: Orders sync automatically in the background without requiring manual trigger
@@ -73,7 +73,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Order Details | 1/1 | Complete | 2026-01-20 |
-| 2. Lead Matching | 0/1 | In Progress | - |
+| 2. Lead Matching | 1/1 | Complete | 2026-01-22 |
 | 3. Sync Automation | 0/TBD | Not started | - |
 | 4. Revenue Charts | 0/TBD | Not started | - |
 

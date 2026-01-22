@@ -22,9 +22,9 @@ Requirements for Toast Enhancements milestone. Each maps to roadmap phases.
 
 ### Lead Matching
 
-- [ ] **MATCH-01**: Unmatched orders show "Match to Lead" button
-- [ ] **MATCH-02**: Matching UI shows smart suggestions based on name/phone similarity
-- [ ] **MATCH-03**: User can confirm match and save to update order
+- [x] **MATCH-01**: Unmatched orders show "Match to Lead" button
+- [x] **MATCH-02**: Matching UI shows smart suggestions based on name/phone similarity
+- [x] **MATCH-03**: User can confirm match and save to update order
 
 ### Revenue Charts
 
@@ -63,9 +63,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ORD-01 | Phase 1 | Complete |
 | ORD-02 | Phase 1 | Complete |
 | ORD-03 | Phase 1 | Complete |
-| MATCH-01 | Phase 2 | Pending |
-| MATCH-02 | Phase 2 | Pending |
-| MATCH-03 | Phase 2 | Pending |
+| MATCH-01 | Phase 2 | Complete |
+| MATCH-02 | Phase 2 | Complete |
+| MATCH-03 | Phase 2 | Complete |
 | SYNC-01 | Phase 3 | Pending |
 | SYNC-02 | Phase 3 | Pending |
 | SYNC-03 | Phase 3 | Pending |
@@ -81,4 +81,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-20 after roadmap creation*
+*Last updated: 2026-01-22 after Phase 2 completion*
