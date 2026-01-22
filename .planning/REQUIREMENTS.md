@@ -9,10 +9,10 @@ Requirements for Toast Enhancements milestone. Each maps to roadmap phases.
 
 ### Sync Automation
 
-- [ ] **SYNC-01**: Orders sync automatically on interval without manual trigger
-- [ ] **SYNC-02**: Sync status indicator shows last sync time and in-progress state
-- [ ] **SYNC-03**: Sync backs off gracefully when API rate limited
-- [ ] **SYNC-04**: Manual sync button remains available as fallback
+- [x] **SYNC-01**: Orders sync automatically on interval without manual trigger
+- [x] **SYNC-02**: Sync status indicator shows last sync time and in-progress state
+- [x] **SYNC-03**: Sync backs off gracefully when API rate limited
+- [x] **SYNC-04**: Manual sync button remains available as fallback
 
 ### Order Details
 
@@ -66,10 +66,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MATCH-01 | Phase 2 | Complete |
 | MATCH-02 | Phase 2 | Complete |
 | MATCH-03 | Phase 2 | Complete |
-| SYNC-01 | Phase 3 | Pending |
-| SYNC-02 | Phase 3 | Pending |
-| SYNC-03 | Phase 3 | Pending |
-| SYNC-04 | Phase 3 | Pending |
+| SYNC-01 | Phase 3 | Complete |
+| SYNC-02 | Phase 3 | Complete |
+| SYNC-03 | Phase 3 | Complete |
+| SYNC-04 | Phase 3 | Complete |
 | CHART-01 | Phase 4 | Pending |
 | CHART-02 | Phase 4 | Pending |
 | CHART-03 | Phase 4 | Pending |
@@ -81,4 +81,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-22 after Phase 2 completion*
+*Last updated: 2026-01-22 after Phase 3 completion*
