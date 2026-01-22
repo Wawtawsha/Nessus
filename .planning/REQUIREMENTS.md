@@ -28,9 +28,9 @@ Requirements for Toast Enhancements milestone. Each maps to roadmap phases.
 
 ### Revenue Charts
 
-- [ ] **CHART-01**: Analytics shows time-series revenue chart (line or bar)
-- [ ] **CHART-02**: User can toggle granularity (daily/weekly/monthly)
-- [ ] **CHART-03**: User can select custom date range
+- [x] **CHART-01**: Analytics shows time-series revenue chart (line or bar)
+- [x] **CHART-02**: User can toggle granularity (daily/weekly/monthly)
+- [x] **CHART-03**: User can select custom date range
 
 ## Future Requirements
 
@@ -70,9 +70,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SYNC-02 | Phase 3 | Complete |
 | SYNC-03 | Phase 3 | Complete |
 | SYNC-04 | Phase 3 | Complete |
-| CHART-01 | Phase 4 | Pending |
-| CHART-02 | Phase 4 | Pending |
-| CHART-03 | Phase 4 | Pending |
+| CHART-01 | Phase 4 | Complete |
+| CHART-02 | Phase 4 | Complete |
+| CHART-03 | Phase 4 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 13 total
@@ -81,4 +81,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-22 after Phase 3 completion*
+*Last updated: 2026-01-22 after Phase 4 completion*
