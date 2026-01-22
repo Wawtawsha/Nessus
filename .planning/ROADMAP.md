@@ -61,10 +61,10 @@ Plans:
   1. Analytics page shows a time-series revenue chart (line or bar)
   2. User can toggle between daily, weekly, and monthly granularity
   3. User can select a custom date range for the chart
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 04-01: Revenue time-series chart with granularity and date range controls
+- [ ] 04-01-PLAN.md - Install shadcn/ui charts, create RPC, build RevenueChart with controls
 
 ## Progress
 
@@ -75,7 +75,7 @@ Plans:
 | 1. Order Details | 1/1 | Complete | 2026-01-20 |
 | 2. Lead Matching | 1/1 | Complete | 2026-01-22 |
 | 3. Sync Automation | 1/1 | Complete | 2026-01-22 |
-| 4. Revenue Charts | 0/TBD | Not started | - |
+| 4. Revenue Charts | 0/1 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-20*
