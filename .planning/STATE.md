@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 Phase: 4 of 4 (Revenue Charts)
 Plan: 1 of 1 in current phase
 Status: Phase complete - MILESTONE v1.1 COMPLETE
-Last activity: 2026-01-22 — Completed 04-01-PLAN.md (Revenue Charts)
+Last activity: 2026-01-23 — Completed quick task 001: Full Resync with batch inserts
 
 Progress: [##########] 100% (4 of 4 phases complete)
 
@@ -78,11 +78,13 @@ None - milestone complete.
 
 ### Blockers/Concerns
 
-**User action required:** Apply database migration for revenue chart RPC:
-```bash
-supabase db push
-# or manually run: crm-dashboard/supabase/migrations/004_revenue_aggregation.sql
-```
+None currently.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Directory |
+|---|-------------|------|-----------|
+| 001 | Full Resync with optimized batch inserts (30,424 orders synced) | 2026-01-23 | [001-run-full-resync](./quick/001-run-full-resync-with-optimized-batch-ins/) |
 
 ## Session Continuity
 
@@ -91,4 +93,4 @@ Stopped at: Completed Phase 4 (Revenue Charts) — Milestone v1.1 COMPLETE
 Resume file: None
 
 ---
-*Last updated: 2026-01-22*
+*Last updated: 2026-01-23*
