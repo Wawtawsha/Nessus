@@ -1,18 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { ToastClient, ToastOrder, ToastSelection, ToastPayment } from '@/lib/toast/client'
-import { SupabaseClient } from '@supabase/supabase-js'
+import { ToastClient, ToastOrder } from '@/lib/toast/client'
 
 interface SyncRequest {
   clientId: string
   startDate?: string // ISO date
   endDate?: string // ISO date
+  fullSync?: boolean // Ignore last_sync_at and fetch full history
+  daysBack?: number // How many days back to sync (default 30)
 }
+
+const BATCH_SIZE = 500 // Supabase recommends <= 1000 rows per upsert
 
 /**
  * POST /api/toast/sync
  * Sync orders from Toast for a client.
- * Matches orders to leads by email/phone.
+ * Uses batch upserts for speed.
  * Admin-only.
  */
 export async function POST(request: NextRequest) {
@@ -72,16 +75,17 @@ export async function POST(request: NextRequest) {
     // Calculate date range
     const endDate = body.endDate ? new Date(body.endDate) : new Date()
     let startDate: Date
+    const daysBack = body.daysBack || 30
 
     if (body.startDate) {
       startDate = new Date(body.startDate)
-    } else if (integration.last_sync_at) {
-      // Start from last sync
+    } else if (integration.last_sync_at && !body.fullSync) {
+      // Start from last sync (unless fullSync requested)
       startDate = new Date(integration.last_sync_at)
     } else {
-      // Default: 30 days back
+      // Full sync: go back specified days (default 30)
       startDate = new Date()
-      startDate.setDate(startDate.getDate() - 30)
+      startDate.setDate(startDate.getDate() - daysBack)
     }
 
     // Create Toast client
@@ -93,7 +97,9 @@ export async function POST(request: NextRequest) {
     })
 
     // Fetch orders from Toast
+    console.log(`[Sync] Fetching orders from ${startDate.toISOString()} to ${endDate.toISOString()}`)
     const orders = await toastClient.getOrders(startDate, endDate)
+    console.log(`[Sync] Fetched ${orders.length} orders, starting batch insert...`)
 
     // Get existing leads for matching
     const { data: leads } = await supabase
@@ -110,81 +116,148 @@ export async function POST(request: NextRequest) {
         emailToLead.set(lead.email.toLowerCase(), lead.id)
       }
       if (lead.phone) {
-        // Normalize phone: remove non-digits
         const normalizedPhone = lead.phone.replace(/\D/g, '')
         phoneToLead.set(normalizedPhone, lead.id)
       }
     }
 
-    // Process orders
-    let ordersInserted = 0
-    let leadsMatched = 0
-    let itemsInserted = 0
-    let paymentsInserted = 0
-
-    for (const order of orders) {
-      const orderData = extractOrderData(order, body.clientId)
+    // Transform all orders to DB format
+    const orderRows = orders.map(order => {
+      const data = extractOrderData(order, body.clientId)
 
       // Try to match to a lead
-      let leadId: string | null = null
-      if (orderData.customer_email) {
-        leadId = emailToLead.get(orderData.customer_email.toLowerCase()) || null
+      if (data.customer_email) {
+        data.lead_id = emailToLead.get(data.customer_email.toLowerCase()) || null
       }
-      if (!leadId && orderData.customer_phone) {
-        const normalizedPhone = orderData.customer_phone.replace(/\D/g, '')
-        leadId = phoneToLead.get(normalizedPhone) || null
-      }
-
-      if (leadId) {
-        orderData.lead_id = leadId
-        leadsMatched++
+      if (!data.lead_id && data.customer_phone) {
+        const normalizedPhone = data.customer_phone.replace(/\D/g, '')
+        data.lead_id = phoneToLead.get(normalizedPhone) || null
       }
 
-      // Upsert the order
-      const { error: upsertError } = await supabase
+      return data
+    })
+
+    // Count leads matched
+    const leadsMatched = orderRows.filter(o => o.lead_id).length
+
+    // Batch upsert orders
+    let ordersInserted = 0
+    for (let i = 0; i < orderRows.length; i += BATCH_SIZE) {
+      const batch = orderRows.slice(i, i + BATCH_SIZE)
+      console.log(`[Sync] Upserting orders batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(orderRows.length / BATCH_SIZE)} (${batch.length} orders)`)
+
+      const { error } = await supabase
         .from('toast_orders')
-        .upsert(orderData, {
+        .upsert(batch, {
           onConflict: 'client_id,toast_order_guid',
         })
 
-      if (!upsertError) {
-        ordersInserted++
+      if (error) {
+        console.error(`[Sync] Batch upsert error:`, error)
+      } else {
+        ordersInserted += batch.length
+      }
+    }
 
-        // Query to get the order ID (upsert doesn't reliably return ID on conflict)
-        const { data: orderRecord } = await supabase
-          .from('toast_orders')
-          .select('id')
-          .eq('client_id', body.clientId)
-          .eq('toast_order_guid', order.guid)
-          .single()
+    console.log(`[Sync] Orders complete. Now syncing line items and payments...`)
 
-        if (!orderRecord) continue
-        const orderId = orderRecord.id
+    // Get all order IDs we just inserted (for line items/payments)
+    const { data: orderRecords } = await supabase
+      .from('toast_orders')
+      .select('id, toast_order_guid')
+      .eq('client_id', body.clientId)
+      .in('toast_order_guid', orders.map(o => o.guid))
 
-        // Extract and insert line items
-        const check = order.checks?.[0]
-        if (check?.selections) {
-          const itemCount = await insertLineItems(
-            supabase,
-            orderId,
-            body.clientId,
-            check.selections
-          )
-          itemsInserted += itemCount
+    const guidToId = new Map<string, string>()
+    for (const rec of orderRecords || []) {
+      guidToId.set(rec.toast_order_guid, rec.id)
+    }
+
+    // Collect all line items and payments
+    const allLineItems: Record<string, unknown>[] = []
+    const allPayments: Record<string, unknown>[] = []
+
+    for (const order of orders) {
+      const orderId = guidToId.get(order.guid)
+      if (!orderId) continue
+
+      // Collect line items from ALL checks
+      for (const check of order.checks || []) {
+        for (const selection of check.selections || []) {
+          allLineItems.push({
+            order_id: orderId,
+            client_id: body.clientId,
+            toast_selection_guid: selection.guid,
+            toast_item_guid: selection.item?.guid || null,
+            display_name: selection.displayName || 'Unknown Item',
+            quantity: selection.quantity || 1,
+            unit_price: selection.preDiscountPrice / (selection.quantity || 1),
+            pre_discount_price: selection.preDiscountPrice || 0,
+            price: selection.price || 0,
+            tax: selection.tax || 0,
+            voided: selection.voided || false,
+            seat_number: selection.seatNumber || null,
+            is_modifier: false,
+            parent_item_id: null,
+          })
+          // Note: skipping nested modifiers for speed - they complicate batching
         }
 
-        // Extract and insert payments
-        if (check?.payments) {
-          const paymentCount = await insertPayments(
-            supabase,
-            orderId,
-            body.clientId,
-            check.payments
-          )
-          paymentsInserted += paymentCount
+        // Collect payments
+        for (const payment of check.payments || []) {
+          allPayments.push({
+            order_id: orderId,
+            client_id: body.clientId,
+            toast_payment_guid: payment.guid,
+            payment_type: payment.type || 'OTHER',
+            amount: payment.amount || 0,
+            tip_amount: payment.tipAmount || 0,
+            amount_tendered: payment.amountTendered || 0,
+            card_type: payment.cardType || null,
+            last_four: payment.lastFour || null,
+            paid_date: payment.paidDate || null,
+            refund_status: payment.refundStatus || null,
+            voided: payment.voidInfo !== null,
+          })
         }
       }
     }
+
+    // Batch upsert line items
+    let itemsInserted = 0
+    for (let i = 0; i < allLineItems.length; i += BATCH_SIZE) {
+      const batch = allLineItems.slice(i, i + BATCH_SIZE)
+      console.log(`[Sync] Upserting line items batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(allLineItems.length / BATCH_SIZE)}`)
+
+      const { error } = await supabase
+        .from('toast_order_items')
+        .upsert(batch, {
+          onConflict: 'order_id,toast_selection_guid',
+        })
+
+      if (!error) {
+        itemsInserted += batch.length
+      }
+    }
+
+    // Batch upsert payments
+    let paymentsInserted = 0
+    for (let i = 0; i < allPayments.length; i += BATCH_SIZE) {
+      const batch = allPayments.slice(i, i + BATCH_SIZE)
+      console.log(`[Sync] Upserting payments batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(allPayments.length / BATCH_SIZE)}`)
+
+      const { error } = await supabase
+        .from('toast_payments')
+        .upsert(batch, {
+          onConflict: 'order_id,toast_payment_guid',
+        })
+
+      if (!error) {
+        paymentsInserted += batch.length
+      }
+    }
+
+    console.log(`[Sync] Complete! Orders: ${ordersInserted}, Items: ${itemsInserted}, Payments: ${paymentsInserted}`)
 
     // Update integration status
     await supabase
@@ -214,6 +287,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     // Update integration with error
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    console.error(`[Sync] Error:`, errorMessage)
 
     await supabase
       .from('toast_integrations')
@@ -234,13 +308,31 @@ export async function POST(request: NextRequest) {
  * Extract relevant data from a Toast order
  */
 function extractOrderData(order: ToastOrder, clientId: string) {
-  // Get first check (most orders have one check)
-  const check = order.checks?.[0]
-  const customer = check?.customer
-  const payments = check?.payments || []
+  // Sum ALL checks (orders can have multiple tabs/splits)
+  let subtotal = 0
+  let taxAmount = 0
+  let tipAmount = 0
+  let totalAmount = 0
+  let customer: { guid?: string; firstName?: string | null; lastName?: string | null; email?: string | null; phone?: string | null } | null = null
+  let checkGuid: string | null = null
 
-  // Sum up tips from all payments
-  const tipAmount = payments.reduce((sum, p) => sum + (p.tipAmount || 0), 0)
+  for (const check of order.checks || []) {
+    subtotal += check.amount || 0
+    taxAmount += check.taxAmount || 0
+    totalAmount += check.totalAmount || 0
+    // Sum tips from all payments in all checks
+    for (const payment of check.payments || []) {
+      tipAmount += payment.tipAmount || 0
+    }
+    // Use first customer found
+    if (!customer && check.customer) {
+      customer = check.customer
+    }
+    // Use first check GUID
+    if (!checkGuid && check.guid) {
+      checkGuid = check.guid
+    }
+  }
 
   // Extract delivery info if present
   const delivery = order.deliveryInfo
@@ -248,7 +340,7 @@ function extractOrderData(order: ToastOrder, clientId: string) {
   return {
     client_id: clientId,
     toast_order_guid: order.guid,
-    toast_check_guid: check?.guid || null,
+    toast_check_guid: checkGuid,
     toast_customer_guid: customer?.guid || null,
     display_number: order.displayNumber || null,
     business_date: order.businessDate,
@@ -258,10 +350,10 @@ function extractOrderData(order: ToastOrder, clientId: string) {
     source: order.source || null,
     voided: order.voided || false,
     number_of_guests: order.numberOfGuests || 1,
-    subtotal: check?.amount || 0,
-    tax_amount: check?.taxAmount || 0,
+    subtotal: subtotal,
+    tax_amount: taxAmount,
     tip_amount: tipAmount,
-    total_amount: check?.totalAmount || 0,
+    total_amount: totalAmount,
     customer_first_name: customer?.firstName || null,
     customer_last_name: customer?.lastName || null,
     customer_email: customer?.email || null,
@@ -272,108 +364,6 @@ function extractOrderData(order: ToastOrder, clientId: string) {
     delivery_zip: delivery?.zipCode || null,
     raw_data: order,
     synced_at: new Date().toISOString(),
-    lead_id: null as string | null, // Will be set if matched
+    lead_id: null as string | null,
   }
-}
-
-/**
- * Insert line items from Toast selections
- * Handles nested modifiers recursively
- */
-async function insertLineItems(
-  supabase: SupabaseClient,
-  orderId: string,
-  clientId: string,
-  selections: ToastSelection[],
-  parentItemId: string | null = null
-): Promise<number> {
-  let count = 0
-
-  for (const selection of selections) {
-    const itemData = {
-      order_id: orderId,
-      client_id: clientId,
-      toast_selection_guid: selection.guid,
-      toast_item_guid: selection.item?.guid || null,
-      display_name: selection.displayName || 'Unknown Item',
-      quantity: selection.quantity || 1,
-      unit_price: selection.preDiscountPrice / (selection.quantity || 1),
-      pre_discount_price: selection.preDiscountPrice || 0,
-      price: selection.price || 0,
-      tax: selection.tax || 0,
-      voided: selection.voided || false,
-      seat_number: selection.seatNumber || null,
-      is_modifier: parentItemId !== null,
-      parent_item_id: parentItemId,
-    }
-
-    // Upsert the line item
-    const { data: insertedItem, error } = await supabase
-      .from('toast_order_items')
-      .upsert(itemData, {
-        onConflict: 'order_id,toast_selection_guid',
-      })
-      .select('id')
-      .single()
-
-    if (!error && insertedItem) {
-      count++
-
-      // Recursively insert modifiers
-      if (selection.modifiers && selection.modifiers.length > 0) {
-        const modifierCount = await insertLineItems(
-          supabase,
-          orderId,
-          clientId,
-          selection.modifiers,
-          insertedItem.id
-        )
-        count += modifierCount
-      }
-    }
-  }
-
-  return count
-}
-
-/**
- * Insert payments from Toast check
- */
-async function insertPayments(
-  supabase: SupabaseClient,
-  orderId: string,
-  clientId: string,
-  payments: ToastPayment[]
-): Promise<number> {
-  let count = 0
-
-  for (const payment of payments) {
-    const paymentData = {
-      order_id: orderId,
-      client_id: clientId,
-      toast_payment_guid: payment.guid,
-      payment_type: payment.type || 'OTHER',
-      amount: payment.amount || 0,
-      tip_amount: payment.tipAmount || 0,
-      amount_tendered: payment.amountTendered || 0,
-      card_type: payment.cardType || null,
-      last_four: payment.lastFour || null,
-      paid_date: payment.paidDate || null,
-      refund_status: payment.refundStatus || null,
-      voided: payment.voidInfo !== null,
-    }
-
-    // Upsert the payment
-    const { error } = await supabase
-      .from('toast_payments')
-      .upsert(paymentData, {
-        onConflict: 'order_id,toast_payment_guid',
-      })
-
-    if (!error) {
-      count++
-    }
-  }
-
-  return count
 }
