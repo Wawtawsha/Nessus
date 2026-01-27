@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     const orders = await toastClient.getOrders(startDate, endDate)
 
     // Analyze the orders
-    const ordersByDate = new Map<string, { count: number; total: number }>()
+    const ordersByDate = new Map<string, { count: number; netSales: number; grossSales: number }>()
     const sources = new Set<string>()
     const revenueCenters = new Set<string>()
 
