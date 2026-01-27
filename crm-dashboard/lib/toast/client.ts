@@ -291,7 +291,7 @@ export class ToastClient {
 
   /**
    * Fetch orders for a date range
-   * Uses the ordersBulk endpoint for efficient retrieval
+   * Uses the ordersBulk endpoint with pagination to get ALL orders
    */
   async getOrders(startDate: Date, endDate: Date): Promise<ToastOrder[]> {
     const accessToken = await this.authenticate()
@@ -300,27 +300,58 @@ export class ToastClient {
     const startDateStr = startDate.toISOString()
     const endDateStr = endDate.toISOString()
 
-    const url = new URL(`${this.baseUrl}/orders/v2/ordersBulk`)
-    url.searchParams.set('startDate', startDateStr)
-    url.searchParams.set('endDate', endDateStr)
+    console.log(`[Toast] Fetching orders from ${startDateStr} to ${endDateStr}`)
 
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Toast-Restaurant-External-ID': this.credentials.restaurantGuid,
-        'Content-Type': 'application/json',
-      },
-    })
+    const allOrders: ToastOrder[] = []
+    let page = 1
+    const pageSize = 100 // Maximum allowed by Toast API
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      throw new Error(`Toast orders fetch failed: ${response.status} - ${errorText}`)
+    while (true) {
+      const url = new URL(`${this.baseUrl}/orders/v2/ordersBulk`)
+      url.searchParams.set('startDate', startDateStr)
+      url.searchParams.set('endDate', endDateStr)
+      url.searchParams.set('pageSize', pageSize.toString())
+      url.searchParams.set('page', page.toString())
+
+      console.log(`[Toast] Fetching page ${page}...`)
+
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Toast-Restaurant-External-ID': this.credentials.restaurantGuid,
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`Toast orders fetch failed: ${response.status} - ${errorText}`)
+      }
+
+      // Log pagination headers
+      const totalCount = response.headers.get('Toast-Total-Result-Count')
+      const linkHeader = response.headers.get('Link')
+      console.log(`[Toast] Page ${page}: Total-Result-Count=${totalCount}, Link=${linkHeader}`)
+
+      // The response is a JSON array of orders
+      const orders: ToastOrder[] = await response.json()
+      console.log(`[Toast] Page ${page}: Received ${orders.length} orders`)
+      allOrders.push(...orders)
+
+      // Check if there are more pages via Link header (RFC 5988)
+      const hasNextPage = linkHeader && linkHeader.includes('rel="next"')
+
+      // Also stop if we got fewer than pageSize (last page)
+      if (!hasNextPage || orders.length < pageSize) {
+        console.log(`[Toast] Pagination complete. Total orders fetched: ${allOrders.length}`)
+        break
+      }
+
+      page++
     }
 
-    // The response is a JSON array of orders, not wrapped in an object
-    const orders: ToastOrder[] = await response.json()
-    return orders
+    return allOrders
   }
 
   /**
