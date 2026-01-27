@@ -68,21 +68,32 @@ export default function OrdersPage() {
   const [matchFilter, setMatchFilter] = useState<string>('')
   const [sourceFilter, setSourceFilter] = useState<string>('')
   const [sources, setSources] = useState<string[]>([])
-  const [dateFrom, setDateFrom] = useState('')
-  const [dateTo, setDateTo] = useState('')
+  const [daysBack, setDaysBack] = useState<number>(7) // Default to 7 days
+  const [includeInvoices, setIncludeInvoices] = useState<boolean>(false)
   const [selectedOrder, setSelectedOrder] = useState<ToastOrder | null>(null)
   const supabase = createClient()
   const { isAdmin, currentClientId } = useUser()
 
   const fetchOrders = useCallback(async () => {
+    // Calculate date range based on daysBack
+    const today = new Date()
+    const startDate = new Date()
+    startDate.setDate(today.getDate() - daysBack)
+
+    // Convert to YYYYMMDD integer format
+    const startDateInt = parseInt(
+      `${startDate.getFullYear()}${String(startDate.getMonth() + 1).padStart(2, '0')}${String(startDate.getDate()).padStart(2, '0')}`,
+      10
+    )
+
     let query = supabase
       .from('toast_orders')
       .select(`
         *,
         lead:leads(id, first_name, last_name, status)
       `)
+      .gte('business_date', startDateInt)
       .order('business_date', { ascending: false })
-      .limit(500)
 
     // Admin filtering by selected client (client users filtered by RLS automatically)
     if (isAdmin && currentClientId) {
@@ -101,14 +112,9 @@ export default function OrdersPage() {
       query = query.eq('source', sourceFilter)
     }
 
-    // Date range filter (business_date is YYYYMMDD integer)
-    if (dateFrom) {
-      const fromInt = parseInt(dateFrom.replace(/-/g, ''), 10)
-      query = query.gte('business_date', fromInt)
-    }
-    if (dateTo) {
-      const toInt = parseInt(dateTo.replace(/-/g, ''), 10)
-      query = query.lte('business_date', toInt)
+    // Exclude invoices unless toggled on
+    if (!includeInvoices) {
+      query = query.neq('source', 'Invoice')
     }
 
     // Search by customer name or email
@@ -124,7 +130,7 @@ export default function OrdersPage() {
       setOrders(data || [])
     }
     setLoading(false)
-  }, [supabase, matchFilter, sourceFilter, search, dateFrom, dateTo, isAdmin, currentClientId])
+  }, [supabase, matchFilter, sourceFilter, search, daysBack, includeInvoices, isAdmin, currentClientId])
 
   // Fetch unique sources for filter
   const fetchSources = useCallback(async () => {
@@ -159,6 +165,11 @@ export default function OrdersPage() {
     }),
     { revenue: 0, orders: 0, matched: 0 }
   )
+
+  // Calculate start date for display
+  const startDate = new Date()
+  startDate.setDate(startDate.getDate() - daysBack)
+  const sinceDate = `${String(startDate.getMonth() + 1).padStart(2, '0')}/${String(startDate.getDate()).padStart(2, '0')}/${String(startDate.getFullYear()).slice(2)}`
 
   const exportCSV = () => {
     const headers = [
@@ -214,6 +225,7 @@ export default function OrdersPage() {
         <div className="bg-white rounded-lg shadow p-4">
           <div className="text-sm text-gray-500">Total Revenue</div>
           <div className="text-2xl font-bold text-gray-900">{formatCurrency(totals.revenue)}</div>
+          <div className="text-xs text-gray-400 mt-1">since {sinceDate}</div>
         </div>
         <div className="bg-white rounded-lg shadow p-4">
           <div className="text-sm text-gray-500">Total Orders</div>
@@ -233,7 +245,18 @@ export default function OrdersPage() {
 
       {/* Filters */}
       <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <select
+            value={daysBack}
+            onChange={(e) => setDaysBack(parseInt(e.target.value))}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+          >
+            <option value={7}>Last 7 days</option>
+            <option value={14}>Last 14 days</option>
+            <option value={30}>Last 30 days</option>
+            <option value={60}>Last 60 days</option>
+            <option value={90}>Last 90 days</option>
+          </select>
           <input
             type="text"
             placeholder="Search customer..."
@@ -262,32 +285,29 @@ export default function OrdersPage() {
               </option>
             ))}
           </select>
-          <input
-            type="date"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="From"
-          />
-          <input
-            type="date"
-            value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="To"
-          />
           <button
             onClick={() => {
               setSearch('')
               setMatchFilter('')
               setSourceFilter('')
-              setDateFrom('')
-              setDateTo('')
+              setDaysBack(7)
+              setIncludeInvoices(false)
             }}
             className="px-3 py-2 text-gray-600 hover:text-gray-900"
           >
             Clear Filters
           </button>
+        </div>
+        <div className="mt-3 flex items-center">
+          <label className="flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeInvoices}
+              onChange={(e) => setIncludeInvoices(e.target.checked)}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <span className="ml-2 text-sm text-gray-600">Include invoices</span>
+          </label>
         </div>
       </div>
 
@@ -388,7 +408,7 @@ export default function OrdersPage() {
       </div>
 
       <div className="mt-4 text-sm text-gray-500">
-        Showing {orders.length} order{orders.length !== 1 ? 's' : ''}
+        Showing {orders.length.toLocaleString()} order{orders.length !== 1 ? 's' : ''} from the last {daysBack} days
       </div>
 
       {/* Order Detail Modal */}

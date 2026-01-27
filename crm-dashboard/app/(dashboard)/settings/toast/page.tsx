@@ -44,6 +44,14 @@ export default function ToastSettingsPage() {
   const [testResult, setTestResult] = useState<Record<string, unknown> | null>(null)
   const [daysBack, setDaysBack] = useState('7')
 
+  // Full resync state
+  const [fullSyncDays, setFullSyncDays] = useState('90')
+  const [fullSyncing, setFullSyncing] = useState(false)
+
+  // Diagnose state
+  const [diagnosing, setDiagnosing] = useState(false)
+  const [diagnoseResult, setDiagnoseResult] = useState<Record<string, unknown> | null>(null)
+
   // Redirect non-admins
   useEffect(() => {
     if (!userLoading && !isAdmin) {
@@ -180,6 +188,44 @@ export default function ToastSettingsPage() {
     }
   }
 
+  const handleFullResync = async () => {
+    if (!selectedClientId || !integration) return
+    if (!confirm(`This will fetch ALL orders from the last ${fullSyncDays} days. This may take a while. Continue?`)) return
+
+    setFullSyncing(true)
+    setMessage(null)
+
+    try {
+      const response = await fetch('/api/toast/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId: selectedClientId,
+          fullSync: true,
+          daysBack: parseInt(fullSyncDays) || 90,
+        }),
+      })
+      const data = await response.json()
+
+      if (data.success) {
+        setMessage({
+          type: 'success',
+          text: `Full resync complete! Processed ${data.stats.ordersProcessed} orders, inserted ${data.stats.ordersInserted}.`
+        })
+        // Refresh integration status
+        const refreshResponse = await fetch(`/api/toast/setup?clientId=${selectedClientId}`)
+        const refreshData = await refreshResponse.json()
+        setIntegration(refreshData.integration)
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Full resync failed' })
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Network error during full resync' })
+    } finally {
+      setFullSyncing(false)
+    }
+  }
+
   const handleDelete = async () => {
     if (!selectedClientId || !integration) return
     if (!confirm('Remove Toast integration for this client? Orders will remain in the database.')) return
@@ -201,6 +247,33 @@ export default function ToastSettingsPage() {
       }
     } catch (err) {
       setMessage({ type: 'error', text: 'Network error' })
+    }
+  }
+
+  const handleDiagnose = async () => {
+    if (!selectedClientId || !integration) return
+
+    setDiagnosing(true)
+    setDiagnoseResult(null)
+    setMessage(null)
+
+    try {
+      const response = await fetch(`/api/toast/diagnose?clientId=${selectedClientId}&days=7`)
+      const data = await response.json()
+      setDiagnoseResult(data)
+
+      if (data.success) {
+        setMessage({
+          type: 'success',
+          text: `Diagnose complete: Found ${data.results?.totalOrders || 0} orders totaling $${(data.results?.totalRevenue || 0).toFixed(2)}`
+        })
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Diagnose failed' })
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Network error during diagnose' })
+    } finally {
+      setDiagnosing(false)
     }
   }
 
@@ -271,20 +344,112 @@ export default function ToastSettingsPage() {
                   </div>
                 )}
               </div>
-              <div className="mt-4 flex gap-3">
+              <div className="mt-4 flex flex-wrap gap-3 items-center">
                 <button
                   onClick={handleSync}
-                  disabled={syncStatus === 'syncing'}
+                  disabled={syncStatus === 'syncing' || fullSyncing}
                   className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed"
                 >
                   {syncStatus === 'syncing' ? 'Syncing...' : 'Sync Now'}
                 </button>
+                <div className="flex items-center gap-2 border-l pl-3">
+                  <input
+                    type="number"
+                    value={fullSyncDays}
+                    onChange={(e) => setFullSyncDays(e.target.value)}
+                    className="w-16 px-2 py-1 border border-gray-300 rounded-md text-sm"
+                    min="7"
+                    max="365"
+                  />
+                  <span className="text-sm text-gray-500">days</span>
+                  <button
+                    onClick={handleFullResync}
+                    disabled={syncStatus === 'syncing' || fullSyncing}
+                    className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 disabled:bg-orange-400 disabled:cursor-not-allowed"
+                  >
+                    {fullSyncing ? 'Resyncing...' : 'Full Resync'}
+                  </button>
+                </div>
                 <button
                   onClick={handleDelete}
                   className="text-red-600 hover:text-red-800 px-4 py-2"
                 >
                   Remove Integration
                 </button>
+              </div>
+              <p className="mt-2 text-xs text-gray-500">
+                "Sync Now" fetches new orders since last sync. "Full Resync" re-fetches ALL orders for the specified number of days (with pagination).
+              </p>
+
+              {/* Diagnose Section */}
+              <div className="mt-4 pt-4 border-t">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleDiagnose}
+                    disabled={diagnosing}
+                    className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed"
+                  >
+                    {diagnosing ? 'Diagnosing...' : 'Diagnose API'}
+                  </button>
+                  <span className="text-sm text-gray-500">
+                    Quick test: fetch 7 days of orders without saving to database
+                  </span>
+                </div>
+                {diagnoseResult && (
+                  <div className="mt-4">
+                    <details open>
+                      <summary className="cursor-pointer text-sm font-medium text-gray-700 mb-2">
+                        Diagnose Results
+                      </summary>
+                      <div className="bg-gray-50 rounded-md p-4 text-sm">
+                        {diagnoseResult.success ? (
+                          <>
+                            <div className="grid grid-cols-2 gap-2 mb-4">
+                              <div><strong>Total Orders:</strong> {(diagnoseResult.results as Record<string, unknown>)?.totalOrders as number}</div>
+                              <div><strong>Revenue Centers:</strong> {((diagnoseResult.results as Record<string, unknown>)?.revenueCenters as string[])?.length || 0}</div>
+                              <div><strong>Net Sales:</strong> <span className="text-green-700 font-bold">${((diagnoseResult.results as Record<string, unknown>)?.totalNetSales as number)?.toFixed(2)}</span></div>
+                              <div><strong>Gross Sales:</strong> ${((diagnoseResult.results as Record<string, unknown>)?.totalGrossSales as number)?.toFixed(2)}</div>
+                              <div className="col-span-2"><strong>Sources:</strong> {((diagnoseResult.results as Record<string, unknown>)?.sources as string[])?.join(', ') || 'None'}</div>
+                            </div>
+                            <div className="mb-4">
+                              <strong>Date Breakdown:</strong>
+                              <table className="mt-2 w-full text-xs">
+                                <thead>
+                                  <tr className="bg-gray-200">
+                                    <th className="px-2 py-1 text-left">Date</th>
+                                    <th className="px-2 py-1 text-left">Day</th>
+                                    <th className="px-2 py-1 text-right">Orders</th>
+                                    <th className="px-2 py-1 text-right">Net Sales</th>
+                                    <th className="px-2 py-1 text-right">Gross</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {((diagnoseResult.results as Record<string, unknown>)?.dateBreakdown as Array<{date: string; dayOfWeek: string; count: number; netSales: number; grossSales: number}>)?.map((row) => (
+                                    <tr key={row.date} className="border-b">
+                                      <td className="px-2 py-1">{row.date}</td>
+                                      <td className="px-2 py-1">{row.dayOfWeek}</td>
+                                      <td className="px-2 py-1 text-right">{row.count}</td>
+                                      <td className="px-2 py-1 text-right font-medium">${row.netSales.toFixed(2)}</td>
+                                      <td className="px-2 py-1 text-right text-gray-500">${row.grossSales.toFixed(2)}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-red-600">{diagnoseResult.error as string}</div>
+                        )}
+                        <details className="mt-2">
+                          <summary className="cursor-pointer text-xs text-gray-500">Raw JSON</summary>
+                          <pre className="bg-gray-900 text-green-400 p-4 rounded-md overflow-auto max-h-64 text-xs mt-2">
+                            {JSON.stringify(diagnoseResult, null, 2)}
+                          </pre>
+                        </details>
+                      </div>
+                    </details>
+                  </div>
+                )}
               </div>
             </div>
           ) : null}

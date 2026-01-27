@@ -36,6 +36,7 @@ interface RevenueStats {
   avgOrderValue: number
   totalTips: number
   matchedOrders: number
+  oldestOrderDate: string | null
 }
 
 interface PaymentStats {
@@ -64,6 +65,7 @@ export default function AnalyticsPage() {
   const [paymentStats, setPaymentStats] = useState<PaymentStats[]>([])
   const [topItems, setTopItems] = useState<TopItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [includeInvoices, setIncludeInvoices] = useState<boolean>(false)
 
   // Revenue chart state
   const [granularity, setGranularity] = useState<'day' | 'week' | 'month'>('day')
@@ -173,8 +175,11 @@ export default function AnalyticsPage() {
     // Revenue Stats from Toast Orders
     let ordersQuery = supabase
       .from('toast_orders')
-      .select('total_amount, tip_amount, lead_id')
+      .select('total_amount, tip_amount, lead_id, business_date, source')
     ordersQuery = addClientFilter(ordersQuery)
+    if (!includeInvoices) {
+      ordersQuery = ordersQuery.neq('source', 'Invoice')
+    }
     const { data: ordersData } = await ordersQuery
 
     if (ordersData && ordersData.length > 0) {
@@ -182,12 +187,29 @@ export default function AnalyticsPage() {
       const totalTips = ordersData.reduce((sum, o) => sum + (o.tip_amount || 0), 0)
       const matchedOrders = ordersData.filter(o => o.lead_id).length
 
+      // Find oldest order date (business_date is YYYYMMDD integer)
+      const oldestDate = ordersData.reduce((min, o) => {
+        const bd = o.business_date
+        return bd && (!min || bd < min) ? bd : min
+      }, null as number | null)
+
+      // Format YYYYMMDD to MM/DD/YY
+      let oldestOrderDate: string | null = null
+      if (oldestDate) {
+        const dateStr = oldestDate.toString()
+        const year = dateStr.slice(2, 4)
+        const month = dateStr.slice(4, 6)
+        const day = dateStr.slice(6, 8)
+        oldestOrderDate = `${month}/${day}/${year}`
+      }
+
       setRevenueStats({
         totalRevenue,
         orderCount: ordersData.length,
         avgOrderValue: totalRevenue / ordersData.length,
         totalTips,
         matchedOrders,
+        oldestOrderDate,
       })
     }
 
@@ -252,7 +274,7 @@ export default function AnalyticsPage() {
     }
 
     setLoading(false)
-  }, [supabase, isAdmin, currentClientId])
+  }, [supabase, isAdmin, currentClientId, includeInvoices])
 
   // Fetch revenue chart data via RPC
   const fetchRevenueChartData = useCallback(async () => {
@@ -262,7 +284,8 @@ export default function AnalyticsPage() {
       p_granularity: granularity,
       p_start_date: dateRange.from.toISOString().split('T')[0],
       p_end_date: dateRange.to.toISOString().split('T')[0],
-      p_client_id: clientIdParam
+      p_client_id: clientIdParam,
+      p_include_invoices: includeInvoices
     })
 
     if (!error && data) {
@@ -270,7 +293,7 @@ export default function AnalyticsPage() {
     } else {
       setRevenueChartData([])
     }
-  }, [supabase, granularity, dateRange, isAdmin, currentClientId])
+  }, [supabase, granularity, dateRange, isAdmin, currentClientId, includeInvoices])
 
   useEffect(() => {
     fetchStats()
@@ -295,7 +318,18 @@ export default function AnalyticsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Analytics</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
+        <label className="flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={includeInvoices}
+            onChange={(e) => setIncludeInvoices(e.target.checked)}
+            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+          />
+          <span className="ml-2 text-sm text-gray-600">Include invoices</span>
+        </label>
+      </div>
 
       {/* Revenue Stats */}
       {revenueStats && (
@@ -305,6 +339,9 @@ export default function AnalyticsPage() {
             <div className="bg-green-50 rounded-lg p-4">
               <div className="text-2xl font-bold text-green-700">{formatCurrency(revenueStats.totalRevenue)}</div>
               <div className="text-sm text-green-600">Total Revenue</div>
+              {revenueStats.oldestOrderDate && (
+                <div className="text-xs text-green-500 mt-1">since {revenueStats.oldestOrderDate}</div>
+              )}
             </div>
             <div className="bg-blue-50 rounded-lg p-4">
               <div className="text-2xl font-bold text-blue-700">{revenueStats.orderCount}</div>
