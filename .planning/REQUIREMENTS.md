@@ -32,6 +32,13 @@ Requirements for Toast Enhancements milestone. Each maps to roadmap phases.
 - [x] **CHART-02**: User can toggle granularity (daily/weekly/monthly)
 - [x] **CHART-03**: User can select custom date range
 
+### Shrike Website Consolidation
+
+- [ ] **SHRIKE-01**: "Shrike Website" client exists in sidebar and both old clients ("2016 Night at Press Club", "Rosemont Vineyard") are deactivated
+- [ ] **SHRIKE-02**: Visit data from both old clients is consolidated under "Shrike Website" with per-site identity preserved via website_label column
+- [ ] **SHRIKE-03**: Visits panel shows each webpage's full metrics (visits, unique IPs, sessions, locations, referrers, pages, time series) in its own distinct card
+- [ ] **SHRIKE-04**: All per-site metrics viewable on one screen without clicking between clients
+
 ## Future Requirements
 
 Deferred to later milestones. Tracked but not in current roadmap.
@@ -73,12 +80,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CHART-01 | Phase 4 | Complete |
 | CHART-02 | Phase 4 | Complete |
 | CHART-03 | Phase 4 | Complete |
+| SHRIKE-01 | Phase 5 | Planned |
+| SHRIKE-02 | Phase 5 | Planned |
+| SHRIKE-03 | Phase 5 | Planned |
+| SHRIKE-04 | Phase 5 | Planned |
 
 **Coverage:**
-- v1.1 requirements: 13 total
-- Mapped to phases: 13
+- v1.1 requirements: 17 total
+- Mapped to phases: 17
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-22 after Phase 4 completion*
+*Last updated: 2026-02-13 after Phase 5 planning*
