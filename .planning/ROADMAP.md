@@ -57,7 +57,7 @@ Plans:
 
 </details>
 
-## 🚧 v1.2 Lead Management (In Progress)
+## v1.2 Lead Management (In Progress)
 
 **Milestone Goal:** Expand lead capture with manual entry and dedicated cold-calling client.
 
@@ -95,15 +95,15 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Lead detail page has an "Edit" button that enables editing of lead fields
   2. Changes save to Supabase and reflect immediately
-**Plans**: 0 plans
+**Plans**: 1 plan
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 8 to break down)
+- [ ] 08-01-PLAN.md -- Inline edit mode on lead detail contact card with save/cancel
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 6 → 7 → 8
+Phases execute in numeric order: 6 -> 7 -> 8
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -114,7 +114,7 @@ Phases execute in numeric order: 6 → 7 → 8
 | 5. Shrike Consolidation | v1.1 | 2/2 | Complete | 2026-02-13 |
 | 6. Database + Cold Calling | v1.2 | 1/1 | Complete | 2026-02-14 |
 | 7. Manual Lead Entry UI | v1.2 | 1/1 | Complete | 2026-02-14 |
-| 8. Edit Lead UI | v1.2 | 0/0 | Planned | - |
+| 8. Edit Lead UI | v1.2 | 0/1 | Planned | - |
 
 ---
-*Last updated: 2026-02-14 after Phase 7 execution, Phase 8 added*
+*Last updated: 2026-02-14 after Phase 8 planning*
