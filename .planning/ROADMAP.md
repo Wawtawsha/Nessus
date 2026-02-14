@@ -12,7 +12,7 @@ Milestone v1.2 expands lead capture beyond website forms with manual entry capab
 
 ## Phases
 
-- [ ] **Phase 6: Database + Cold Calling Client** - Extend schema and create leads-only client
+- [x] **Phase 6: Database + Cold Calling Client** - Extend schema and create leads-only client
 - [ ] **Phase 7: Manual Lead Entry UI** - Build Add Lead form for all clients
 
 <details>
@@ -71,7 +71,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 06-01-PLAN.md -- Cold Calling client + lead schema extension + client-type tab filtering
+- [x] 06-01-PLAN.md -- Cold Calling client + lead schema extension + client-type tab filtering
 
 ### Phase 7: Manual Lead Entry UI
 **Goal**: Users can manually add leads from any client's leads page
@@ -99,8 +99,8 @@ Phases execute in numeric order: 6 → 7
 | 3. Sync Automation | v1.1 | 1/1 | Complete | 2026-02 |
 | 4. Revenue Charts | v1.1 | 1/1 | Complete | 2026-02 |
 | 5. Shrike Consolidation | v1.1 | 2/2 | Complete | 2026-02-13 |
-| 6. Database + Cold Calling | v1.2 | 0/1 | Planned | - |
+| 6. Database + Cold Calling | v1.2 | 1/1 | Complete | 2026-02-14 |
 | 7. Manual Lead Entry UI | v1.2 | 0/1 | Planned | - |
 
 ---
-*Last updated: 2026-02-14 after Phase 7 planning*
+*Last updated: 2026-02-14 after Phase 6 execution*

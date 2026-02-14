@@ -9,8 +9,8 @@ Requirements for Lead Management milestone. Each maps to roadmap phases.
 
 ### Cold Calling Client
 
-- [ ] **CLIENT-01**: "Cold Calling" client appears in sidebar as an active client
-- [ ] **CLIENT-02**: When Cold Calling is selected, only the Leads tab is shown (visits, orders, pipeline, analytics are hidden)
+- [x] **CLIENT-01**: "Cold Calling" client appears in sidebar as an active client
+- [x] **CLIENT-02**: When Cold Calling is selected, only the Leads tab is shown (visits, orders, pipeline, analytics are hidden)
 
 ### Manual Lead Entry
 
@@ -47,8 +47,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CLIENT-01 | Phase 6 | Pending |
-| CLIENT-02 | Phase 6 | Pending |
+| CLIENT-01 | Phase 6 | Complete |
+| CLIENT-02 | Phase 6 | Complete |
 | LEAD-01 | Phase 7 | Pending |
 | LEAD-02 | Phase 7 | Pending |
 | LEAD-03 | Phase 7 | Pending |
@@ -61,4 +61,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-14*
-*Last updated: 2026-02-14 after roadmap creation*
+*Last updated: 2026-02-14 after Phase 6 execution*
