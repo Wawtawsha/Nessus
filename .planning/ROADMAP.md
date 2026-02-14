@@ -68,10 +68,10 @@ Plans:
   1. User sees "Cold Calling" in client sidebar as an active client
   2. When Cold Calling is selected, only Leads tab is visible (no Visits, Orders, Pipeline, Analytics tabs)
   3. Leads table has has_website (boolean) and social_media_presence (1-5 integer) columns
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] TBD
+- [ ] 06-01-PLAN.md -- Cold Calling client + lead schema extension + client-type tab filtering
 
 ### Phase 7: Manual Lead Entry UI
 **Goal**: Users can manually add leads from any client's leads page
@@ -99,8 +99,8 @@ Phases execute in numeric order: 6 → 7
 | 3. Sync Automation | v1.1 | 1/1 | Complete | 2026-02 |
 | 4. Revenue Charts | v1.1 | 1/1 | Complete | 2026-02 |
 | 5. Shrike Consolidation | v1.1 | 2/2 | Complete | 2026-02-13 |
-| 6. Database + Cold Calling | v1.2 | 0/? | Not started | - |
+| 6. Database + Cold Calling | v1.2 | 0/1 | Planned | - |
 | 7. Manual Lead Entry UI | v1.2 | 0/? | Not started | - |
 
 ---
-*Last updated: 2026-02-14 after v1.2 roadmap creation*
+*Last updated: 2026-02-14 after Phase 6 planning*
