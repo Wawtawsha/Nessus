@@ -4,6 +4,11 @@ import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useUser } from '@/contexts/UserContext'
 
+const WEBSITES = [
+  { label: 'press-club', name: '2016 Night at Press Club' },
+  { label: 'rosemont', name: 'Rosemont Vineyard' },
+] as const
+
 interface VisitStats {
   totalVisits: number
   uniqueIPs: number
@@ -31,28 +36,37 @@ interface DailyStats {
   count: number
 }
 
-export default function VisitsPage() {
+const addSiteFilters = <T,>(query: T, clientId: string | null, websiteLabel: string): T => {
+  let filtered = query as any
+  if (clientId) {
+    filtered = filtered.eq('client_id', clientId)
+  }
+  filtered = filtered.eq('website_label', websiteLabel)
+  return filtered
+}
+
+function WebsiteCard({
+  websiteLabel,
+  websiteName,
+  currentClientId,
+  supabase,
+}: {
+  websiteLabel: string
+  websiteName: string
+  currentClientId: string | null
+  supabase: ReturnType<typeof createClient>
+}) {
   const [stats, setStats] = useState<VisitStats | null>(null)
   const [locationStats, setLocationStats] = useState<LocationStats[]>([])
   const [pageStats, setPageStats] = useState<PageStats[]>([])
   const [referrerStats, setReferrerStats] = useState<ReferrerStats[]>([])
   const [dailyStats, setDailyStats] = useState<DailyStats[]>([])
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
-  const { isAdmin, currentClientId } = useUser()
 
   const fetchStats = useCallback(async () => {
-    // Helper to add client filter
-    const addClientFilter = <T,>(query: T): T => {
-      if (currentClientId) {
-        return (query as any).eq('client_id', currentClientId)
-      }
-      return query
-    }
-
     // Total visits and unique counts
     let visitsQuery = supabase.from('visits').select('ip_address, session_id')
-    visitsQuery = addClientFilter(visitsQuery)
+    visitsQuery = addSiteFilters(visitsQuery, currentClientId, websiteLabel)
     const { data: visitsData } = await visitsQuery
 
     if (visitsData) {
@@ -68,7 +82,7 @@ export default function VisitsPage() {
 
     // Visits by location
     let locationQuery = supabase.from('visits').select('country, city')
-    locationQuery = addClientFilter(locationQuery)
+    locationQuery = addSiteFilters(locationQuery, currentClientId, websiteLabel)
     const { data: locationData } = await locationQuery
 
     if (locationData) {
@@ -89,7 +103,7 @@ export default function VisitsPage() {
 
     // Visits by page
     let pageQuery = supabase.from('visits').select('page_path')
-    pageQuery = addClientFilter(pageQuery)
+    pageQuery = addSiteFilters(pageQuery, currentClientId, websiteLabel)
     const { data: pageData } = await pageQuery
 
     if (pageData) {
@@ -108,7 +122,7 @@ export default function VisitsPage() {
 
     // Visits by referrer
     let referrerQuery = supabase.from('visits').select('referrer')
-    referrerQuery = addClientFilter(referrerQuery)
+    referrerQuery = addSiteFilters(referrerQuery, currentClientId, websiteLabel)
     const { data: referrerData } = await referrerQuery
 
     if (referrerData) {
@@ -133,7 +147,7 @@ export default function VisitsPage() {
       .from('visits')
       .select('created_at')
       .gte('created_at', thirtyDaysAgo.toISOString())
-    timeQuery = addClientFilter(timeQuery)
+    timeQuery = addSiteFilters(timeQuery, currentClientId, websiteLabel)
     const { data: timeData } = await timeQuery
 
     if (timeData) {
@@ -150,7 +164,7 @@ export default function VisitsPage() {
     }
 
     setLoading(false)
-  }, [supabase, currentClientId])
+  }, [supabase, currentClientId, websiteLabel])
 
   useEffect(() => {
     fetchStats()
@@ -166,8 +180,194 @@ export default function VisitsPage() {
   }, [fetchStats])
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>
+    return (
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">{websiteName}</h2>
+        <div className="animate-pulse space-y-4">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="h-16 bg-gray-200 rounded-lg" />
+            <div className="h-16 bg-gray-200 rounded-lg" />
+            <div className="h-16 bg-gray-200 rounded-lg" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="h-48 bg-gray-200 rounded-lg" />
+            <div className="h-48 bg-gray-200 rounded-lg" />
+          </div>
+          <div className="h-48 bg-gray-200 rounded-lg" />
+        </div>
+      </div>
+    )
   }
+
+  return (
+    <div className="bg-white rounded-lg shadow p-6">
+      <h2 className="text-xl font-bold text-gray-900 mb-4">{websiteName}</h2>
+
+      {/* Overview Stats */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <StatCard label="Total Visits" value={stats?.totalVisits || 0} color="blue" />
+        <StatCard label="Unique IPs" value={stats?.uniqueIPs || 0} color="green" />
+        <StatCard label="Unique Sessions" value={stats?.uniqueSessions || 0} color="purple" />
+      </div>
+
+      {/* Metrics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {/* Locations */}
+        <div className="bg-gray-50 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3">Visits by Location</h3>
+          {locationStats.length === 0 ? (
+            <p className="text-gray-500 text-sm">No data yet</p>
+          ) : (
+            <div className="space-y-2">
+              {locationStats.map((stat, i) => (
+                <div key={i} className="flex items-center">
+                  <div className="flex-1">
+                    <div className="text-xs font-medium text-gray-900">
+                      {stat.city ? `${stat.city}, ` : ''}{stat.country}
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                      <div
+                        className="bg-blue-600 h-1.5 rounded-full"
+                        style={{
+                          width: `${(stat.count / (locationStats[0]?.count || 1)) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="ml-3 text-xs font-semibold text-gray-600 w-10 text-right">
+                    {stat.count}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Top Pages */}
+        <div className="bg-gray-50 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3">Top Pages</h3>
+          {pageStats.length === 0 ? (
+            <p className="text-gray-500 text-sm">No data yet</p>
+          ) : (
+            <div className="space-y-2">
+              {pageStats.map((stat) => (
+                <div key={stat.page_path} className="flex items-center">
+                  <div className="flex-1">
+                    <div className="text-xs font-medium text-gray-900 truncate" title={stat.page_path}>
+                      {stat.page_path}
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                      <div
+                        className="bg-green-600 h-1.5 rounded-full"
+                        style={{
+                          width: `${(stat.count / (pageStats[0]?.count || 1)) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="ml-3 text-xs font-semibold text-gray-600 w-10 text-right">
+                    {stat.count}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Top Referrers */}
+        <div className="bg-gray-50 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3">Top Referrers</h3>
+          {referrerStats.length === 0 ? (
+            <p className="text-gray-500 text-sm">No data yet</p>
+          ) : (
+            <div className="space-y-2">
+              {referrerStats.map((stat) => (
+                <div key={stat.referrer} className="flex items-center">
+                  <div className="flex-1">
+                    <div className="text-xs font-medium text-gray-900 truncate" title={stat.referrer}>
+                      {stat.referrer === 'Direct' ? 'Direct' : (() => {
+                        try {
+                          return new URL(stat.referrer).hostname
+                        } catch {
+                          return stat.referrer
+                        }
+                      })()}
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                      <div
+                        className="bg-purple-600 h-1.5 rounded-full"
+                        style={{
+                          width: `${(stat.count / (referrerStats[0]?.count || 1)) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="ml-3 text-xs font-semibold text-gray-600 w-10 text-right">
+                    {stat.count}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Session Stats */}
+        <div className="bg-gray-50 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3">Session Stats</h3>
+          <div className="text-sm text-gray-600 space-y-2">
+            <div className="flex justify-between">
+              <span>Avg visits/session:</span>
+              <span className="font-medium">
+                {stats && stats.uniqueSessions > 0
+                  ? (stats.totalVisits / stats.uniqueSessions).toFixed(1)
+                  : '0'}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>Returning visitors:</span>
+              <span className="font-medium">
+                {stats && stats.totalVisits > 0
+                  ? (((stats.totalVisits - stats.uniqueIPs) / stats.totalVisits) * 100).toFixed(1)
+                  : '0'}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Visits Over Time */}
+      <div className="bg-gray-50 rounded-lg p-4">
+        <h3 className="text-sm font-semibold text-gray-900 mb-3">Visits Over Time (Last 30 Days)</h3>
+        {dailyStats.length === 0 ? (
+          <p className="text-gray-500 text-sm">No data yet</p>
+        ) : (
+          <div className="flex items-end h-36 gap-0.5">
+            {dailyStats.map((stat) => {
+              const maxCount = Math.max(...dailyStats.map((s) => s.count))
+              const height = maxCount > 0 ? (stat.count / maxCount) * 100 : 0
+              return (
+                <div
+                  key={stat.date}
+                  className="flex-1 bg-indigo-500 rounded-t hover:bg-indigo-600 cursor-pointer group relative"
+                  style={{ height: `${Math.max(height, 5)}%` }}
+                  title={`${stat.date}: ${stat.count} visits`}
+                >
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap z-10">
+                    {stat.count}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default function VisitsPage() {
+  const supabase = createClient()
+  const { isAdmin, currentClientId } = useUser()
 
   // Non-admin users must have a client selected
   if (!isAdmin && !currentClientId) {
@@ -182,162 +382,16 @@ export default function VisitsPage() {
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Visitor Analytics</h1>
 
-      {/* Overview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <StatCard label="Total Visits" value={stats?.totalVisits || 0} color="blue" />
-        <StatCard label="Unique IPs" value={stats?.uniqueIPs || 0} color="green" />
-        <StatCard label="Unique Sessions" value={stats?.uniqueSessions || 0} color="purple" />
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* By Location */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Visits by Location</h2>
-          {locationStats.length === 0 ? (
-            <p className="text-gray-500">No data yet</p>
-          ) : (
-            <div className="space-y-3">
-              {locationStats.map((stat, i) => (
-                <div key={i} className="flex items-center">
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-gray-900">
-                      {stat.city ? `${stat.city}, ` : ''}{stat.country}
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{
-                          width: `${(stat.count / (locationStats[0]?.count || 1)) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="ml-4 text-sm font-semibold text-gray-600 w-12 text-right">
-                    {stat.count}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* By Page */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Top Pages</h2>
-          {pageStats.length === 0 ? (
-            <p className="text-gray-500">No data yet</p>
-          ) : (
-            <div className="space-y-3">
-              {pageStats.map((stat) => (
-                <div key={stat.page_path} className="flex items-center">
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-gray-900 truncate" title={stat.page_path}>
-                      {stat.page_path}
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                      <div
-                        className="bg-green-600 h-2 rounded-full"
-                        style={{
-                          width: `${(stat.count / (pageStats[0]?.count || 1)) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="ml-4 text-sm font-semibold text-gray-600 w-12 text-right">
-                    {stat.count}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* By Referrer */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Top Referrers</h2>
-          {referrerStats.length === 0 ? (
-            <p className="text-gray-500">No data yet</p>
-          ) : (
-            <div className="space-y-3">
-              {referrerStats.map((stat) => (
-                <div key={stat.referrer} className="flex items-center">
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-gray-900 truncate" title={stat.referrer}>
-                      {stat.referrer === 'Direct' ? 'Direct' : (() => {
-                        try {
-                          return new URL(stat.referrer).hostname
-                        } catch {
-                          return stat.referrer
-                        }
-                      })()}
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                      <div
-                        className="bg-purple-600 h-2 rounded-full"
-                        style={{
-                          width: `${(stat.count / (referrerStats[0]?.count || 1)) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="ml-4 text-sm font-semibold text-gray-600 w-12 text-right">
-                    {stat.count}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Recent Visits Table */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Session Stats</h2>
-          <div className="text-sm text-gray-600 space-y-2">
-            <div className="flex justify-between">
-              <span>Avg visits/session:</span>
-              <span className="font-medium">
-                {stats && stats.uniqueSessions > 0
-                  ? (stats.totalVisits / stats.uniqueSessions).toFixed(1)
-                  : '0'}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span>Returning visitors:</span>
-              <span className="font-medium">
-                {stats && stats.uniqueIPs > 0
-                  ? Math.round(((stats.totalVisits - stats.uniqueIPs) / stats.totalVisits) * 100)
-                  : 0}%
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Over Time */}
-        <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Visits Over Time (Last 30 Days)</h2>
-          {dailyStats.length === 0 ? (
-            <p className="text-gray-500">No data yet</p>
-          ) : (
-            <div className="flex items-end h-48 gap-1">
-              {dailyStats.map((stat) => {
-                const maxCount = Math.max(...dailyStats.map((s) => s.count))
-                const height = maxCount > 0 ? (stat.count / maxCount) * 100 : 0
-                return (
-                  <div
-                    key={stat.date}
-                    className="flex-1 bg-indigo-500 rounded-t hover:bg-indigo-600 cursor-pointer group relative"
-                    style={{ height: `${Math.max(height, 5)}%` }}
-                    title={`${stat.date}: ${stat.count} visits`}
-                  >
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap">
-                      {stat.count}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
+        {WEBSITES.map((site) => (
+          <WebsiteCard
+            key={site.label}
+            websiteLabel={site.label}
+            websiteName={site.name}
+            currentClientId={currentClientId}
+            supabase={supabase}
+          />
+        ))}
       </div>
     </div>
   )
