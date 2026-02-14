@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import type { Lead } from '@/types/lead'
@@ -23,6 +23,10 @@ export default function LeadsPage() {
   const [campaigns, setCampaigns] = useState<string[]>([])
   const supabase = createClient()
   const { isAdmin, currentClientId } = useUser()
+
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [preferredContact, setPreferredContact] = useState('email')
 
   const fetchLeads = useCallback(async () => {
     let query = supabase
@@ -113,16 +117,67 @@ export default function LeadsPage() {
     a.click()
   }
 
+  const handleAddLead = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setSubmitting(true)
+
+    const form = e.currentTarget
+    const formData = new FormData(form)
+
+    const preferredContact = formData.get('preferred_contact') as string || 'email'
+    const smsConsent = formData.get('sms_consent') === 'on'
+    const hasWebsite = formData.get('has_website') === 'on'
+    const socialMedia = formData.get('social_media_presence') as string
+
+    const { error } = await supabase.from('leads').insert({
+      client_id: currentClientId,
+      first_name: formData.get('first_name') as string || '',
+      last_name: formData.get('last_name') as string || '',
+      email: formData.get('email') as string || '',
+      phone: (formData.get('phone') as string) || null,
+      preferred_contact: preferredContact,
+      sms_consent: smsConsent,
+      sms_consent_at: smsConsent ? new Date().toISOString() : null,
+      has_website: hasWebsite || null,
+      social_media_presence: socialMedia ? parseInt(socialMedia, 10) : null,
+      status: 'new',
+      utm_source: 'manual-entry',
+    })
+
+    setSubmitting(false)
+
+    if (error) {
+      console.error('Error adding lead:', error)
+      alert('Failed to add lead: ' + error.message)
+      return
+    }
+
+    form.reset()
+    setPreferredContact('email')
+    dialogRef.current?.close()
+    fetchLeads()
+  }
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Leads</h1>
-        <button
-          onClick={exportCSV}
-          className="bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700"
-        >
-          Export CSV
-        </button>
+        <div className="flex gap-2">
+          {currentClientId && (
+            <button
+              onClick={() => dialogRef.current?.showModal()}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
+            >
+              Add Lead
+            </button>
+          )}
+          <button
+            onClick={exportCSV}
+            className="bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700"
+          >
+            Export CSV
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -237,6 +292,128 @@ export default function LeadsPage() {
       <div className="mt-4 text-sm text-gray-500">
         Showing {leads.length} lead{leads.length !== 1 ? 's' : ''}
       </div>
+
+      {/* Add Lead Dialog */}
+      <dialog
+        ref={dialogRef}
+        className="rounded-lg shadow-xl p-0 w-full max-w-md backdrop:bg-black/50"
+        onClick={(e) => { if (e.target === e.currentTarget) dialogRef.current?.close() }}
+      >
+        <form onSubmit={handleAddLead} className="p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Add Lead</h2>
+
+          <div className="space-y-4">
+            {/* Name row */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                <input
+                  type="text"
+                  name="first_name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                <input
+                  type="text"
+                  name="last_name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input
+                type="email"
+                name="email"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+              <input
+                type="tel"
+                name="phone"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Preferred Contact (controlled — drives SMS consent visibility) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Contact</label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-1 text-sm">
+                  <input type="radio" name="preferred_contact" value="email" checked={preferredContact === 'email'} onChange={(e) => setPreferredContact(e.target.value)} />
+                  Email
+                </label>
+                <label className="flex items-center gap-1 text-sm">
+                  <input type="radio" name="preferred_contact" value="phone" checked={preferredContact === 'phone'} onChange={(e) => setPreferredContact(e.target.value)} />
+                  Phone
+                </label>
+                <label className="flex items-center gap-1 text-sm">
+                  <input type="radio" name="preferred_contact" value="sms" checked={preferredContact === 'sms'} onChange={(e) => setPreferredContact(e.target.value)} />
+                  SMS
+                </label>
+              </div>
+            </div>
+
+            {/* SMS Consent -- only shown when preferred_contact is sms */}
+            {preferredContact === 'sms' && (
+              <div>
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" name="sms_consent" className="rounded" />
+                  <span className="text-gray-700">SMS Consent</span>
+                </label>
+              </div>
+            )}
+
+            {/* Has Website */}
+            <div>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" name="has_website" className="rounded" />
+                <span className="text-gray-700">Has a website</span>
+              </label>
+            </div>
+
+            {/* Social Media Presence */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Social Media Presence</label>
+              <div className="flex gap-3">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <label key={n} className="flex items-center gap-1 text-sm">
+                    <input type="radio" name="social_media_presence" value={n} />
+                    {n}
+                  </label>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400 mt-1">1 = minimal, 5 = strong presence</p>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-end gap-2 mt-6">
+            <button
+              type="button"
+              onClick={() => { dialogRef.current?.close(); setPreferredContact('email') }}
+              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 disabled:opacity-50"
+            >
+              {submitting ? 'Adding...' : 'Add Lead'}
+            </button>
+          </div>
+        </form>
+      </dialog>
     </div>
   )
 }
