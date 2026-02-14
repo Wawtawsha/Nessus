@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Connect marketing leads to actual revenue
-**Current focus:** Milestone v1.1 — Toast Enhancements, Phase 4 (Revenue Charts) COMPLETE
+**Current focus:** Milestone v1.1 — Toast Enhancements — COMPLETE
 
 ## Current Position
 
-Phase: 4 of 4 (Revenue Charts)
-Plan: 1 of 1 in current phase
-Status: Phase complete - MILESTONE v1.1 COMPLETE
-Last activity: 2026-01-23 — Completed quick task 001: Full Resync with batch inserts
+Phase: 5 of 5 (Shrike Website Consolidation)
+Plan: 2 of 2 in current phase
+Status: Complete
+Last activity: 2026-02-13 — Phase 5 executed (2 plans, both verified)
 
-Progress: [##########] 100% (4 of 4 phases complete)
+Progress: [##########] 100% (5 of 5 phases complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 15.6 min
-- Total execution time: 1.04 hours
+- Total plans completed: 6
+- Average duration: 13.7 min
+- Total execution time: ~1.3 hours
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: [##########] 100% (4 of 4 phases complete)
 | 02-lead-matching | 1 | 25 min | 25 min |
 | 03-sync-automation | 1 | 5.3 min | 5.3 min |
 | 04-revenue-charts | 1 | 12 min | 12 min |
+| 05-shrike-consolidation | 2 | ~18 min | ~9 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (20min), 02-01 (25min), 03-01 (5.3min), 04-01 (12min)
+- Last 5 plans: 02-01 (25min), 03-01 (5.3min), 04-01 (12min), 05-01 (~10min), 05-02 (~8min)
 - Trend: Stable velocity with efficient execution
 
 *Updated after each plan completion*
@@ -72,9 +73,22 @@ Recent decisions affecting current work:
 - Custom tooltip for type safety over generic wrapper
 - RPC aggregation for charts (better perf than client-side)
 
+**Phase 05 decisions:**
+- website_label TEXT column intentionally nullable (external tracker not yet updated)
+- Client IDs looked up dynamically by name (no hardcoded UUIDs)
+- Old clients deactivated, not deleted (enables rollback)
+- Per-site WebsiteCard components with independent data fetching and polling
+- addSiteFilters helper scopes queries by client_id + website_label
+
 ### Pending Todos
 
-None - milestone complete.
+- Fix visit tracking script to pass `website_label` parameter for new visits under "Shrike Media Website" client
+
+### Roadmap Evolution
+
+- Phase 5 added: Shrike Media Website Consolidation — merge Press Club & Rosemont into single "Shrike Media Website" client with full data consolidation (all tables) and per-site visit metrics
+- Name corrected from "Shrike Website" to "Shrike Media Website" per user
+- Scope expanded from visits-only to full consolidation (visits, leads, orders, items, payments)
 
 ### Blockers/Concerns
 
@@ -88,9 +102,9 @@ None currently.
 
 ## Session Continuity
 
-Last session: 2026-01-22
-Stopped at: Completed Phase 4 (Revenue Charts) — Milestone v1.1 COMPLETE
+Last session: 2026-02-13
+Stopped at: Milestone v1.1 complete — all 5 phases done
 Resume file: None
 
 ---
-*Last updated: 2026-01-23*
+*Last updated: 2026-02-13*

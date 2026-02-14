@@ -32,12 +32,12 @@ Requirements for Toast Enhancements milestone. Each maps to roadmap phases.
 - [x] **CHART-02**: User can toggle granularity (daily/weekly/monthly)
 - [x] **CHART-03**: User can select custom date range
 
-### Shrike Website Consolidation
+### Shrike Media Website Consolidation
 
-- [ ] **SHRIKE-01**: "Shrike Website" client exists in sidebar and both old clients ("2016 Night at Press Club", "Rosemont Vineyard") are deactivated
-- [ ] **SHRIKE-02**: Visit data from both old clients is consolidated under "Shrike Website" with per-site identity preserved via website_label column
-- [ ] **SHRIKE-03**: Visits panel shows each webpage's full metrics (visits, unique IPs, sessions, locations, referrers, pages, time series) in its own distinct card
-- [ ] **SHRIKE-04**: All per-site metrics viewable on one screen without clicking between clients
+- [x] **SHRIKE-01**: "Shrike Media Website" client exists in sidebar and both old clients ("2016 Night at Press Club", "Rosemont Vineyard") are deactivated
+- [x] **SHRIKE-02**: ALL data (visits, leads, toast_orders, toast_order_items, toast_payments) from both old clients is consolidated under "Shrike Media Website" with per-site visit identity preserved via website_label column
+- [x] **SHRIKE-03**: Visits panel shows each webpage's full metrics (visits, unique IPs, sessions, locations, referrers, pages, time series) in its own distinct card
+- [x] **SHRIKE-04**: All per-site metrics viewable on one screen without clicking between clients
 
 ## Future Requirements
 
@@ -80,10 +80,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CHART-01 | Phase 4 | Complete |
 | CHART-02 | Phase 4 | Complete |
 | CHART-03 | Phase 4 | Complete |
-| SHRIKE-01 | Phase 5 | Planned |
-| SHRIKE-02 | Phase 5 | Planned |
-| SHRIKE-03 | Phase 5 | Planned |
-| SHRIKE-04 | Phase 5 | Planned |
+| SHRIKE-01 | Phase 5 | Complete |
+| SHRIKE-02 | Phase 5 | Complete |
+| SHRIKE-03 | Phase 5 | Complete |
+| SHRIKE-04 | Phase 5 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 17 total
@@ -92,4 +92,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-02-13 after Phase 5 planning*
+*Last updated: 2026-02-13 after Phase 5 completion*

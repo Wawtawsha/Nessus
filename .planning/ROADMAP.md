@@ -10,7 +10,7 @@ Milestone v1.1 enhances the existing Toast integration with four focused deliver
 - [x] **Phase 2: Lead Matching** - Connect unmatched orders to leads with smart suggestions
 - [x] **Phase 3: Sync Automation** - Background sync with status indicator and rate limiting
 - [x] **Phase 4: Revenue Charts** - Time-series revenue visualization with granularity controls
-- [ ] **Phase 5: Shrike Website Consolidation** - Merge Press Club & Rosemont into single "Shrike Website" client with per-site visit metrics
+- [x] **Phase 5: Shrike Website Consolidation** - Merge Press Club & Rosemont into single "Shrike Media Website" client with full data consolidation and per-site visit metrics
 
 ## Phase Details
 
@@ -68,19 +68,19 @@ Plans:
 - [x] 04-01-PLAN.md - Install shadcn/ui charts, create RPC, build RevenueChart with controls
 
 ### Phase 5: Shrike Website Consolidation
-**Goal**: Merge "2016 Night at Press Club" and "Rosemont Vineyard" clients into a single "Shrike Website" client. Redesign the visits panel to display each webpage's metrics in its own box within a single view.
+**Goal**: Merge "2016 Night at Press Club" and "Rosemont Vineyard" clients into a single "Shrike Media Website" client. Redesign the visits panel to display each webpage's metrics in its own box within a single view.
 **Depends on**: Nothing (independent refactoring)
 **Requirements**: SHRIKE-01, SHRIKE-02, SHRIKE-03, SHRIKE-04
 **Success Criteria** (what must be TRUE):
-  1. "Shrike Website" client exists in sidebar and both old clients are deactivated
-  2. Visit data from both old clients is consolidated under "Shrike Website" with per-site identity preserved
+  1. "Shrike Media Website" client exists in sidebar and both old clients are deactivated
+  2. ALL data (visits, leads, orders, items, payments) from both old clients is consolidated under "Shrike Media Website" with per-site visit identity preserved
   3. Visits panel shows each webpage's full metrics (visits, unique IPs, sessions, locations, referrers, pages, time series) in its own distinct box/card
   4. All metrics viewable on one screen without clicking between clients
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md - Database migration: consolidate clients, add website_label, migrate visits
-- [ ] 05-02-PLAN.md - UI refactoring: per-site WebsiteCard layout on visits page
+- [x] 05-01-PLAN.md - Database migration: consolidate clients, add website_label, migrate ALL tables (visits, leads, orders, items, payments)
+- [x] 05-02-PLAN.md - UI refactoring: per-site WebsiteCard layout on visits page
 
 ## Progress
 
@@ -92,7 +92,7 @@ Plans:
 | 2. Lead Matching | 1/1 | Complete | 2026-01-22 |
 | 3. Sync Automation | 1/1 | Complete | 2026-01-22 |
 | 4. Revenue Charts | 1/1 | Complete | 2026-01-22 |
-| 5. Shrike Website Consolidation | 0/2 | Planned | - |
+| 5. Shrike Website Consolidation | 2/2 | Complete | 2026-02-13 |
 
 ---
 *Roadmap created: 2026-01-20*
