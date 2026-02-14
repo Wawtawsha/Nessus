@@ -82,10 +82,10 @@ Plans:
   2. Clicking Add Lead opens form that captures: first name, last name, email, phone, preferred contact, SMS consent, has_website, social_media_presence
   3. All form fields are optional (no required validation)
   4. After submitting, new lead appears in leads list within 5 seconds
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] TBD
+- [ ] 07-01-PLAN.md -- Add Lead dialog, form, submit handler, and button on leads page
 
 ## Progress
 
@@ -100,7 +100,7 @@ Phases execute in numeric order: 6 → 7
 | 4. Revenue Charts | v1.1 | 1/1 | Complete | 2026-02 |
 | 5. Shrike Consolidation | v1.1 | 2/2 | Complete | 2026-02-13 |
 | 6. Database + Cold Calling | v1.2 | 0/1 | Planned | - |
-| 7. Manual Lead Entry UI | v1.2 | 0/? | Not started | - |
+| 7. Manual Lead Entry UI | v1.2 | 0/1 | Planned | - |
 
 ---
-*Last updated: 2026-02-14 after Phase 6 planning*
+*Last updated: 2026-02-14 after Phase 7 planning*
