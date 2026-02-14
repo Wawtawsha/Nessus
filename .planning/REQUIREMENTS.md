@@ -14,10 +14,14 @@ Requirements for Lead Management milestone. Each maps to roadmap phases.
 
 ### Manual Lead Entry
 
-- [ ] **LEAD-01**: "Add Lead" button is visible on all clients' leads pages
-- [ ] **LEAD-02**: Add Lead form captures: first name, last name, email, phone, preferred contact, SMS consent, has_website (boolean), social_media_presence (1-5 scale)
-- [ ] **LEAD-03**: All form fields are optional (no validation requirements — admin tool)
-- [ ] **LEAD-04**: Submitted leads appear in the leads list immediately
+- [x] **LEAD-01**: "Add Lead" button is visible on all clients' leads pages
+- [x] **LEAD-02**: Add Lead form captures: first name, last name, email, phone, preferred contact, SMS consent, has_website (boolean), social_media_presence (1-5 scale)
+- [x] **LEAD-03**: All form fields are optional (no validation requirements — admin tool)
+- [x] **LEAD-04**: Submitted leads appear in the leads list immediately
+
+### Edit Lead
+
+- [ ] **EDIT-01**: Lead detail page has edit capability to correct manual entry mistakes
 
 ## Future Requirements
 
@@ -49,16 +53,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | CLIENT-01 | Phase 6 | Complete |
 | CLIENT-02 | Phase 6 | Complete |
-| LEAD-01 | Phase 7 | Pending |
-| LEAD-02 | Phase 7 | Pending |
-| LEAD-03 | Phase 7 | Pending |
-| LEAD-04 | Phase 7 | Pending |
+| LEAD-01 | Phase 7 | Complete |
+| LEAD-02 | Phase 7 | Complete |
+| LEAD-03 | Phase 7 | Complete |
+| LEAD-04 | Phase 7 | Complete |
+| EDIT-01 | Phase 8 | Pending |
 
 **Coverage:**
-- v1.2 requirements: 6 total
-- Mapped to phases: 6
+- v1.2 requirements: 7 total
+- Mapped to phases: 7
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-14*
-*Last updated: 2026-02-14 after Phase 6 execution*
+*Last updated: 2026-02-14 after Phase 7 execution, EDIT-01 added*

@@ -4,16 +4,17 @@
 
 - ✅ **v1.0 Foundation** - Phases 1-4 (shipped 2026-01)
 - ✅ **v1.1 Toast Enhancements** - Phases 1-5 (shipped 2026-02-13)
-- 🚧 **v1.2 Lead Management** - Phases 6-7 (in progress)
+- 🚧 **v1.2 Lead Management** - Phases 6-8 (in progress)
 
 ## Overview
 
-Milestone v1.2 expands lead capture beyond website forms with manual entry capability and a dedicated cold-calling client. Phase 6 extends the database schema with new lead fields (has_website, social_media_presence) and creates a Cold Calling client that shows leads-only view. Phase 7 builds the manual "Add Lead" form UI across all clients' leads pages.
+Milestone v1.2 expands lead capture beyond website forms with manual entry capability and a dedicated cold-calling client. Phase 6 extends the database schema with new lead fields (has_website, social_media_presence) and creates a Cold Calling client that shows leads-only view. Phase 7 builds the manual "Add Lead" form UI across all clients' leads pages. Phase 8 adds edit capability to the lead detail page so manually-entered leads can be corrected.
 
 ## Phases
 
 - [x] **Phase 6: Database + Cold Calling Client** - Extend schema and create leads-only client
-- [ ] **Phase 7: Manual Lead Entry UI** - Build Add Lead form for all clients
+- [x] **Phase 7: Manual Lead Entry UI** - Build Add Lead form for all clients
+- [ ] **Phase 8: Edit Lead UI** - Add edit capability to lead detail page
 
 <details>
 <summary>✅ v1.1 Toast Enhancements (Phases 1-5) - SHIPPED 2026-02-13</summary>
@@ -85,12 +86,24 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 07-01-PLAN.md -- Add Lead dialog, form, submit handler, and button on leads page
+- [x] 07-01-PLAN.md -- Add Lead dialog, form, submit handler, and button on leads page
+
+### Phase 8: Edit Lead UI
+**Goal**: Users can edit lead details from the lead detail page to correct manual entry mistakes
+**Depends on**: Phase 7 (Add Lead form exists)
+**Requirements**: EDIT-01
+**Success Criteria** (what must be TRUE):
+  1. Lead detail page has an "Edit" button that enables editing of lead fields
+  2. Changes save to Supabase and reflect immediately
+**Plans**: 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 8 to break down)
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 6 → 7
+Phases execute in numeric order: 6 → 7 → 8
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -100,7 +113,8 @@ Phases execute in numeric order: 6 → 7
 | 4. Revenue Charts | v1.1 | 1/1 | Complete | 2026-02 |
 | 5. Shrike Consolidation | v1.1 | 2/2 | Complete | 2026-02-13 |
 | 6. Database + Cold Calling | v1.2 | 1/1 | Complete | 2026-02-14 |
-| 7. Manual Lead Entry UI | v1.2 | 0/1 | Planned | - |
+| 7. Manual Lead Entry UI | v1.2 | 1/1 | Complete | 2026-02-14 |
+| 8. Edit Lead UI | v1.2 | 0/0 | Planned | - |
 
 ---
-*Last updated: 2026-02-14 after Phase 6 execution*
+*Last updated: 2026-02-14 after Phase 7 execution, Phase 8 added*
