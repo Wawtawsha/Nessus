@@ -8,9 +8,14 @@ A multi-tenant CRM for managing leads with Toast POS integration. Restaurants ca
 
 Connect marketing leads to actual revenue — show which leads became paying customers and how much they spent.
 
-## Current Milestone: None (planning next)
+## Current Milestone: v1.2 Lead Management
 
-No active milestone. Run `/gsd:new-milestone` to start the next one.
+**Goal:** Expand lead capture beyond website forms with manual entry and a dedicated cold-calling client.
+
+**Target features:**
+- Cold Calling client (lead-source bucket, leads-only dashboard view)
+- Manual "Add Lead" button on all clients' leads pages
+- New lead fields: has_website (boolean), social_media_presence (1-5 scale)
 
 ## Requirements
 
@@ -35,7 +40,11 @@ No active milestone. Run `/gsd:new-milestone` to start the next one.
 
 <!-- Current scope. Building toward these. -->
 
-(None — start a new milestone)
+- [ ] Cold Calling client exists in sidebar as lead-source bucket
+- [ ] Cold Calling shows leads-only view (no visits/orders/analytics)
+- [ ] Manual "Add Lead" button on all clients' leads pages
+- [ ] Add Lead form captures extended fields (has_website, social_media_presence)
+- [ ] No required fields on Add Lead form (admin tool)
 
 ### Out of Scope
 
@@ -78,6 +87,7 @@ No active milestone. Run `/gsd:new-milestone` to start the next one.
 |---------|------|--------|------|
 | v1.0 | Foundation | Complete | 2026-01 |
 | v1.1 | Toast Enhancements | Complete | 2026-02-13 |
+| v1.2 | Lead Management | In Progress | 2026-02-14 |
 
 ---
-*Last updated: 2026-02-13 after milestone v1.1 completion*
+*Last updated: 2026-02-14 after milestone v1.2 start*
