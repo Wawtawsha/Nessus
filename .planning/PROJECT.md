@@ -8,15 +8,9 @@ A multi-tenant CRM for managing leads with Toast POS integration. Restaurants ca
 
 Connect marketing leads to actual revenue — show which leads became paying customers and how much they spent.
 
-## Current Milestone: v1.1 Toast Enhancements
+## Current Milestone: None (planning next)
 
-**Goal:** Make the Toast integration more useful with automated syncing, better order visibility, and smarter lead matching.
-
-**Target features:**
-- Automated order sync (aggressive polling within API limits)
-- Order detail view (line items, payments, modifiers)
-- Smart manual lead matching (suggest likely matches for unmatched orders)
-- Revenue over time chart (daily/weekly/monthly toggle)
+No active milestone. Run `/gsd:new-milestone` to start the next one.
 
 ## Requirements
 
@@ -31,15 +25,17 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 - ✓ Orders page with filters and CSV export — v1.0
 - ✓ Revenue overview in Analytics (totals, payment breakdown, top items) — v1.0
 - ✓ Lead detail page shows linked orders — v1.0
+- ✓ Automated sync runs on schedule without manual trigger — v1.1
+- ✓ Order detail modal shows line items with modifiers and payment info — v1.1
+- ✓ Unmatched orders show smart lead suggestions for manual matching — v1.1
+- ✓ Revenue chart shows trends over time with granularity toggle — v1.1
+- ✓ Shrike Media Website consolidation with per-site visit metrics — v1.1
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] Automated sync runs on schedule without manual trigger
-- [ ] Order detail modal shows line items with modifiers and payment info
-- [ ] Unmatched orders show smart lead suggestions for manual matching
-- [ ] Revenue chart shows trends over time with granularity toggle
+(None — start a new milestone)
 
 ### Out of Scope
 
@@ -56,10 +52,12 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 - Line items stored in toast_order_items, payments in toast_payments
 - Lead matching normalizes email (lowercase) and phone (digits only)
 - Multi-tenant: each client has their own Toast credentials and data
+- Shrike Media Website consolidated from two clients with website_label for per-site identity
+- Visit tracking via Supabase Edge Function (track-visitor) with website_label support
 
 ## Constraints
 
-- **API Rate Limits**: Toast may throttle aggressive polling — need to handle gracefully
+- **API Rate Limits**: Toast may throttle aggressive polling — handled with exponential backoff
 - **Supabase**: Using client-side Supabase with RLS, no server-side cron built-in
 - **No Backend**: Next.js API routes only, no persistent server process
 
@@ -67,8 +65,19 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Polling over webhooks | Simpler, no Toast partnership needed | — Pending |
-| Client-side scheduling | No server to run cron, browser-based | — Pending |
+| Polling over webhooks | Simpler, no Toast partnership needed | v1.1 — Working well |
+| Client-side scheduling | No server to run cron, browser-based | v1.1 — 60s interval, SyncContext |
+| RPC for chart aggregation | Better perf than client-side | v1.1 — get_revenue_by_period |
+| Manual shadcn/ui setup | More control than interactive CLI | v1.1 — 4 components created |
+| website_label for multi-site | Preserve per-site identity in consolidated client | v1.1 — nullable TEXT column |
+| Deactivate old clients, not delete | Enables rollback if consolidation has issues | v1.1 — is_active=false |
+
+## Milestones
+
+| Version | Name | Status | Date |
+|---------|------|--------|------|
+| v1.0 | Foundation | Complete | 2026-01 |
+| v1.1 | Toast Enhancements | Complete | 2026-02-13 |
 
 ---
-*Last updated: 2026-01-20 after milestone v1.1 start*
+*Last updated: 2026-02-13 after milestone v1.1 completion*
