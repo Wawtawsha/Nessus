@@ -37,6 +37,17 @@ export default function LeadDetailPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [notes, setNotes] = useState('')
+  const [isEditing, setIsEditing] = useState(false)
+  const [editForm, setEditForm] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    preferred_contact: 'email' as 'email' | 'phone' | 'sms',
+    sms_consent: false,
+    has_website: null as boolean | null,
+    social_media_presence: null as number | null,
+  })
 
   const fetchLead = useCallback(async () => {
     const { data, error } = await supabase
@@ -133,6 +144,68 @@ export default function LeadDetailPage() {
     }
   }
 
+  const startEdit = () => {
+    if (!lead) return
+    setEditForm({
+      first_name: lead.first_name,
+      last_name: lead.last_name,
+      email: lead.email,
+      phone: lead.phone || '',
+      preferred_contact: lead.preferred_contact,
+      sms_consent: lead.sms_consent,
+      has_website: lead.has_website,
+      social_media_presence: lead.social_media_presence,
+    })
+    setIsEditing(true)
+  }
+
+  const cancelEdit = () => {
+    setIsEditing(false)
+  }
+
+  const saveEdit = async () => {
+    if (!lead) return
+    setSaving(true)
+
+    // Calculate changed fields
+    const changedFields: Record<string, any> = {}
+    if (editForm.first_name !== lead.first_name) changedFields.first_name = editForm.first_name
+    if (editForm.last_name !== lead.last_name) changedFields.last_name = editForm.last_name
+    if (editForm.email !== lead.email) changedFields.email = editForm.email
+    if ((editForm.phone || null) !== lead.phone) changedFields.phone = editForm.phone || null
+    if (editForm.preferred_contact !== lead.preferred_contact) changedFields.preferred_contact = editForm.preferred_contact
+    if (editForm.sms_consent !== lead.sms_consent) changedFields.sms_consent = editForm.sms_consent
+    if (editForm.has_website !== lead.has_website) changedFields.has_website = editForm.has_website
+    if (editForm.social_media_presence !== lead.social_media_presence) changedFields.social_media_presence = editForm.social_media_presence
+
+    const { error } = await supabase
+      .from('leads')
+      .update({
+        first_name: editForm.first_name,
+        last_name: editForm.last_name,
+        email: editForm.email,
+        phone: editForm.phone || null,
+        preferred_contact: editForm.preferred_contact,
+        sms_consent: editForm.sms_consent,
+        has_website: editForm.has_website,
+        social_media_presence: editForm.social_media_presence,
+      })
+      .eq('id', id)
+
+    if (!error) {
+      // Log event with only changed fields
+      await supabase.from('lead_events').insert({
+        lead_id: id,
+        event_type: 'lead_edited',
+        event_data: changedFields,
+      })
+      fetchLead()
+      fetchEvents()
+      setIsEditing(false)
+    }
+    setSaving(false)
+  }
+
   if (loading) {
     return <div className="text-center py-8">Loading...</div>
   }
@@ -154,49 +227,252 @@ export default function LeadDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex justify-between items-start mb-4">
-              <h1 className="text-2xl font-bold text-gray-900">
-                {lead.first_name} {lead.last_name}
-              </h1>
-              <button
-                onClick={deleteLead}
-                className="text-red-600 hover:text-red-700 text-sm"
-              >
-                Delete
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-500">Email</label>
-                <a href={`mailto:${lead.email}`} className="text-blue-600 hover:underline">
-                  {lead.email}
-                </a>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">Phone</label>
-                {lead.phone ? (
-                  <a href={`tel:${lead.phone}`} className="text-blue-600 hover:underline">
-                    {lead.phone}
-                  </a>
+              {!isEditing ? (
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {lead.first_name} {lead.last_name}
+                </h1>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={editForm.first_name}
+                    onChange={(e) => setEditForm({ ...editForm, first_name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="First name"
+                  />
+                  <input
+                    type="text"
+                    value={editForm.last_name}
+                    onChange={(e) => setEditForm({ ...editForm, last_name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Last name"
+                  />
+                </div>
+              )}
+              <div className="flex gap-2">
+                {!isEditing ? (
+                  <>
+                    <button
+                      onClick={startEdit}
+                      className="text-blue-600 hover:text-blue-700 text-sm"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={deleteLead}
+                      className="text-red-600 hover:text-red-700 text-sm"
+                    >
+                      Delete
+                    </button>
+                  </>
                 ) : (
-                  <span className="text-gray-400">-</span>
+                  <>
+                    <button
+                      onClick={saveEdit}
+                      disabled={saving}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      {saving ? 'Saving...' : 'Save'}
+                    </button>
+                    <button
+                      onClick={cancelEdit}
+                      className="bg-gray-100 text-gray-700 px-4 py-2 rounded-md text-sm hover:bg-gray-200"
+                    >
+                      Cancel
+                    </button>
+                  </>
                 )}
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">SMS Consent</label>
-                <span className={lead.sms_consent ? 'text-green-600' : 'text-gray-400'}>
-                  {lead.sms_consent ? 'Yes' : 'No'}
-                </span>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">Preferred Contact</label>
-                <span className="capitalize">{lead.preferred_contact || 'Email'}</span>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">Created</label>
-                <span>{new Date(lead.created_at).toLocaleString()}</span>
-              </div>
             </div>
+
+            {!isEditing ? (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Email</label>
+                  <a href={`mailto:${lead.email}`} className="text-blue-600 hover:underline">
+                    {lead.email}
+                  </a>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Phone</label>
+                  {lead.phone ? (
+                    <a href={`tel:${lead.phone}`} className="text-blue-600 hover:underline">
+                      {lead.phone}
+                    </a>
+                  ) : (
+                    <span className="text-gray-400">-</span>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">SMS Consent</label>
+                  <span className={lead.sms_consent ? 'text-green-600' : 'text-gray-400'}>
+                    {lead.sms_consent ? 'Yes' : 'No'}
+                  </span>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Preferred Contact</label>
+                  <span className="capitalize">{lead.preferred_contact || 'Email'}</span>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Has Website</label>
+                  <span>{lead.has_website === null ? '-' : lead.has_website ? 'Yes' : 'No'}</span>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Social Media Presence</label>
+                  <span>{lead.social_media_presence !== null ? lead.social_media_presence : '-'}</span>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Created</label>
+                  <span>{new Date(lead.created_at).toLocaleString()}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>
+                  <input
+                    type="text"
+                    value={editForm.email}
+                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Phone</label>
+                  <input
+                    type="text"
+                    value={editForm.phone}
+                    onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Preferred Contact</label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        value="email"
+                        checked={editForm.preferred_contact === 'email'}
+                        onChange={(e) => setEditForm({ ...editForm, preferred_contact: e.target.value as 'email' | 'phone' | 'sms' })}
+                        className="mr-2"
+                      />
+                      Email
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        value="phone"
+                        checked={editForm.preferred_contact === 'phone'}
+                        onChange={(e) => setEditForm({ ...editForm, preferred_contact: e.target.value as 'email' | 'phone' | 'sms' })}
+                        className="mr-2"
+                      />
+                      Phone
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        value="sms"
+                        checked={editForm.preferred_contact === 'sms'}
+                        onChange={(e) => setEditForm({ ...editForm, preferred_contact: e.target.value as 'email' | 'phone' | 'sms' })}
+                        className="mr-2"
+                      />
+                      SMS
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={editForm.sms_consent}
+                      onChange={(e) => setEditForm({ ...editForm, sms_consent: e.target.checked })}
+                      className="mr-2"
+                    />
+                    <span className="text-sm font-medium text-gray-500">SMS Consent</span>
+                  </label>
+                </div>
+                <div>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={editForm.has_website === true}
+                      onChange={(e) => setEditForm({ ...editForm, has_website: e.target.checked })}
+                      className="mr-2"
+                    />
+                    <span className="text-sm font-medium text-gray-500">Has Website</span>
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Social Media Presence (1-5)</label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        value="1"
+                        checked={editForm.social_media_presence === 1}
+                        onChange={() => setEditForm({ ...editForm, social_media_presence: 1 })}
+                        className="mr-2"
+                      />
+                      1
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        value="2"
+                        checked={editForm.social_media_presence === 2}
+                        onChange={() => setEditForm({ ...editForm, social_media_presence: 2 })}
+                        className="mr-2"
+                      />
+                      2
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        value="3"
+                        checked={editForm.social_media_presence === 3}
+                        onChange={() => setEditForm({ ...editForm, social_media_presence: 3 })}
+                        className="mr-2"
+                      />
+                      3
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        value="4"
+                        checked={editForm.social_media_presence === 4}
+                        onChange={() => setEditForm({ ...editForm, social_media_presence: 4 })}
+                        className="mr-2"
+                      />
+                      4
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        value="5"
+                        checked={editForm.social_media_presence === 5}
+                        onChange={() => setEditForm({ ...editForm, social_media_presence: 5 })}
+                        className="mr-2"
+                      />
+                      5
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        checked={editForm.social_media_presence === null}
+                        onChange={() => setEditForm({ ...editForm, social_media_presence: null })}
+                        className="mr-2"
+                      />
+                      None
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Created</label>
+                  <span>{new Date(lead.created_at).toLocaleString()}</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Status */}
