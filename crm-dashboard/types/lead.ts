@@ -18,6 +18,8 @@ export interface Lead {
   referrer: string | null
   status: 'new' | 'contacted' | 'qualified' | 'converted' | 'unqualified'
   notes: string | null
+  has_website: boolean | null
+  social_media_presence: number | null  // 1-5 scale
   created_at: string
   updated_at: string
 }

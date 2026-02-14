@@ -9,6 +9,7 @@ interface Client {
   id: string
   name: string
   slug: string
+  client_type: string  // 'full' | 'leads_only'
 }
 
 interface ClientAccordionProps {
@@ -28,7 +29,7 @@ export default function ClientAccordion({ newLeadCount, onLeadsClick }: ClientAc
     const fetchClients = async () => {
       const { data } = await supabase
         .from('clients')
-        .select('id, name, slug')
+        .select('id, name, slug, client_type')
         .eq('is_active', true)
         .order('name')
 
@@ -65,13 +66,19 @@ export default function ClientAccordion({ newLeadCount, onLeadsClick }: ClientAc
     router.push(path)
   }
 
-  const subNavItems = [
-    { path: '/leads', label: 'Leads', icon: '👥' },
-    { path: '/orders', label: 'Orders', icon: '🧾' },
-    { path: '/pipeline', label: 'Pipeline', icon: '📋' },
-    { path: '/analytics', label: 'Analytics', icon: '📊' },
-    { path: '/visits', label: 'Visits', icon: '👁️' },
-  ]
+  const getNavItems = (clientType: string) => {
+    const allItems = [
+      { path: '/leads', label: 'Leads', icon: '👥' },
+      { path: '/orders', label: 'Orders', icon: '🧾' },
+      { path: '/pipeline', label: 'Pipeline', icon: '📋' },
+      { path: '/analytics', label: 'Analytics', icon: '📊' },
+      { path: '/visits', label: 'Visits', icon: '👁️' },
+    ]
+    if (clientType === 'leads_only') {
+      return allItems.filter(item => item.path === '/leads')
+    }
+    return allItems
+  }
 
   // For client users with only one client, show simplified view
   if (!isAdmin && clients.length === 1) {
@@ -81,7 +88,7 @@ export default function ClientAccordion({ newLeadCount, onLeadsClick }: ClientAc
         <div className="px-4 py-2 text-xs text-gray-500 uppercase tracking-wider">
           {client.name}
         </div>
-        {subNavItems.map((item) => (
+        {getNavItems(client.client_type).map((item) => (
           <button
             key={item.path}
             onClick={() => handleNavClick(client.id, item.path)}
@@ -143,7 +150,7 @@ export default function ClientAccordion({ newLeadCount, onLeadsClick }: ClientAc
                 isExpanded ? 'max-h-64' : 'max-h-0'
               }`}
             >
-              {subNavItems.map((item) => (
+              {getNavItems(client.client_type).map((item) => (
                 <button
                   key={item.path}
                   onClick={() => handleNavClick(client.id, item.path)}
