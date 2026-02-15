@@ -35,7 +35,9 @@
 ### v1.3 Analytics Deep Dive (Phases 9-13)
 
 - [x] Phase 9: Component Decomposition (1/1 plans)
-- [ ] Phase 10: Session Journeys + Time on Page (0/1 plans)
+- [ ] Phase 10: Session Journeys + Time on Page (1/1 plans)
+  Plans:
+  - [ ] 10-01-PLAN.md — SessionJourneys + TimeOnPage sections in Deep Dive tab
 - [ ] Phase 11: Referrer Analysis + Geo Distribution (0/1 plans)
 - [ ] Phase 12: Scroll Depth + Explicit Time on Page (0/1 plans)
 - [ ] Phase 13: Database Indexes (0/1 plans)
@@ -53,10 +55,10 @@
 | 7. Manual Lead Entry UI | v1.2 | 1/1 | Complete | 2026-02-14 |
 | 8. Edit Lead UI | v1.2 | 1/1 | Complete | 2026-02-15 |
 | 9. Component Decomposition | v1.3 | 1/1 | Complete | 2026-02-15 |
-| 10. Session Journeys + Time | v1.3 | 0/1 | Pending | |
+| 10. Session Journeys + Time | v1.3 | 0/1 | Planned | |
 | 11. Referrer + Geo | v1.3 | 0/1 | Pending | |
 | 12. Scroll Depth | v1.3 | 0/1 | Pending | |
 | 13. Database Indexes | v1.3 | 0/1 | Pending | |
 
 ---
-*Last updated: 2026-02-15 — Phase 9 complete*
+*Last updated: 2026-02-15 — Phase 10 planned*
