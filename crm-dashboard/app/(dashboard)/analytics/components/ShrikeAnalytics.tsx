@@ -86,6 +86,41 @@ interface PageDistribution {
   count: number
 }
 
+interface BreakdownItem {
+  name: string
+  count: number
+}
+
+// Lightweight UA parser — no external dependencies
+function parseUA(ua: string): { device: string; browser: string; os: string } {
+  // Device
+  let device = 'Desktop'
+  if (/iPad|tablet/i.test(ua)) device = 'Tablet'
+  else if (/iPhone|Android.*Mobile|Mobile/i.test(ua)) device = 'Mobile'
+
+  // Browser (order matters — check in-app browsers first)
+  let browser = 'Other'
+  if (/Instagram/i.test(ua)) browser = 'Instagram'
+  else if (/Snapchat/i.test(ua)) browser = 'Snapchat'
+  else if (/FBAV|FBAN|MetaIAB/i.test(ua)) browser = 'Facebook'
+  else if (/CriOS/i.test(ua)) browser = 'Chrome (iOS)'
+  else if (/FxiOS/i.test(ua)) browser = 'Firefox (iOS)'
+  else if (/Edg\//i.test(ua)) browser = 'Edge'
+  else if (/Chrome/i.test(ua) && !/Chromium/i.test(ua)) browser = 'Chrome'
+  else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = 'Safari'
+  else if (/Firefox/i.test(ua)) browser = 'Firefox'
+
+  // OS
+  let os = 'Other'
+  if (/iPhone|iPad|iOS/i.test(ua)) os = 'iOS'
+  else if (/Android/i.test(ua)) os = 'Android'
+  else if (/Windows/i.test(ua)) os = 'Windows'
+  else if (/Macintosh|Mac OS/i.test(ua)) os = 'macOS'
+  else if (/Linux/i.test(ua)) os = 'Linux'
+
+  return { device, browser, os }
+}
+
 export function ShrikeAnalytics() {
   const [siteFilter, setSiteFilter] = useState<string>('all')
   const [loading, setLoading] = useState(true)
@@ -96,6 +131,9 @@ export function ShrikeAnalytics() {
   const [funnel, setFunnel] = useState<FunnelStep[]>([])
   const [dailyActivity, setDailyActivity] = useState<DailyActivity[]>([])
   const [pageDistribution, setPageDistribution] = useState<PageDistribution[]>([])
+  const [deviceBreakdown, setDeviceBreakdown] = useState<BreakdownItem[]>([])
+  const [browserBreakdown, setBrowserBreakdown] = useState<BreakdownItem[]>([])
+  const [osBreakdown, setOsBreakdown] = useState<BreakdownItem[]>([])
 
   const supabase = createClient()
 
@@ -113,7 +151,7 @@ export function ShrikeAnalytics() {
     // Fetch all visits for this client in one query to minimize round trips
     let query = supabase
       .from('visits')
-      .select('event_name, event_data, session_id, page_path, created_at')
+      .select('event_name, event_data, session_id, page_path, created_at, user_agent')
     query = addFilters(query)
     const { data: visits } = await query
 
@@ -233,6 +271,35 @@ export function ShrikeAnalytics() {
         .map(([pagePath, count]) => ({ pagePath, count }))
         .sort((a, b) => b.count - a.count)
     )
+
+    // --- Section 9: Device / Browser / OS Breakdown ---
+    // Only count unique sessions (not every row) for accurate visitor breakdown
+    const sessionUAs = new Map<string, string>()
+    visits.forEach(v => {
+      if (v.session_id && v.user_agent && !sessionUAs.has(v.session_id)) {
+        sessionUAs.set(v.session_id, v.user_agent)
+      }
+    })
+
+    const deviceCounts: Record<string, number> = {}
+    const browserCounts: Record<string, number> = {}
+    const osCounts: Record<string, number> = {}
+
+    sessionUAs.forEach(ua => {
+      const parsed = parseUA(ua)
+      deviceCounts[parsed.device] = (deviceCounts[parsed.device] || 0) + 1
+      browserCounts[parsed.browser] = (browserCounts[parsed.browser] || 0) + 1
+      osCounts[parsed.os] = (osCounts[parsed.os] || 0) + 1
+    })
+
+    const toSorted = (counts: Record<string, number>) =>
+      Object.entries(counts)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count)
+
+    setDeviceBreakdown(toSorted(deviceCounts))
+    setBrowserBreakdown(toSorted(browserCounts))
+    setOsBreakdown(toSorted(osCounts))
 
     setLoading(false)
   }, [supabase, addFilters])
@@ -442,7 +509,7 @@ export function ShrikeAnalytics() {
       </div>
 
       {/* Section 7: Page Distribution */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white rounded-lg shadow p-6 mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Page Views by Page</h2>
         {pageDistribution.length === 0 ? (
           <p className="text-gray-500">No page view data</p>
@@ -467,6 +534,13 @@ export function ShrikeAnalytics() {
           </div>
         )}
       </div>
+
+      {/* Section 9: Device / Browser / OS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <BreakdownCard title="Device Type" items={deviceBreakdown} color="#6366f1" />
+        <BreakdownCard title="Browser" items={browserBreakdown} color="#3b82f6" />
+        <BreakdownCard title="Operating System" items={osBreakdown} color="#10b981" />
+      </div>
     </div>
   )
 }
@@ -484,6 +558,42 @@ function StatCard({ label, value, color }: { label: string; value: number; color
     <div className={`rounded-lg p-4 ${colors[color] || colors.blue}`}>
       <div className="text-2xl font-bold">{value}</div>
       <div className="text-sm opacity-75">{label}</div>
+    </div>
+  )
+}
+
+function BreakdownCard({ title, items, color }: { title: string; items: BreakdownItem[]; color: string }) {
+  const max = items[0]?.count || 1
+  const total = items.reduce((sum, i) => sum + i.count, 0)
+
+  return (
+    <div className="bg-white rounded-lg shadow p-6">
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">{title}</h2>
+      {items.length === 0 ? (
+        <p className="text-gray-500">No data</p>
+      ) : (
+        <div className="space-y-3">
+          {items.map(item => (
+            <div key={item.name} className="flex items-center">
+              <div className="flex-1">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="font-medium text-gray-900">{item.name}</span>
+                  <span className="text-gray-500">{Math.round((item.count / total) * 100)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="h-2 rounded-full"
+                    style={{ width: `${(item.count / max) * 100}%`, backgroundColor: color }}
+                  />
+                </div>
+              </div>
+              <div className="ml-3 text-sm font-semibold text-gray-600 w-10 text-right">
+                {item.count}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
