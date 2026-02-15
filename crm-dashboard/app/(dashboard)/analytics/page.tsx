@@ -5,6 +5,9 @@ import { createClient } from '@/lib/supabase/client'
 import { useUser } from '@/contexts/UserContext'
 import { RevenueChart } from './components/RevenueChart'
 import { ChartControls } from './components/ChartControls'
+import { ShrikeAnalytics } from './components/ShrikeAnalytics'
+
+const SHRIKE_CLIENT_ID = 'da6fa735-8143-4cdf-941c-5b6021cbc961'
 
 interface Stats {
   totalLeads: number
@@ -57,6 +60,16 @@ function formatCurrency(amount: number): string {
 }
 
 export default function AnalyticsPage() {
+  const { currentClientId } = useUser()
+
+  if (currentClientId === SHRIKE_CLIENT_ID) {
+    return <ShrikeAnalytics />
+  }
+
+  return <DefaultAnalytics />
+}
+
+function DefaultAnalytics() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [campaignStats, setCampaignStats] = useState<CampaignStats[]>([])
   const [sourceStats, setSourceStats] = useState<SourceStats[]>([])
@@ -66,8 +79,6 @@ export default function AnalyticsPage() {
   const [topItems, setTopItems] = useState<TopItem[]>([])
   const [loading, setLoading] = useState(true)
   const [includeInvoices, setIncludeInvoices] = useState<boolean>(false)
-
-  // Revenue chart state
   const [granularity, setGranularity] = useState<'day' | 'week' | 'month'>('day')
   const [dateRange, setDateRange] = useState(() => {
     const to = new Date()
