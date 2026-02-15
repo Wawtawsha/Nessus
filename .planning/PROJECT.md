@@ -2,20 +2,11 @@
 
 ## What This Is
 
-A multi-tenant CRM for managing leads with Toast POS integration. Restaurants can track leads, sync orders from Toast, and see which customers convert to paying guests. Built with Next.js 14, Supabase, and Tailwind.
+A multi-tenant CRM for managing leads with Toast POS integration. Restaurants can track leads, sync orders from Toast, manually add and edit leads, and see which customers convert to paying guests. Includes a dedicated Cold Calling client for leads-only workflows. Built with Next.js 14, Supabase, and Tailwind.
 
 ## Core Value
 
 Connect marketing leads to actual revenue — show which leads became paying customers and how much they spent.
-
-## Current Milestone: v1.2 Lead Management
-
-**Goal:** Expand lead capture beyond website forms with manual entry and a dedicated cold-calling client.
-
-**Target features:**
-- Cold Calling client (lead-source bucket, leads-only dashboard view)
-- Manual "Add Lead" button on all clients' leads pages
-- New lead fields: has_website (boolean), social_media_presence (1-5 scale)
 
 ## Requirements
 
@@ -35,16 +26,16 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 - ✓ Unmatched orders show smart lead suggestions for manual matching — v1.1
 - ✓ Revenue chart shows trends over time with granularity toggle — v1.1
 - ✓ Shrike Media Website consolidation with per-site visit metrics — v1.1
+- ✓ Cold Calling client with leads-only sidebar view — v1.2
+- ✓ Manual "Add Lead" form with extended qualification fields — v1.2
+- ✓ All form fields optional (admin tool philosophy) — v1.2
+- ✓ Inline edit mode on lead detail page with change event logging — v1.2
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] Cold Calling client exists in sidebar as lead-source bucket
-- [ ] Cold Calling shows leads-only view (no visits/orders/analytics)
-- [ ] Manual "Add Lead" button on all clients' leads pages
-- [ ] Add Lead form captures extended fields (has_website, social_media_presence)
-- [ ] No required fields on Add Lead form (admin tool)
+(None — planning next milestone)
 
 ### Out of Scope
 
@@ -53,6 +44,8 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 - Real-time webhooks from Toast — requires Toast partnership, overkill for current scale
 - Email/SMS integration — separate milestone
 - Pipeline automation — separate milestone
+- Bulk lead import (CSV) — manual entry sufficient, revisit if volume grows
+- Lead scoring/ranking — premature, not enough data yet
 
 ## Context
 
@@ -63,6 +56,9 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 - Multi-tenant: each client has their own Toast credentials and data
 - Shrike Media Website consolidated from two clients with website_label for per-site identity
 - Visit tracking via Supabase Edge Function (track-visitor) with website_label support
+- Cold Calling client uses client_type='leads_only' for tab filtering
+- Manual leads tagged with utm_source='manual-entry' for attribution
+- Lead detail supports inline editing with lead_event audit logging
 
 ## Constraints
 
@@ -80,6 +76,9 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 | Manual shadcn/ui setup | More control than interactive CLI | v1.1 — 4 components created |
 | website_label for multi-site | Preserve per-site identity in consolidated client | v1.1 — nullable TEXT column |
 | Deactivate old clients, not delete | Enables rollback if consolidation has issues | v1.1 — is_active=false |
+| client_type column for tab filtering | Simpler than separate routes for leads-only clients | v1.2 — getNavItems() function |
+| Native HTML dialog for forms | No external dependency, modern browser API | v1.2 — Add Lead form |
+| Inline edit vs separate page | Faster workflow, matches admin tool philosophy | v1.2 — isEditing toggle |
 
 ## Milestones
 
@@ -87,7 +86,7 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 |---------|------|--------|------|
 | v1.0 | Foundation | Complete | 2026-01 |
 | v1.1 | Toast Enhancements | Complete | 2026-02-13 |
-| v1.2 | Lead Management | In Progress | 2026-02-14 |
+| v1.2 | Lead Management | Complete | 2026-02-15 |
 
 ---
-*Last updated: 2026-02-14 after milestone v1.2 start*
+*Last updated: 2026-02-15 after v1.2 milestone*
