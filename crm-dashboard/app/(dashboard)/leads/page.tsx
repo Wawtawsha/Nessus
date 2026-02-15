@@ -160,7 +160,7 @@ export default function LeadsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Leads</h1>
         <div className="flex gap-2">
           {currentClientId && (
@@ -228,12 +228,13 @@ export default function LeadsPage() {
       </div>
 
       {/* Leads Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : leads.length === 0 ? (
           <div className="p-8 text-center text-gray-500">No leads found</div>
         ) : (
+          <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -286,6 +287,7 @@ export default function LeadsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

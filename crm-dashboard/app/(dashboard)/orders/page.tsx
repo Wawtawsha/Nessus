@@ -210,7 +210,7 @@ export default function OrdersPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Toast Orders</h1>
         <button
           onClick={exportCSV}
@@ -312,7 +312,7 @@ export default function OrdersPage() {
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : orders.length === 0 ? (
@@ -320,6 +320,7 @@ export default function OrdersPage() {
             No orders found. Make sure Toast is connected and synced in Settings.
           </div>
         ) : (
+          <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -404,6 +405,7 @@ export default function OrdersPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

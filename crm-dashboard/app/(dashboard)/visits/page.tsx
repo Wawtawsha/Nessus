@@ -184,7 +184,7 @@ function WebsiteCard({
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">{websiteName}</h2>
         <div className="animate-pulse space-y-4">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="h-16 bg-gray-200 rounded-lg" />
             <div className="h-16 bg-gray-200 rounded-lg" />
             <div className="h-16 bg-gray-200 rounded-lg" />

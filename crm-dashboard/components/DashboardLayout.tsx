@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useUser } from '@/contexts/UserContext'
 import ClientAccordion from './ClientAccordion'
 import { SyncStatusIndicator } from './SyncStatusIndicator'
@@ -17,6 +17,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter()
   const supabase = createClient()
   const [newLeadCount, setNewLeadCount] = useState(0)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const { isAdmin, currentClient, currentClientId, setCurrentClientId, profile, loading } = useUser()
 
   // Note: Real-time notifications disabled (Supabase Realtime not available)
@@ -29,6 +30,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   const clearNewLeadCount = () => setNewLeadCount(0)
+  const closeSidebar = () => setSidebarOpen(false)
 
   // Admin-only navigation items (management pages)
   const adminNavItems = [
@@ -45,14 +47,56 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Mobile top bar */}
+      <div className="md:hidden flex items-center justify-between bg-gray-900 text-white px-4 py-3 sticky top-0 z-50">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="p-1 -ml-1"
+          aria-label="Open menu"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <h1 className="text-lg font-bold">Nessus</h1>
+        <div className="w-6" /> {/* Spacer for centering */}
+      </div>
+
+      {/* Backdrop overlay (mobile only) */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={closeSidebar}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white flex flex-col">
-        <div className="p-4">
-          <h1 className="text-xl font-bold">Nessus</h1>
-          {!isAdmin && profile && (
-            <p className="text-sm text-gray-400 mt-1">Client Portal</p>
-          )}
+      <aside
+        className={`
+          fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white flex flex-col
+          transform transition-transform duration-200 ease-in-out
+          md:relative md:translate-x-0
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
+      >
+        <div className="p-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold">Nessus</h1>
+            {!isAdmin && profile && (
+              <p className="text-sm text-gray-400 mt-1">Client Portal</p>
+            )}
+          </div>
+          {/* Close button (mobile only) */}
+          <button
+            onClick={closeSidebar}
+            className="md:hidden p-1 text-gray-400 hover:text-white"
+            aria-label="Close menu"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
         {/* Navigation */}
@@ -76,6 +120,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     setCurrentClientId(null)
                     if (item.href === '/leads') clearNewLeadCount()
                     router.push(item.href)
+                    closeSidebar()
                   }}
                   className={`w-full flex items-center px-4 py-3 text-sm text-left ${
                     pathname.startsWith(item.href) && !currentClientId
@@ -100,6 +145,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <ClientAccordion
             newLeadCount={newLeadCount}
             onLeadsClick={clearNewLeadCount}
+            onNavigate={closeSidebar}
           />
 
           {/* Admin-only management items */}
@@ -110,6 +156,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={closeSidebar}
                   className={`flex items-center px-4 py-3 text-sm ${
                     pathname.startsWith(item.href)
                       ? 'bg-gray-800 border-l-4 border-blue-500'
@@ -137,7 +184,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-8 bg-gray-100 overflow-y-auto">
+      <main className="flex-1 p-4 md:p-6 lg:p-8 bg-gray-100 overflow-y-auto">
         {children}
       </main>
     </div>

@@ -111,7 +111,7 @@ export default function ClientsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
           <p className="text-gray-500 text-sm mt-1">Manage your client accounts</p>
@@ -186,12 +186,13 @@ export default function ClientsPage() {
       )}
 
       {/* Clients Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow">
         {clients.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
             No clients yet. Click &quot;Add Client&quot; to create one.
           </div>
         ) : (
+          <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -259,6 +260,7 @@ export default function ClientsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

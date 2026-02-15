@@ -15,9 +15,10 @@ interface Client {
 interface ClientAccordionProps {
   newLeadCount: number
   onLeadsClick: () => void
+  onNavigate?: () => void
 }
 
-export default function ClientAccordion({ newLeadCount, onLeadsClick }: ClientAccordionProps) {
+export default function ClientAccordion({ newLeadCount, onLeadsClick, onNavigate }: ClientAccordionProps) {
   const [clients, setClients] = useState<Client[]>([])
   const [expandedClientId, setExpandedClientId] = useState<string | null>(null)
   const pathname = usePathname()
@@ -64,6 +65,7 @@ export default function ClientAccordion({ newLeadCount, onLeadsClick }: ClientAc
       onLeadsClick()
     }
     router.push(path)
+    onNavigate?.()
   }
 
   const getNavItems = (clientType: string) => {
