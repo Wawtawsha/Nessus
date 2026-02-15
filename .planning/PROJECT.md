@@ -35,11 +35,15 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] Session journey visualization — show event sequences within a session
-- [ ] Geographic heatmap — visualize visitor locations using existing ip/country/city data
-- [ ] Referrer analysis — which external sources drive the most engaged visitors
-- [ ] Scroll depth tracking — capture scroll milestones (25/50/75/100%) in Shrike
-- [ ] Time on page metrics — calculate from page view timestamps within sessions
+- [ ] Session journey visualization — show event sequences within a session (v1.3)
+- [ ] Geographic heatmap — visualize visitor locations using existing ip/country/city data (v1.3)
+- [ ] Referrer analysis — which external sources drive the most engaged visitors (v1.3)
+- [ ] Scroll depth tracking — capture scroll milestones (25/50/75/100%) in Shrike (v1.3)
+- [ ] Time on page metrics — calculate from page view timestamps within sessions (v1.3)
+- [ ] Call scripts CRUD on Cold Calling page (v1.4)
+- [ ] Script-lead outcome tracking with success/fail per call (v1.4)
+- [ ] User-defined lead niche taxonomy with persistent options (v1.4)
+- [ ] Script performance analytics by niche and overall (v1.4)
 
 ### Out of Scope
 
@@ -63,6 +67,9 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 - Cold Calling client uses client_type='leads_only' for tab filtering
 - Manual leads tagged with utm_source='manual-entry' for attribution
 - Lead detail supports inline editing with lead_event audit logging
+- Cold Calling scripts: each script always linked to a lead outcome (no standalone counters)
+- Niche taxonomy: user-managed options that persist until manually removed
+- Script counters are aggregated from script_lead_outcomes, not independent values
 
 ## Constraints
 
@@ -92,8 +99,9 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 | v1.1 | Toast Enhancements | Complete | 2026-02-13 |
 | v1.2 | Lead Management | Complete | 2026-02-15 |
 | v1.3 | Analytics Deep Dive | Active | 2026-02-15 |
+| v1.4 | Cold Calling Scripts | Active | 2026-02-15 |
 
-## Current Milestone: v1.3 Analytics Deep Dive
+## Current Milestone: v1.3 Analytics Deep Dive (parallel)
 
 **Goal:** Surface deep visitor insights — session journeys, geographic distribution, referrer quality, and scroll engagement — building on the existing ShrikeAnalytics dashboard.
 
@@ -104,5 +112,16 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 - Scroll depth tracking (new Shrike events + CRM display)
 - Time on page calculation from session timestamps
 
+## Current Milestone: v1.4 Cold Calling Scripts
+
+**Goal:** Equip cold callers with managed call scripts, track per-lead outcomes (success/fail), and surface analytics on which scripts perform best overall and within business niches.
+
+**Target features:**
+- Scripts CRUD (create, edit, delete call scripts on Cold Calling page)
+- Script-lead outcome tracking (assign script to lead, mark success/fail per call)
+- Aggregated script performance counters (derived from per-lead outcomes)
+- User-defined lead niche taxonomy (combo selector: pick existing or create new)
+- Script analytics by niche and overall performance ranking
+
 ---
-*Last updated: 2026-02-15 after v1.3 milestone start*
+*Last updated: 2026-02-15 after v1.4 milestone start*
