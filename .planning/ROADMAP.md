@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 Foundation** - Phases 1-4 (shipped 2026-01)
 - ✅ **v1.1 Toast Enhancements** - Phases 1-5 (shipped 2026-02-13)
-- 🚧 **v1.2 Lead Management** - Phases 6-8 (in progress)
+- ✅ **v1.2 Lead Management** - Phases 6-8 (shipped 2026-02-15)
 
 ## Overview
 
@@ -14,7 +14,7 @@ Milestone v1.2 expands lead capture beyond website forms with manual entry capab
 
 - [x] **Phase 6: Database + Cold Calling Client** - Extend schema and create leads-only client
 - [x] **Phase 7: Manual Lead Entry UI** - Build Add Lead form for all clients
-- [ ] **Phase 8: Edit Lead UI** - Add edit capability to lead detail page
+- [x] **Phase 8: Edit Lead UI** - Add edit capability to lead detail page
 
 <details>
 <summary>✅ v1.1 Toast Enhancements (Phases 1-5) - SHIPPED 2026-02-13</summary>
@@ -57,7 +57,7 @@ Plans:
 
 </details>
 
-## v1.2 Lead Management (In Progress)
+## v1.2 Lead Management (Complete)
 
 **Milestone Goal:** Expand lead capture with manual entry and dedicated cold-calling client.
 
@@ -98,7 +98,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 08-01-PLAN.md -- Inline edit mode on lead detail contact card with save/cancel
+- [x] 08-01-PLAN.md -- Inline edit mode on lead detail contact card with save/cancel
 
 ## Progress
 
@@ -114,7 +114,7 @@ Phases execute in numeric order: 6 -> 7 -> 8
 | 5. Shrike Consolidation | v1.1 | 2/2 | Complete | 2026-02-13 |
 | 6. Database + Cold Calling | v1.2 | 1/1 | Complete | 2026-02-14 |
 | 7. Manual Lead Entry UI | v1.2 | 1/1 | Complete | 2026-02-14 |
-| 8. Edit Lead UI | v1.2 | 0/1 | Planned | - |
+| 8. Edit Lead UI | v1.2 | 1/1 | Complete | 2026-02-15 |
 
 ---
-*Last updated: 2026-02-14 after Phase 8 planning*
+*Last updated: 2026-02-15 — Milestone v1.2 complete*

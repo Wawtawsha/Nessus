@@ -21,7 +21,7 @@ Requirements for Lead Management milestone. Each maps to roadmap phases.
 
 ### Edit Lead
 
-- [ ] **EDIT-01**: Lead detail page has edit capability to correct manual entry mistakes
+- [x] **EDIT-01**: Lead detail page has edit capability to correct manual entry mistakes
 
 ## Future Requirements
 
@@ -57,7 +57,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LEAD-02 | Phase 7 | Complete |
 | LEAD-03 | Phase 7 | Complete |
 | LEAD-04 | Phase 7 | Complete |
-| EDIT-01 | Phase 8 | Pending |
+| EDIT-01 | Phase 8 | Complete |
 
 **Coverage:**
 - v1.2 requirements: 7 total
@@ -66,4 +66,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-14*
-*Last updated: 2026-02-14 after Phase 7 execution, EDIT-01 added*
+*Last updated: 2026-02-15 — all v1.2 requirements complete*
