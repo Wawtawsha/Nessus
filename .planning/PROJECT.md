@@ -35,7 +35,11 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 
 <!-- Current scope. Building toward these. -->
 
-(None — planning next milestone)
+- [ ] Session journey visualization — show event sequences within a session
+- [ ] Geographic heatmap — visualize visitor locations using existing ip/country/city data
+- [ ] Referrer analysis — which external sources drive the most engaged visitors
+- [ ] Scroll depth tracking — capture scroll milestones (25/50/75/100%) in Shrike
+- [ ] Time on page metrics — calculate from page view timestamps within sessions
 
 ### Out of Scope
 
@@ -87,6 +91,18 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 | v1.0 | Foundation | Complete | 2026-01 |
 | v1.1 | Toast Enhancements | Complete | 2026-02-13 |
 | v1.2 | Lead Management | Complete | 2026-02-15 |
+| v1.3 | Analytics Deep Dive | Active | 2026-02-15 |
+
+## Current Milestone: v1.3 Analytics Deep Dive
+
+**Goal:** Surface deep visitor insights — session journeys, geographic distribution, referrer quality, and scroll engagement — building on the existing ShrikeAnalytics dashboard.
+
+**Target features:**
+- Session journey visualization (event timeline per session)
+- Geographic heatmap from existing visit data (country/city)
+- Referrer analysis with engagement quality scoring
+- Scroll depth tracking (new Shrike events + CRM display)
+- Time on page calculation from session timestamps
 
 ---
-*Last updated: 2026-02-15 after v1.2 milestone*
+*Last updated: 2026-02-15 after v1.3 milestone start*

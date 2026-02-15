@@ -9,12 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 
 ## Current Position
 
-Phase: —
+Phase: Not started (defining requirements)
 Plan: —
-Status: Between milestones — v1.2 shipped and archived
-Last activity: 2026-02-15 — v1.2 milestone archived
-
-Progress: All milestones complete. Ready for v1.3.
+Status: Defining requirements for v1.3 Analytics Deep Dive
+Last activity: 2026-02-15 — Milestone v1.3 started
 
 ## Completed Milestones
 
@@ -41,9 +39,13 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: v1.2 archived, between milestones
+Stopped at: v1.3 milestone started, research phase
 Resume file: None
-Next: `/gsd:new-milestone` for v1.3
+Next: Research → Requirements → Roadmap for v1.3
+
+### Roadmap Evolution
+
+- v1.3 Analytics Deep Dive started: session journeys, geo heatmap, referrer analysis, scroll depth
 
 ---
 *Last updated: 2026-02-15*
