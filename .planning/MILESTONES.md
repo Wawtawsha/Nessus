@@ -1,5 +1,32 @@
 # Project Milestones: Nessus CRM
 
+## v1.3 Analytics Deep Dive (Shipped: 2026-02-15)
+
+**Delivered:** Deep visitor analytics with session journeys, referrer analysis, geographic distribution, scroll depth tracking, and component architecture refactoring.
+
+**Phases completed:** 9-13 (6 plans total)
+
+**Key accomplishments:**
+
+- Refactored ShrikeAnalytics from 606-line monolith to 130-line tab container + 8 autonomous section components
+- Session journey visualization with chronological event timelines and time-on-page from timestamp deltas
+- Referrer analysis with fbclid-aware categorization and engagement quality scoring
+- Geographic distribution with US state abbreviations and city-level breakdown
+- Scroll depth tracking via IntersectionObserver on Shrike + per-page milestone achievement rates in CRM
+- Database index audit confirmed 100% FK coverage across all tables
+
+**Stats:**
+
+- 28 commits, +1,553 LOC TypeScript (CRM) + scroll tracking (Shrike)
+- 5 phases, 6 plans
+- 1 day (2026-02-15)
+
+**Git range:** `feat(09-01)` to `docs(13-01)`
+
+**What's next:** v1.4 Cold Calling Scripts — script CRUD, outcome tracking, niche taxonomy, analytics
+
+---
+
 ## v1.2 Lead Management (Shipped: 2026-02-15)
 
 **Delivered:** Manual lead entry and editing with a dedicated Cold Calling client for leads-only workflows.

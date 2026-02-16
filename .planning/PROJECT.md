@@ -30,16 +30,18 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 - ✓ Manual "Add Lead" form with extended qualification fields — v1.2
 - ✓ All form fields optional (admin tool philosophy) — v1.2
 - ✓ Inline edit mode on lead detail page with change event logging — v1.2
+- ✓ Session journey visualization with chronological event timelines — v1.3
+- ✓ Geographic distribution with city-level breakdown and US state abbreviations — v1.3
+- ✓ Referrer analysis with engagement quality scoring and fbclid-aware categorization — v1.3
+- ✓ Scroll depth tracking via IntersectionObserver with per-page milestone achievement rates — v1.3
+- ✓ Time on page metrics from session timestamp deltas with last-page exclusion — v1.3
+- ✓ Component decomposition (606→130 line refactor) with section component pattern — v1.3
+- ✓ Database index audit confirming 100% FK coverage — v1.3
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] Session journey visualization — show event sequences within a session (v1.3)
-- [ ] Geographic heatmap — visualize visitor locations using existing ip/country/city data (v1.3)
-- [ ] Referrer analysis — which external sources drive the most engaged visitors (v1.3)
-- [ ] Scroll depth tracking — capture scroll milestones (25/50/75/100%) in Shrike (v1.3)
-- [ ] Time on page metrics — calculate from page view timestamps within sessions (v1.3)
 - [ ] Call scripts CRUD on Cold Calling page (v1.4)
 - [ ] Script-lead outcome tracking with success/fail per call (v1.4)
 - [ ] User-defined lead niche taxonomy with persistent options (v1.4)
@@ -90,6 +92,10 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 | client_type column for tab filtering | Simpler than separate routes for leads-only clients | v1.2 — getNavItems() function |
 | Native HTML dialog for forms | No external dependency, modern browser API | v1.2 — Add Lead form |
 | Inline edit vs separate page | Faster workflow, matches admin tool philosophy | v1.2 — isEditing toggle |
+| Section component pattern (Visit prop + useMemo) | Self-contained analytics sections, no prop drilling | v1.3 — 13 sections total |
+| IntersectionObserver for scroll tracking | Off-main-thread, 43% less CPU than scroll listeners | v1.3 — Shrike website |
+| fbclid checked FIRST in referrer categorization | Correct Facebook attribution over domain matching | v1.3 — ReferrerAnalysis |
+| Last-page exclusion from time-on-page | No exit timestamp available for final page in session | v1.3 — TimeOnPage |
 
 ## Milestones
 
@@ -98,19 +104,8 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 | v1.0 | Foundation | Complete | 2026-01 |
 | v1.1 | Toast Enhancements | Complete | 2026-02-13 |
 | v1.2 | Lead Management | Complete | 2026-02-15 |
-| v1.3 | Analytics Deep Dive | Active | 2026-02-15 |
+| v1.3 | Analytics Deep Dive | Complete | 2026-02-15 |
 | v1.4 | Cold Calling Scripts | Active | 2026-02-15 |
-
-## Current Milestone: v1.3 Analytics Deep Dive (parallel)
-
-**Goal:** Surface deep visitor insights — session journeys, geographic distribution, referrer quality, and scroll engagement — building on the existing ShrikeAnalytics dashboard.
-
-**Target features:**
-- Session journey visualization (event timeline per session)
-- Geographic heatmap from existing visit data (country/city)
-- Referrer analysis with engagement quality scoring
-- Scroll depth tracking (new Shrike events + CRM display)
-- Time on page calculation from session timestamps
 
 ## Current Milestone: v1.4 Cold Calling Scripts
 
@@ -124,4 +119,4 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 - Script analytics by niche and overall performance ranking
 
 ---
-*Last updated: 2026-02-15 after v1.4 milestone start*
+*Last updated: 2026-02-15 after v1.3 milestone completion*

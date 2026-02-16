@@ -10,19 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Milestone: v1.4 Cold Calling Scripts
-Phase: 14 - Schema + Niche Taxonomy (1 of 1 plans complete)
-Plan: 14-01 complete
-Status: Phase 14 complete, ready for Phase 15
-Last activity: 2026-02-15 -- v1.3 milestone complete (Phase 13 database index audit)
+Phase: 14 - Schema + Niche Taxonomy (1 of 2 plans complete)
+Plan: 14-01 complete, 14-02 pending
+Status: Phase 14 in progress
+Last activity: 2026-02-15 -- v1.3 milestone archived
 
-Progress v1.4: █░░░ (1/4 phases = 25%)
-Progress v1.3: █████ (5/5 phases = 100%) ✓ COMPLETE
+Progress v1.4: █░░░ (0/4 phases complete, Phase 14 in progress)
 
 ## v1.4 Phases
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 14 | Schema + Niche Taxonomy | ✓ Complete |
+| 14 | Schema + Niche Taxonomy | In Progress (1/2 plans) |
 | 15 | Script Library CRUD | Pending |
 | 16 | Outcome Tracking | Pending |
 | 17 | Script Analytics | Pending |
@@ -40,27 +39,10 @@ See `.planning/milestones/` for archived details.
 
 ## Accumulated Context
 
-### Key Decisions
+### Key Decisions (v1.4 scope)
 
 | Decision | Phase | Rationale |
 |----------|-------|-----------|
-| Section components compute from raw visits (not pre-computed state) | 09-01 | Prevents prop drilling, keeps sections autonomous |
-| useMemo for all section computations | 09-01 | Prevents recalculation on tab switching |
-| Visit interface as type contract | 09-01 | Type safety across all section components |
-| Time deltas calculated within sessions only (never across boundaries) | 10-01 | Prevents impossible cross-session durations |
-| Last page in each session excluded from time-on-page metrics | 10-01 | No exit timestamp available for final page |
-| 30-minute cap on page durations | 10-01 | Excludes abandoned tabs from averages |
-| fbclid tracking param checked FIRST in referrer categorization | 11-01 | Handles shrike.vercel.app?fbclid=... as Facebook traffic, not self-referral |
-| Engagement quality defined as avg events/session per referrer source | 11-01 | Identifies high-quality traffic sources producing most engaged visitors |
-| US state names mapped to 2-letter abbreviations for city display | 11-01 | Compact "Farmville, VA" format improves geo breakdown readability |
-| IntersectionObserver over scroll event listeners for scroll depth tracking | 12-01 | Off-main-thread execution, no throttling needed, 43% less CPU on slow devices |
-| Pixel-based sentinel positioning (not CSS %) for scroll milestones | 12-01 | CSS % would be viewport-relative (body lacks position: relative), not page-height relative |
-| Short page guard (scrollHeight <= innerHeight + 100) skips tracking | 12-01 | Pages already fully visible don't need scroll depth milestones |
-| Set-based deduplication for scroll events | 12-01 | Prevents duplicate fires as users scroll up/down past same milestone |
-| Achievement rates use page view sessions as denominator (not scroll event count) | 12-02 | Prevents inflated rates from multi-event sessions, accurate representation of visitor behavior |
-| Session max scroll computation per session, then averaged | 12-02 | Find max milestone each session reached, then average across all sessions for accurate engagement metric |
-| Most-read page uses 100% achievement rate with fallback to average milestone | 12-02 | Primary metric is completion rate, fallback ensures always meaningful result |
-| Top 10 pages by session count (no pagination) | 12-02 | Keeps UI simple, focuses on most-visited pages |
 | All 3 tables (scripts, niches, script_lead_outcomes) created in single migration | 14-01 | Single foundation, avoids fragmented migrations |
 | Niche names normalized to lowercase with UNIQUE constraint | 14-01 | Prevents "Restaurant" vs "restaurant" duplicates, enforced via CHECK constraint |
 | Soft delete for scripts (is_active flag) | 14-01 | Preserves outcome history when scripts retired |
@@ -91,13 +73,13 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: v1.3 milestone complete (all 5 phases verified)
+Stopped at: v1.3 milestone archived, v1.4 Phase 14 in progress (14-01 done, 14-02 pending)
 Resume file: None
-Next: v1.4 Phase 15 (Script Library CRUD) — or /gsd:audit-milestone for v1.3
+Next: v1.4 Phase 14 plan 14-02 (NicheComboBox) — then Phase 15 (Script Library CRUD)
 
 ### Roadmap Evolution
 
-- v1.3 Analytics Deep Dive started: session journeys, geo heatmap, referrer analysis, scroll depth
+- v1.3 Analytics Deep Dive: shipped 2026-02-15 (5 phases, 6 plans)
 - v1.4 Cold Calling Scripts roadmap defined: schema + niche taxonomy, script CRUD, outcome tracking, script analytics
 
 ---

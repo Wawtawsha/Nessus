@@ -45,23 +45,11 @@
 
 - [ ] Phase 14: Schema + Niche Taxonomy (2 plans)
   Plans:
-  - [ ] 14-01-PLAN.md — Database migration (niches, scripts, outcomes tables) + TypeScript types
+  - [x] 14-01-PLAN.md — Database migration (niches, scripts, outcomes tables) + TypeScript types
   - [ ] 14-02-PLAN.md — NicheComboBox component + leads page/detail integration
 - [ ] Phase 15: Script Library CRUD (0/1 plans)
 - [ ] Phase 16: Outcome Tracking (0/1 plans)
 - [ ] Phase 17: Script Analytics (0/1 plans)
-
-#### Phase 12: Scroll Depth
-
-**Goal:** Visitors' scroll behavior is captured on Shrike website and visualized in CRM dashboard, showing per-page milestone achievement rates
-
-**Dependencies:** Phase 11 (Deep Dive tab with section component pattern)
-
-**Success Criteria:**
-1. Scroll milestones (25/50/75/90/100%) fire exactly once per page load as visitors scroll Shrike pages
-2. Short pages (content < viewport) do not fire scroll events
-3. CRM dashboard ScrollDepth section shows per-page milestone achievement rates with summary stats
-4. Empty state displays informative message when no scroll data exists yet
 
 #### Phase 14: Schema + Niche Taxonomy
 
@@ -140,10 +128,10 @@
 | 11. Referrer + Geo | v1.3 | 1/1 | Complete | 2026-02-15 |
 | 12. Scroll Depth | v1.3 | 2/2 | Complete | 2026-02-15 |
 | 13. Database Indexes | v1.3 | 1/1 | Complete | 2026-02-15 |
-| 14. Schema + Niche Taxonomy | v1.4 | 0/2 | Planned | |
+| 14. Schema + Niche Taxonomy | v1.4 | 1/2 | In Progress | |
 | 15. Script Library CRUD | v1.4 | 0/1 | Pending | |
 | 16. Outcome Tracking | v1.4 | 0/1 | Pending | |
 | 17. Script Analytics | v1.4 | 0/1 | Pending | |
 
 ---
-*Last updated: 2026-02-15 -- v1.3 milestone complete (Phase 13)*
+*Last updated: 2026-02-15 -- v1.3 archived, v1.4 in progress*
