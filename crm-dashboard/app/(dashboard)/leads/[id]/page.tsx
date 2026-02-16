@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { Lead, LeadEvent } from '@/types/lead'
+import { NicheComboBox } from '@/components/NicheComboBox'
 
 const STATUS_OPTIONS = ['new', 'contacted', 'qualified', 'converted', 'unqualified'] as const
 
@@ -47,12 +48,13 @@ export default function LeadDetailPage() {
     sms_consent: false,
     has_website: null as boolean | null,
     social_media_presence: null as number | null,
+    niche_id: null as string | null,
   })
 
   const fetchLead = useCallback(async () => {
     const { data, error } = await supabase
       .from('leads')
-      .select('*')
+      .select('*, niche:niches(name)')
       .eq('id', id)
       .single()
 
@@ -155,6 +157,7 @@ export default function LeadDetailPage() {
       sms_consent: lead.sms_consent,
       has_website: lead.has_website,
       social_media_presence: lead.social_media_presence,
+      niche_id: lead.niche_id,
     })
     setIsEditing(true)
   }
@@ -177,6 +180,7 @@ export default function LeadDetailPage() {
     if (editForm.sms_consent !== lead.sms_consent) changedFields.sms_consent = editForm.sms_consent
     if (editForm.has_website !== lead.has_website) changedFields.has_website = editForm.has_website
     if (editForm.social_media_presence !== lead.social_media_presence) changedFields.social_media_presence = editForm.social_media_presence
+    if (editForm.niche_id !== lead.niche_id) changedFields.niche_id = editForm.niche_id
 
     const { error } = await supabase
       .from('leads')
@@ -189,6 +193,7 @@ export default function LeadDetailPage() {
         sms_consent: editForm.sms_consent,
         has_website: editForm.has_website,
         social_media_presence: editForm.social_media_presence,
+        niche_id: editForm.niche_id,
       })
       .eq('id', id)
 
@@ -320,6 +325,10 @@ export default function LeadDetailPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-500">Social Media Presence</label>
                   <span>{lead.social_media_presence !== null ? lead.social_media_presence : '-'}</span>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Business Niche</label>
+                  <span>{(lead as any).niche?.name || '-'}</span>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-500">Created</label>
@@ -466,6 +475,13 @@ export default function LeadDetailPage() {
                       None
                     </label>
                   </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Business Niche</label>
+                  <NicheComboBox
+                    value={editForm.niche_id}
+                    onChange={(nicheId) => setEditForm({ ...editForm, niche_id: nicheId })}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-500">Created</label>
