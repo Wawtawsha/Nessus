@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Milestone: v1.4 Cold Calling Scripts
-Phase: 15 - Script Library CRUD (complete)
-Plan: 15-01 (complete, verified)
-Status: Phase 15 complete, ready for Phase 16
-Last activity: 2026-02-16 -- Script CRUD components built (ScriptManager, ScriptCard, AddEditScriptDialog)
+Phase: 16 - Outcome Tracking (in progress)
+Plan: 16-01 (complete)
+Status: Phase 16 Plan 01 complete - RPC + types + schema ready
+Last activity: 2026-02-16 -- Completed 16-01-PLAN.md (get_script_outcome_stats RPC, OutcomeStats types, outcomeSchema)
 
-Progress v1.4: ████░░ (2/4 phases complete)
+Progress v1.4: ████░░ (2/4 phases complete, 16-01 done)
 
 ## v1.4 Phases
 
@@ -23,7 +23,7 @@ Progress v1.4: ████░░ (2/4 phases complete)
 |-------|------|--------|
 | 14 | Schema + Niche Taxonomy | ✓ Complete |
 | 15 | Script Library CRUD | ✓ Complete |
-| 16 | Outcome Tracking | Pending |
+| 16 | Outcome Tracking | In Progress (16-01 complete) |
 | 17 | Script Analytics | Pending |
 
 ## Completed Milestones
@@ -53,6 +53,9 @@ See `.planning/milestones/` for archived details.
 | mode:'onSubmit' for RHF inside shadcn Dialog | 15-01 | Prevents Dialog X button from triggering validation errors |
 | Dialog state machine (closed/add/edit/view) | 15-01 | Single state var instead of multiple booleans, cleaner transitions |
 | No is_active in script form (separate toggle button) | 15-01 | Form focused on content; active/inactive is operational, not editorial |
+| LEFT JOIN in get_script_outcome_stats RPC | 16-01 | Ensures scripts with zero outcomes appear with 0 counts (not hidden) |
+| COUNT(o.id) not COUNT(*) for total_count | 16-01 | With LEFT JOIN, COUNT(*) returns 1 even when no outcomes; COUNT(o.id) returns 0 correctly |
+| Win rate division by zero guard | 16-01 | Returns 0% when total_count = 0, prevents NaN/infinity in analytics |
 
 ### Research Artifacts
 
@@ -76,9 +79,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Phase 15 complete, ready for Phase 16
+Stopped at: Completed 16-01-PLAN.md (RPC + types + schema)
 Resume file: None
-Next: Phase 16 (Outcome Tracking) — discuss or plan
+Next: Phase 16 Plan 02 (Outcome Tracking UI) — ready to execute
 
 ### Roadmap Evolution
 
@@ -86,6 +89,7 @@ Next: Phase 16 (Outcome Tracking) — discuss or plan
 - v1.4 Cold Calling Scripts roadmap defined: schema + niche taxonomy, script CRUD, outcome tracking, script analytics
 - Phase 14 complete: NicheComboBox, leads integration, photo download → lead pipeline
 - Phase 15 complete: ScriptManager, ScriptCard, AddEditScriptDialog with RHF+Zod validation
+- Phase 16 Plan 01 complete: get_script_outcome_stats RPC, OutcomeStats/ScriptWithStats types, outcomeSchema
 
 ---
 *Last updated: 2026-02-16*
