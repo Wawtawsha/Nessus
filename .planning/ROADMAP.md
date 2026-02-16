@@ -34,9 +34,7 @@
 
 - [x] Phase 9: Component Decomposition (1/1 plans)
 - [x] Phase 10: Session Journeys + Time on Page (1/1 plans)
-- [ ] Phase 11: Referrer Analysis + Geo Distribution (1 plans)
-  Plans:
-  - [ ] 11-01-PLAN.md — Extend Visit type + ReferrerAnalysis + GeoDistribution sections in Deep Dive tab
+- [x] Phase 11: Referrer Analysis + Geo Distribution (1/1 plans)
 - [ ] Phase 12: Scroll Depth + Explicit Time on Page (0/1 plans)
 - [ ] Phase 13: Database Indexes (0/1 plans)
 
@@ -124,7 +122,7 @@
 | 8. Edit Lead UI | v1.2 | 1/1 | Complete | 2026-02-15 |
 | 9. Component Decomposition | v1.3 | 1/1 | Complete | 2026-02-15 |
 | 10. Session Journeys + Time | v1.3 | 1/1 | Complete | 2026-02-15 |
-| 11. Referrer + Geo | v1.3 | 0/1 | Planned | |
+| 11. Referrer + Geo | v1.3 | 1/1 | Complete | 2026-02-15 |
 | 12. Scroll Depth | v1.3 | 0/1 | Pending | |
 | 13. Database Indexes | v1.3 | 0/1 | Pending | |
 | 14. Schema + Niche Taxonomy | v1.4 | 0/2 | Planned | |
@@ -133,4 +131,4 @@
 | 17. Script Analytics | v1.4 | 0/1 | Pending | |
 
 ---
-*Last updated: 2026-02-15 -- Phase 11 planned*
+*Last updated: 2026-02-15 -- Phase 11 complete*
