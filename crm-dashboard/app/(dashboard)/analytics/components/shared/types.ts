@@ -5,4 +5,10 @@ export interface Visit {
   page_path: string | null
   created_at: string
   user_agent: string | null
+  referrer: string | null
+  country: string | null
+  city: string | null
+  region: string | null
+  latitude: number | null
+  longitude: number | null
 }

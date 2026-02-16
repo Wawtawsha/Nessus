@@ -42,7 +42,7 @@ export function ShrikeAnalytics() {
 
     let query = supabase
       .from('visits')
-      .select('event_name, event_data, session_id, page_path, created_at, user_agent')
+      .select('event_name, event_data, session_id, page_path, created_at, user_agent, referrer, country, city, region, latitude, longitude')
     query = addFilters(query)
     const { data } = await query
 
