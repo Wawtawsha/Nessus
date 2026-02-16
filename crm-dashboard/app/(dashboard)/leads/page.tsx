@@ -8,6 +8,7 @@ import type { Niche } from '@/types/niche'
 import { useUser } from '@/contexts/UserContext'
 import { NicheComboBox } from '@/components/NicheComboBox'
 import { ScriptManager } from '@/components/ScriptManager'
+import { ScriptAnalytics } from '@/components/ScriptAnalytics'
 
 const STATUS_COLORS: Record<string, string> = {
   new: 'bg-blue-100 text-blue-800',
@@ -44,6 +45,7 @@ export default function LeadsPage() {
   const [preferredContact, setPreferredContact] = useState('email')
   const [selectedNiche, setSelectedNiche] = useState<string | null>(null)
   const [scriptsExpanded, setScriptsExpanded] = useState(true)
+  const [analyticsExpanded, setAnalyticsExpanded] = useState(false)
 
   const fetchLeads = useCallback(async () => {
     let query = supabase
@@ -292,6 +294,26 @@ export default function LeadsPage() {
           {scriptsExpanded && (
             <div className="px-6 pb-6">
               <ScriptManager clientId={currentClientId} />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Script Analytics Section */}
+      {currentClientId && (
+        <div className="bg-white rounded-lg shadow mb-6">
+          <button
+            onClick={() => setAnalyticsExpanded(!analyticsExpanded)}
+            className="w-full flex items-center justify-between px-6 py-4 text-left"
+          >
+            <h2 className="text-lg font-semibold text-gray-900">Script Analytics</h2>
+            <span className="text-gray-400 text-sm">
+              {analyticsExpanded ? 'Hide' : 'Show'}
+            </span>
+          </button>
+          {analyticsExpanded && (
+            <div className="px-6 pb-6">
+              <ScriptAnalytics clientId={currentClientId} />
             </div>
           )}
         </div>
