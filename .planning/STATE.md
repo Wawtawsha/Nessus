@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Milestone: v1.4 Cold Calling Scripts
-Phase: 17 - Script Analytics (in progress)
-Plan: 17-01 (complete)
-Status: Plan 17-01 complete - analytics RPCs and TypeScript types
-Last activity: 2026-02-16 -- Completed 17-01-PLAN.md (analytics RPCs with date filtering)
+Phase: 17 - Script Analytics (complete)
+Plan: 17-02 (complete)
+Status: v1.4 Cold Calling Scripts milestone COMPLETE
+Last activity: 2026-02-16 -- Completed 17-02-PLAN.md (Script Analytics UI)
 
-Progress v1.4: ███████░ (3/4 phases, 1/2 plans in phase 17 complete)
+Progress v1.4: ████████ (4/4 phases complete, 2/2 plans in phase 17 complete)
 
 ## v1.4 Phases
 
@@ -24,7 +24,7 @@ Progress v1.4: ███████░ (3/4 phases, 1/2 plans in phase 17 compl
 | 14 | Schema + Niche Taxonomy | ✓ Complete |
 | 15 | Script Library CRUD | ✓ Complete |
 | 16 | Outcome Tracking | ✓ Complete |
-| 17 | Script Analytics | In Progress (1/2 plans) |
+| 17 | Script Analytics | ✓ Complete |
 
 ## Completed Milestones
 
@@ -34,6 +34,7 @@ Progress v1.4: ███████░ (3/4 phases, 1/2 plans in phase 17 compl
 | v1.1 | Toast Enhancements | 5 | 6 | 2026-01-15 to 2026-02-13 |
 | v1.2 | Lead Management | 3 | 3 | 2026-02-14 to 2026-02-15 |
 | v1.3 | Analytics Deep Dive | 5 | 6 | 2026-02-15 |
+| v1.4 | Cold Calling Scripts | 4 | 8 | 2026-02-15 to 2026-02-16 |
 
 See `.planning/milestones/` for archived details.
 
@@ -64,6 +65,9 @@ See `.planning/milestones/` for archived details.
 | Date filter in LEFT JOIN ON clause (not WHERE) | 17-01 | Preserves zero-outcome entities when filtering by date range |
 | get_script_outcome_stats shows inactive scripts | 17-01 | Analytics needs historical view; is_active returned as column not filter |
 | HAVING COUNT(l.id) > 0 in script-niche matrix | 17-01 | Only show script-niche pairs where client has leads in that niche |
+| Default collapsed for analytics section | 17-02 | Analytics is secondary to leads workflow (calling and recording outcomes) |
+| Client-side filtering for zero-outcome entities | 17-02 | Additional safety beyond SQL HAVING clause |
+| Visual grouping in ScriptNicheMatrix via border styling | 17-02 | Cleaner than separate tbody elements, works with shadcn Table structure |
 
 ### Research Artifacts
 
@@ -87,19 +91,18 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 17-01-PLAN.md (Script Analytics RPCs and types)
+Stopped at: Completed 17-02-PLAN.md (Script Analytics UI) - v1.4 milestone COMPLETE
 Resume file: None
-Next: Plan 17-02 (Script Analytics UI)
+Next: New milestone planning
 
 ### Roadmap Evolution
 
 - v1.3 Analytics Deep Dive: shipped 2026-02-15 (5 phases, 6 plans)
-- v1.4 Cold Calling Scripts roadmap defined: schema + niche taxonomy, script CRUD, outcome tracking, script analytics
-- Phase 14 complete: NicheComboBox, leads integration, photo download → lead pipeline
-- Phase 15 complete: ScriptManager, ScriptCard, AddEditScriptDialog with RHF+Zod validation
-- Phase 16 complete: RecordOutcomeDialog (relative dropdown, 48px buttons, upsert), ScriptCard stats, ScriptManager integration
-- Phase 16 verified: 5/5 success criteria passed (RPC LEFT JOIN, COUNT(o.id), mobile touch targets, upsert behavior, optional notes)
-- Phase 17 Plan 01 complete: Three analytics RPCs (get_script_outcome_stats upgraded, get_niche_performance_stats, get_script_niche_matrix) with date filtering + TypeScript types
+- v1.4 Cold Calling Scripts: shipped 2026-02-16 (4 phases, 8 plans)
+  - Phase 14: Schema + Niche Taxonomy (NicheComboBox, leads integration, photo download → lead pipeline)
+  - Phase 15: Script Library CRUD (ScriptManager, ScriptCard, AddEditScriptDialog with RHF+Zod validation)
+  - Phase 16: Outcome Tracking (RecordOutcomeDialog, relative dropdown, 48px buttons, upsert pattern)
+  - Phase 17: Script Analytics (3 RPCs with date filtering, 3-view analytics UI, date range filter)
 
 ---
 *Last updated: 2026-02-16*
