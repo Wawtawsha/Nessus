@@ -35,7 +35,10 @@
 - [x] Phase 9: Component Decomposition (1/1 plans)
 - [x] Phase 10: Session Journeys + Time on Page (1/1 plans)
 - [x] Phase 11: Referrer Analysis + Geo Distribution (1/1 plans)
-- [ ] Phase 12: Scroll Depth + Explicit Time on Page (0/1 plans)
+- [ ] Phase 12: Scroll Depth (2 plans)
+  Plans:
+  - [ ] 12-01-PLAN.md -- Scroll depth tracking in Shrike website (useNessusTracking.ts)
+  - [ ] 12-02-PLAN.md -- ScrollDepth analytics section in CRM dashboard
 - [ ] Phase 13: Database Indexes (0/1 plans)
 
 ### v1.4 Cold Calling Scripts (Phases 14-17)
@@ -47,6 +50,18 @@
 - [ ] Phase 15: Script Library CRUD (0/1 plans)
 - [ ] Phase 16: Outcome Tracking (0/1 plans)
 - [ ] Phase 17: Script Analytics (0/1 plans)
+
+#### Phase 12: Scroll Depth
+
+**Goal:** Visitors' scroll behavior is captured on Shrike website and visualized in CRM dashboard, showing per-page milestone achievement rates
+
+**Dependencies:** Phase 11 (Deep Dive tab with section component pattern)
+
+**Success Criteria:**
+1. Scroll milestones (25/50/75/90/100%) fire exactly once per page load as visitors scroll Shrike pages
+2. Short pages (content < viewport) do not fire scroll events
+3. CRM dashboard ScrollDepth section shows per-page milestone achievement rates with summary stats
+4. Empty state displays informative message when no scroll data exists yet
 
 #### Phase 14: Schema + Niche Taxonomy
 
@@ -123,7 +138,7 @@
 | 9. Component Decomposition | v1.3 | 1/1 | Complete | 2026-02-15 |
 | 10. Session Journeys + Time | v1.3 | 1/1 | Complete | 2026-02-15 |
 | 11. Referrer + Geo | v1.3 | 1/1 | Complete | 2026-02-15 |
-| 12. Scroll Depth | v1.3 | 0/1 | Pending | |
+| 12. Scroll Depth | v1.3 | 0/2 | Planned | |
 | 13. Database Indexes | v1.3 | 0/1 | Pending | |
 | 14. Schema + Niche Taxonomy | v1.4 | 0/2 | Planned | |
 | 15. Script Library CRUD | v1.4 | 0/1 | Pending | |
@@ -131,4 +146,4 @@
 | 17. Script Analytics | v1.4 | 0/1 | Pending | |
 
 ---
-*Last updated: 2026-02-15 -- Phase 11 complete*
+*Last updated: 2026-02-15 -- Phase 12 planned (2 plans, 1 wave)*
