@@ -10,19 +10,19 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Milestone: v1.4 Cold Calling Scripts
-Phase: 15 - Script Library CRUD (not yet planned)
-Plan: —
-Status: Ready for Phase 15 planning
-Last activity: 2026-02-16 -- Phase 14 complete (NicheComboBox, leads integration, photo download leads)
+Phase: 15 - Script Library CRUD (complete)
+Plan: 15-01 (complete, verified)
+Status: Phase 15 complete, ready for Phase 16
+Last activity: 2026-02-16 -- Script CRUD components built (ScriptManager, ScriptCard, AddEditScriptDialog)
 
-Progress v1.4: ██░░ (1/4 phases complete)
+Progress v1.4: ████░░ (2/4 phases complete)
 
 ## v1.4 Phases
 
 | Phase | Name | Status |
 |-------|------|--------|
 | 14 | Schema + Niche Taxonomy | ✓ Complete |
-| 15 | Script Library CRUD | Pending |
+| 15 | Script Library CRUD | ✓ Complete |
 | 16 | Outcome Tracking | Pending |
 | 17 | Script Analytics | Pending |
 
@@ -50,6 +50,9 @@ See `.planning/milestones/` for archived details.
 | UNIQUE(script_id, lead_id) on script_lead_outcomes | 14-01 | Enables upsert pattern for updating outcomes |
 | RLS policies scope scripts through user_clients join | 14-01 | Multi-tenant security enforced at database level |
 | Script outcome is binary success/fail for MVP | 16 (planned) | Keep simple, expand categories based on user feedback (Pitfall 16) |
+| mode:'onSubmit' for RHF inside shadcn Dialog | 15-01 | Prevents Dialog X button from triggering validation errors |
+| Dialog state machine (closed/add/edit/view) | 15-01 | Single state var instead of multiple booleans, cleaner transitions |
+| No is_active in script form (separate toggle button) | 15-01 | Form focused on content; active/inactive is operational, not editorial |
 
 ### Research Artifacts
 
@@ -73,15 +76,16 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Phase 14 complete, ready for Phase 15
+Stopped at: Phase 15 complete, ready for Phase 16
 Resume file: None
-Next: Phase 15 (Script Library CRUD) — discuss or plan
+Next: Phase 16 (Outcome Tracking) — discuss or plan
 
 ### Roadmap Evolution
 
 - v1.3 Analytics Deep Dive: shipped 2026-02-15 (5 phases, 6 plans)
 - v1.4 Cold Calling Scripts roadmap defined: schema + niche taxonomy, script CRUD, outcome tracking, script analytics
 - Phase 14 complete: NicheComboBox, leads integration, photo download → lead pipeline
+- Phase 15 complete: ScriptManager, ScriptCard, AddEditScriptDialog with RHF+Zod validation
 
 ---
 *Last updated: 2026-02-16*

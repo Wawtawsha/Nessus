@@ -47,9 +47,9 @@
   Plans:
   - [x] 14-01-PLAN.md — Database migration (niches, scripts, outcomes tables) + TypeScript types
   - [x] 14-02-PLAN.md — NicheComboBox component + leads page/detail integration
-- [ ] Phase 15: Script Library CRUD (1 plan)
+- [x] Phase 15: Script Library CRUD (1/1 plans)
   Plans:
-  - [ ] 15-01-PLAN.md — Script CRUD components (ScriptManager, ScriptCard, AddEditScriptDialog) + leads page integration
+  - [x] 15-01-PLAN.md — Script CRUD components (ScriptManager, ScriptCard, AddEditScriptDialog) + leads page integration
 - [ ] Phase 16: Outcome Tracking (0/1 plans)
 - [ ] Phase 17: Script Analytics (0/1 plans)
 
@@ -131,9 +131,9 @@
 | 12. Scroll Depth | v1.3 | 2/2 | Complete | 2026-02-15 |
 | 13. Database Indexes | v1.3 | 1/1 | Complete | 2026-02-15 |
 | 14. Schema + Niche Taxonomy | v1.4 | 2/2 | Complete | 2026-02-16 |
-| 15. Script Library CRUD | v1.4 | 0/1 | Planned | |
+| 15. Script Library CRUD | v1.4 | 1/1 | Complete | 2026-02-16 |
 | 16. Outcome Tracking | v1.4 | 0/1 | Pending | |
 | 17. Script Analytics | v1.4 | 0/1 | Pending | |
 
 ---
-*Last updated: 2026-02-16 -- Phase 15 planned*
+*Last updated: 2026-02-16 -- Phase 15 complete*
