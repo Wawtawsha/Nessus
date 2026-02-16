@@ -6,7 +6,7 @@
 - ✅ **v1.1 Toast Enhancements** - Phases 1-5 (shipped 2026-02-13)
 - ✅ **v1.2 Lead Management** - Phases 6-8 (shipped 2026-02-15)
 - ✅ **v1.3 Analytics Deep Dive** - Phases 9-13 (shipped 2026-02-15)
-- 🔄 **v1.4 Cold Calling Scripts** - Script CRUD, outcome tracking, niche taxonomy, script analytics
+- ✅ **v1.4 Cold Calling Scripts** - Script CRUD, outcome tracking, niche taxonomy, script analytics (shipped 2026-02-16)
 
 ## Phases
 
@@ -54,10 +54,10 @@
   Plans:
   - [x] 16-01-PLAN.md — RPC aggregation function + TypeScript types + Zod outcome schema
   - [x] 16-02-PLAN.md — RecordOutcomeDialog + ScriptCard stats + ScriptManager integration
-- [ ] Phase 17: Script Analytics (2 plans)
+- [x] Phase 17: Script Analytics (2/2 plans)
   Plans:
-  - [ ] 17-01-PLAN.md — Analytics RPC functions (3 RPCs with date range) + TypeScript types
-  - [ ] 17-02-PLAN.md — Analytics UI (OverallPerformance table, NichePerformance chart, ScriptNicheMatrix, leads page integration)
+  - [x] 17-01-PLAN.md — Analytics RPC functions (3 RPCs with date range) + TypeScript types
+  - [x] 17-02-PLAN.md — Analytics UI (OverallPerformance table, NichePerformance chart, ScriptNicheMatrix, leads page integration)
 
 #### Phase 14: Schema + Niche Taxonomy
 
@@ -143,7 +143,7 @@
 | 14. Schema + Niche Taxonomy | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 15. Script Library CRUD | v1.4 | 1/1 | Complete | 2026-02-16 |
 | 16. Outcome Tracking | v1.4 | 2/2 | Complete | 2026-02-16 |
-| 17. Script Analytics | v1.4 | 0/2 | Planned | |
+| 17. Script Analytics | v1.4 | 2/2 | Complete | 2026-02-16 |
 
 ---
-*Last updated: 2026-02-16 -- Phase 17 planned (2 plans in 2 waves)*
+*Last updated: 2026-02-16 -- Phase 17 complete, v1.4 milestone complete*

@@ -91,9 +91,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 17-02-PLAN.md (Script Analytics UI) - v1.4 milestone COMPLETE
+Stopped at: v1.4 milestone COMPLETE (all 4 phases verified, gap fix applied)
 Resume file: None
-Next: New milestone planning
+Next: /gsd:complete-milestone to archive v1.4
 
 ### Roadmap Evolution
 
