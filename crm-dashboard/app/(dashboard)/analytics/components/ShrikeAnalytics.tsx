@@ -11,6 +11,8 @@ import { EngagementFunnel } from './sections/EngagementFunnel'
 import { ActivityTimeline } from './sections/ActivityTimeline'
 import { PageDistribution } from './sections/PageDistribution'
 import { DeviceBrowserOS } from './sections/DeviceBrowserOS'
+import { SessionJourneys } from './sections/SessionJourneys'
+import { TimeOnPage } from './sections/TimeOnPage'
 
 const SHRIKE_CLIENT_ID = 'da6fa735-8143-4cdf-941c-5b6021cbc961'
 
@@ -117,13 +119,10 @@ export function ShrikeAnalytics() {
           <DeviceBrowserOS visits={visits} />
         </>
       ) : (
-        <div className="bg-white rounded-lg shadow p-8 text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">Coming Soon</h2>
-          <p className="text-gray-600">
-            Deep dive analytics including session journeys, referrer analysis, and geographic
-            distribution.
-          </p>
-        </div>
+        <>
+          <SessionJourneys visits={visits} />
+          <TimeOnPage visits={visits} />
+        </>
       )}
     </div>
   )
