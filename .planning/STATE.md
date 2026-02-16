@@ -13,9 +13,9 @@ Milestone: v1.4 Cold Calling Scripts
 Phase: 14 - Schema + Niche Taxonomy (1 of 1 plans complete)
 Plan: 14-01 complete
 Status: Phase 14 complete, ready for Phase 15
-Last activity: 2026-02-16 -- Completed 14-01-PLAN.md (Database schema for scripts, niches, outcomes)
+Last activity: 2026-02-17 -- Completed 12-02-PLAN.md (ScrollDepth analytics section)
 
-Note: v1.3 Analytics Deep Dive -- Phase 12 Plan 01 complete (Scroll Depth Tracking on Shrike website)
+Note: v1.3 Analytics Deep Dive -- Phase 12 Plan 02 complete (ScrollDepth analytics section)
 
 Progress v1.4: █░░░ (1/4 phases = 25%)
 Progress v1.3: ██░░░░ (2/6 phases = 33%)
@@ -58,6 +58,10 @@ See `.planning/milestones/` for archived details.
 | Pixel-based sentinel positioning (not CSS %) for scroll milestones | 12-01 | CSS % would be viewport-relative (body lacks position: relative), not page-height relative |
 | Short page guard (scrollHeight <= innerHeight + 100) skips tracking | 12-01 | Pages already fully visible don't need scroll depth milestones |
 | Set-based deduplication for scroll events | 12-01 | Prevents duplicate fires as users scroll up/down past same milestone |
+| Achievement rates use page view sessions as denominator (not scroll event count) | 12-02 | Prevents inflated rates from multi-event sessions, accurate representation of visitor behavior |
+| Session max scroll computation per session, then averaged | 12-02 | Find max milestone each session reached, then average across all sessions for accurate engagement metric |
+| Most-read page uses 100% achievement rate with fallback to average milestone | 12-02 | Primary metric is completion rate, fallback ensures always meaningful result |
+| Top 10 pages by session count (no pagination) | 12-02 | Keeps UI simple, focuses on most-visited pages |
 | All 3 tables (scripts, niches, script_lead_outcomes) created in single migration | 14-01 | Single foundation, avoids fragmented migrations |
 | Niche names normalized to lowercase with UNIQUE constraint | 14-01 | Prevents "Restaurant" vs "restaurant" duplicates, enforced via CHECK constraint |
 | Soft delete for scripts (is_active flag) | 14-01 | Preserves outcome history when scripts retired |
@@ -87,10 +91,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-16
-Stopped at: Completed 12-01-PLAN.md (Scroll Depth Tracking)
+Last session: 2026-02-17
+Stopped at: Completed 12-02-PLAN.md (ScrollDepth analytics section)
 Resume file: None
-Next: v1.4 Phase 15 (Script Library CRUD) - or v1.3 continues with Phase 12 Plan 02 (Heartbeat Tracking) or Phase 13 (Analytics Dashboard)
+Next: v1.4 Phase 15 (Script Library CRUD) - or v1.3 continues with Phase 13 (Scroll Depth UI on Shrike website)
 
 ### Roadmap Evolution
 
@@ -98,4 +102,4 @@ Next: v1.4 Phase 15 (Script Library CRUD) - or v1.3 continues with Phase 12 Plan
 - v1.4 Cold Calling Scripts roadmap defined: schema + niche taxonomy, script CRUD, outcome tracking, script analytics
 
 ---
-*Last updated: 2026-02-16*
+*Last updated: 2026-02-17*
