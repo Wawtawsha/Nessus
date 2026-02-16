@@ -20,6 +20,7 @@ export interface Lead {
   notes: string | null
   has_website: boolean | null
   social_media_presence: number | null  // 1-5 scale
+  niche_id: string | null
   created_at: string
   updated_at: string
 }
