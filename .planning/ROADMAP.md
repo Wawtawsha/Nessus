@@ -35,10 +35,7 @@
 - [x] Phase 9: Component Decomposition (1/1 plans)
 - [x] Phase 10: Session Journeys + Time on Page (1/1 plans)
 - [x] Phase 11: Referrer Analysis + Geo Distribution (1/1 plans)
-- [ ] Phase 12: Scroll Depth (2 plans)
-  Plans:
-  - [ ] 12-01-PLAN.md -- Scroll depth tracking in Shrike website (useNessusTracking.ts)
-  - [ ] 12-02-PLAN.md -- ScrollDepth analytics section in CRM dashboard
+- [x] Phase 12: Scroll Depth (2/2 plans)
 - [ ] Phase 13: Database Indexes (0/1 plans)
 
 ### v1.4 Cold Calling Scripts (Phases 14-17)
@@ -138,7 +135,7 @@
 | 9. Component Decomposition | v1.3 | 1/1 | Complete | 2026-02-15 |
 | 10. Session Journeys + Time | v1.3 | 1/1 | Complete | 2026-02-15 |
 | 11. Referrer + Geo | v1.3 | 1/1 | Complete | 2026-02-15 |
-| 12. Scroll Depth | v1.3 | 0/2 | Planned | |
+| 12. Scroll Depth | v1.3 | 2/2 | Complete | 2026-02-15 |
 | 13. Database Indexes | v1.3 | 0/1 | Pending | |
 | 14. Schema + Niche Taxonomy | v1.4 | 0/2 | Planned | |
 | 15. Script Library CRUD | v1.4 | 0/1 | Pending | |
@@ -146,4 +143,4 @@
 | 17. Script Analytics | v1.4 | 0/1 | Pending | |
 
 ---
-*Last updated: 2026-02-15 -- Phase 12 planned (2 plans, 1 wave)*
+*Last updated: 2026-02-15 -- Phase 12 complete*
