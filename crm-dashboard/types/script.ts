@@ -28,3 +28,37 @@ export interface ScriptOutcome {
   created_at: string
   created_by: string | null
 }
+
+// Analytics types (match RPC return signatures)
+
+export interface ScriptPerformance {
+  script_id: string
+  script_title: string
+  is_active: boolean
+  success_count: number
+  fail_count: number
+  total_count: number
+  win_rate: number
+}
+
+export interface NichePerformance {
+  niche_id: string
+  niche_name: string
+  success_count: number
+  fail_count: number
+  total_count: number
+  win_rate: number
+}
+
+export interface ScriptNicheCell {
+  script_id: string
+  script_title: string
+  niche_id: string
+  niche_name: string
+  success_count: number
+  fail_count: number
+  total_count: number
+  win_rate: number
+}
+
+export type DateRange = '7d' | '30d' | '90d' | 'all'
