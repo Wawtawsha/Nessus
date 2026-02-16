@@ -15,6 +15,7 @@ import { SessionJourneys } from './sections/SessionJourneys'
 import { TimeOnPage } from './sections/TimeOnPage'
 import { ReferrerAnalysis } from './sections/ReferrerAnalysis'
 import { GeoDistribution } from './sections/GeoDistribution'
+import { ScrollDepth } from './sections/ScrollDepth'
 
 const SHRIKE_CLIENT_ID = 'da6fa735-8143-4cdf-941c-5b6021cbc961'
 
@@ -126,6 +127,7 @@ export function ShrikeAnalytics() {
           <TimeOnPage visits={visits} />
           <ReferrerAnalysis visits={visits} />
           <GeoDistribution visits={visits} />
+          <ScrollDepth visits={visits} />
         </>
       )}
     </div>
