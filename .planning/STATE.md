@@ -15,9 +15,10 @@ Plan: 14-01 complete
 Status: Phase 14 complete, ready for Phase 15
 Last activity: 2026-02-16 -- Completed 14-01-PLAN.md (Database schema for scripts, niches, outcomes)
 
-Note: v1.3 Analytics Deep Dive -- Phase 11 Plan 01 complete (ReferrerAnalysis + GeoDistribution)
+Note: v1.3 Analytics Deep Dive -- Phase 12 Plan 01 complete (Scroll Depth Tracking on Shrike website)
 
-Progress: █░░░ (1/4 phases = 25%)
+Progress v1.4: █░░░ (1/4 phases = 25%)
+Progress v1.3: ██░░░░ (2/6 phases = 33%)
 
 ## v1.4 Phases
 
@@ -53,6 +54,10 @@ See `.planning/milestones/` for archived details.
 | fbclid tracking param checked FIRST in referrer categorization | 11-01 | Handles shrike.vercel.app?fbclid=... as Facebook traffic, not self-referral |
 | Engagement quality defined as avg events/session per referrer source | 11-01 | Identifies high-quality traffic sources producing most engaged visitors |
 | US state names mapped to 2-letter abbreviations for city display | 11-01 | Compact "Farmville, VA" format improves geo breakdown readability |
+| IntersectionObserver over scroll event listeners for scroll depth tracking | 12-01 | Off-main-thread execution, no throttling needed, 43% less CPU on slow devices |
+| Pixel-based sentinel positioning (not CSS %) for scroll milestones | 12-01 | CSS % would be viewport-relative (body lacks position: relative), not page-height relative |
+| Short page guard (scrollHeight <= innerHeight + 100) skips tracking | 12-01 | Pages already fully visible don't need scroll depth milestones |
+| Set-based deduplication for scroll events | 12-01 | Prevents duplicate fires as users scroll up/down past same milestone |
 | All 3 tables (scripts, niches, script_lead_outcomes) created in single migration | 14-01 | Single foundation, avoids fragmented migrations |
 | Niche names normalized to lowercase with UNIQUE constraint | 14-01 | Prevents "Restaurant" vs "restaurant" duplicates, enforced via CHECK constraint |
 | Soft delete for scripts (is_active flag) | 14-01 | Preserves outcome history when scripts retired |
@@ -83,9 +88,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 11-01-PLAN.md (ReferrerAnalysis + GeoDistribution sections)
+Stopped at: Completed 12-01-PLAN.md (Scroll Depth Tracking)
 Resume file: None
-Next: v1.4 Phase 15 (Script Library CRUD) - or v1.3 continues with Phase 12 (Scroll Depth)
+Next: v1.4 Phase 15 (Script Library CRUD) - or v1.3 continues with Phase 12 Plan 02 (Heartbeat Tracking) or Phase 13 (Analytics Dashboard)
 
 ### Roadmap Evolution
 
