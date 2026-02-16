@@ -122,8 +122,8 @@ export default function LeadsPage() {
   const exportCSV = () => {
     const headers = ['First Name', 'Last Name', 'Email', 'Phone', 'Status', 'Source', 'Campaign', 'Created']
     const rows = leads.map((lead) => [
-      lead.first_name,
-      lead.last_name,
+      lead.first_name || '',
+      lead.last_name || '',
       lead.email,
       lead.phone || '',
       lead.status,
@@ -303,7 +303,9 @@ export default function LeadsPage() {
                 <tr key={lead.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Link href={`/leads/${lead.id}`} className="text-blue-600 hover:underline font-medium">
-                      {lead.first_name} {lead.last_name}
+                      {lead.first_name || lead.last_name
+                        ? `${lead.first_name || ''} ${lead.last_name || ''}`.trim()
+                        : lead.email}
                     </Link>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

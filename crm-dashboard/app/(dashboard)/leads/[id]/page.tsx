@@ -149,8 +149,8 @@ export default function LeadDetailPage() {
   const startEdit = () => {
     if (!lead) return
     setEditForm({
-      first_name: lead.first_name,
-      last_name: lead.last_name,
+      first_name: lead.first_name || '',
+      last_name: lead.last_name || '',
       email: lead.email,
       phone: lead.phone || '',
       preferred_contact: lead.preferred_contact,
@@ -234,7 +234,9 @@ export default function LeadDetailPage() {
             <div className="flex justify-between items-start mb-4">
               {!isEditing ? (
                 <h1 className="text-2xl font-bold text-gray-900">
-                  {lead.first_name} {lead.last_name}
+                  {lead.first_name || lead.last_name
+                    ? `${lead.first_name || ''} ${lead.last_name || ''}`.trim()
+                    : lead.email}
                 </h1>
               ) : (
                 <div className="flex gap-2">
