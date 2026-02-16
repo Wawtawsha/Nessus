@@ -13,6 +13,8 @@ import { PageDistribution } from './sections/PageDistribution'
 import { DeviceBrowserOS } from './sections/DeviceBrowserOS'
 import { SessionJourneys } from './sections/SessionJourneys'
 import { TimeOnPage } from './sections/TimeOnPage'
+import { ReferrerAnalysis } from './sections/ReferrerAnalysis'
+import { GeoDistribution } from './sections/GeoDistribution'
 
 const SHRIKE_CLIENT_ID = 'da6fa735-8143-4cdf-941c-5b6021cbc961'
 
@@ -122,6 +124,8 @@ export function ShrikeAnalytics() {
         <>
           <SessionJourneys visits={visits} />
           <TimeOnPage visits={visits} />
+          <ReferrerAnalysis visits={visits} />
+          <GeoDistribution visits={visits} />
         </>
       )}
     </div>
