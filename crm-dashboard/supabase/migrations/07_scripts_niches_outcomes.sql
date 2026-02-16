@@ -68,7 +68,8 @@ CREATE POLICY niches_delete ON niches
 -- Step 2: Create scripts table (client-scoped)
 -- ---------------------------------------------------------------------------
 -- Scripts belong to a specific client and can be soft-deleted (is_active).
--- RLS policies scope to user's accessible clients via user_clients join.
+-- RLS policies use private.get_user_role() and private.get_user_client_id()
+-- matching the existing codebase pattern (no user_clients join table).
 CREATE TABLE scripts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
@@ -89,57 +90,38 @@ CREATE INDEX idx_scripts_client_id ON scripts(client_id);
 -- Enable RLS
 ALTER TABLE scripts ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies: Scope to user's clients via user_clients join
-CREATE POLICY scripts_select ON scripts
+-- RLS Policies: Admin full access + client scoped via private helper functions
+CREATE POLICY scripts_admin ON scripts
+  FOR ALL
+  TO authenticated
+  USING (private.get_user_role(auth.uid()) = 'admin');
+
+CREATE POLICY scripts_client_select ON scripts
   FOR SELECT
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_clients uc
-      WHERE uc.client_id = scripts.client_id
-        AND uc.user_id = auth.uid()
-    )
-  );
+  USING (client_id = private.get_user_client_id(auth.uid()));
 
-CREATE POLICY scripts_insert ON scripts
+CREATE POLICY scripts_client_insert ON scripts
   FOR INSERT
   TO authenticated
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM user_clients uc
-      WHERE uc.client_id = scripts.client_id
-        AND uc.user_id = auth.uid()
-    )
-  );
+  WITH CHECK (client_id = private.get_user_client_id(auth.uid()));
 
-CREATE POLICY scripts_update ON scripts
+CREATE POLICY scripts_client_update ON scripts
   FOR UPDATE
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_clients uc
-      WHERE uc.client_id = scripts.client_id
-        AND uc.user_id = auth.uid()
-    )
-  );
+  USING (client_id = private.get_user_client_id(auth.uid()));
 
-CREATE POLICY scripts_delete ON scripts
+CREATE POLICY scripts_client_delete ON scripts
   FOR DELETE
   TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_clients uc
-      WHERE uc.client_id = scripts.client_id
-        AND uc.user_id = auth.uid()
-    )
-  );
+  USING (client_id = private.get_user_client_id(auth.uid()));
 
 -- ---------------------------------------------------------------------------
 -- Step 3: Create script_lead_outcomes table
 -- ---------------------------------------------------------------------------
 -- Junction table tracking which scripts were used on which leads, with outcome.
 -- UNIQUE(script_id, lead_id) allows upsert pattern for updating outcomes.
--- RLS policies scope through scripts -> user_clients chain.
+-- RLS policies scope through scripts -> client_id using private helpers.
 CREATE TABLE script_lead_outcomes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   script_id UUID NOT NULL REFERENCES scripts(id) ON DELETE CASCADE,
@@ -163,52 +145,53 @@ CREATE INDEX idx_slo_lead_id ON script_lead_outcomes(lead_id);
 -- Enable RLS
 ALTER TABLE script_lead_outcomes ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies: Scope through scripts -> user_clients chain
-CREATE POLICY slo_select ON script_lead_outcomes
+-- RLS Policies: Admin full access + client scoped through scripts
+CREATE POLICY slo_admin ON script_lead_outcomes
+  FOR ALL
+  TO authenticated
+  USING (private.get_user_role(auth.uid()) = 'admin');
+
+CREATE POLICY slo_client_select ON script_lead_outcomes
   FOR SELECT
   TO authenticated
   USING (
     EXISTS (
       SELECT 1 FROM scripts s
-      JOIN user_clients uc ON uc.client_id = s.client_id
       WHERE s.id = script_lead_outcomes.script_id
-        AND uc.user_id = auth.uid()
+        AND s.client_id = private.get_user_client_id(auth.uid())
     )
   );
 
-CREATE POLICY slo_insert ON script_lead_outcomes
+CREATE POLICY slo_client_insert ON script_lead_outcomes
   FOR INSERT
   TO authenticated
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM scripts s
-      JOIN user_clients uc ON uc.client_id = s.client_id
       WHERE s.id = script_lead_outcomes.script_id
-        AND uc.user_id = auth.uid()
+        AND s.client_id = private.get_user_client_id(auth.uid())
     )
   );
 
-CREATE POLICY slo_update ON script_lead_outcomes
+CREATE POLICY slo_client_update ON script_lead_outcomes
   FOR UPDATE
   TO authenticated
   USING (
     EXISTS (
       SELECT 1 FROM scripts s
-      JOIN user_clients uc ON uc.client_id = s.client_id
       WHERE s.id = script_lead_outcomes.script_id
-        AND uc.user_id = auth.uid()
+        AND s.client_id = private.get_user_client_id(auth.uid())
     )
   );
 
-CREATE POLICY slo_delete ON script_lead_outcomes
+CREATE POLICY slo_client_delete ON script_lead_outcomes
   FOR DELETE
   TO authenticated
   USING (
     EXISTS (
       SELECT 1 FROM scripts s
-      JOIN user_clients uc ON uc.client_id = s.client_id
       WHERE s.id = script_lead_outcomes.script_id
-        AND uc.user_id = auth.uid()
+        AND s.client_id = private.get_user_client_id(auth.uid())
     )
   );
 
