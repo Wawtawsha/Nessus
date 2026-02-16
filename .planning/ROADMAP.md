@@ -50,7 +50,10 @@
 - [x] Phase 15: Script Library CRUD (1/1 plans)
   Plans:
   - [x] 15-01-PLAN.md — Script CRUD components (ScriptManager, ScriptCard, AddEditScriptDialog) + leads page integration
-- [ ] Phase 16: Outcome Tracking (0/1 plans)
+- [ ] Phase 16: Outcome Tracking (2 plans)
+  Plans:
+  - [ ] 16-01-PLAN.md — RPC aggregation function + TypeScript types + Zod outcome schema
+  - [ ] 16-02-PLAN.md — RecordOutcomeDialog + ScriptCard stats + ScriptManager integration
 - [ ] Phase 17: Script Analytics (0/1 plans)
 
 #### Phase 14: Schema + Niche Taxonomy
@@ -90,6 +93,8 @@
 **Dependencies:** Phase 15 (scripts exist to select from)
 
 **Requirements:** SCRIPT-02
+
+**Plans:** 2 plans
 
 **Success Criteria:**
 1. User can open a script call dialog, select a lead, and mark the outcome as success or fail with large phone-friendly buttons (48x48px minimum)
@@ -132,8 +137,8 @@
 | 13. Database Indexes | v1.3 | 1/1 | Complete | 2026-02-15 |
 | 14. Schema + Niche Taxonomy | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 15. Script Library CRUD | v1.4 | 1/1 | Complete | 2026-02-16 |
-| 16. Outcome Tracking | v1.4 | 0/1 | Pending | |
+| 16. Outcome Tracking | v1.4 | 0/2 | Planned | |
 | 17. Script Analytics | v1.4 | 0/1 | Pending | |
 
 ---
-*Last updated: 2026-02-16 -- Phase 15 complete*
+*Last updated: 2026-02-16 -- Phase 16 planned (2 plans)*
