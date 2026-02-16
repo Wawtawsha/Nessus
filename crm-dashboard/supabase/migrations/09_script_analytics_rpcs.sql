@@ -217,6 +217,7 @@ CREATE OR REPLACE FUNCTION get_script_niche_matrix(
 RETURNS TABLE (
   script_id UUID,
   script_title TEXT,
+  is_active BOOLEAN,
   niche_id UUID,
   niche_name TEXT,
   success_count BIGINT,
@@ -229,6 +230,7 @@ BEGIN
   SELECT
     s.id AS script_id,
     s.title AS script_title,
+    s.is_active,
     n.id AS niche_id,
     n.name AS niche_name,
     COALESCE(COUNT(*) FILTER (WHERE o.outcome = 'success'), 0)::BIGINT AS success_count,
@@ -249,7 +251,7 @@ BEGIN
     AND (p_start_date IS NULL OR o.created_at >= p_start_date)
     AND (p_end_date IS NULL OR o.created_at <= p_end_date)
   WHERE s.client_id = p_client_id
-  GROUP BY s.id, s.title, n.id, n.name
+  GROUP BY s.id, s.title, s.is_active, n.id, n.name
   HAVING COUNT(l.id) > 0
   ORDER BY s.title, n.name;
 END;
@@ -258,6 +260,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 COMMENT ON FUNCTION get_script_niche_matrix(UUID, TIMESTAMPTZ, TIMESTAMPTZ) IS
 'Cross-tabulation of scripts and niches with outcome statistics.
 Shows performance of each script in each niche for a given client.
+Includes is_active flag for inactive script visual distinction.
 Uses CROSS JOIN with LEFT JOINs to preserve zero-outcome combinations.
 Only returns script-niche pairs where the client has leads in that niche.
 Supports optional date range filtering via p_start_date and p_end_date.

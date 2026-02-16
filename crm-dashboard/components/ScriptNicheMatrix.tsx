@@ -98,11 +98,13 @@ export function ScriptNicheMatrix({ clientId, dateRange }: ScriptNicheMatrixProp
             return (
               <TableRow
                 key={`${row.script_id}-${row.niche_id}`}
-                className={isNewScript ? 'border-t-2 border-gray-300' : ''}
+                className={`${isNewScript ? 'border-t-2 border-gray-300' : ''} ${!row.is_active ? 'opacity-50' : ''}`}
               >
                 <TableCell>
                   {row.script_title}
-                  {/* Inactive marker would go here if we had is_active in response */}
+                  {!row.is_active && (
+                    <span className="ml-1 text-xs text-gray-400 italic">(Inactive)</span>
+                  )}
                 </TableCell>
                 <TableCell>{row.niche_name}</TableCell>
                 <TableCell className="text-right">{row.total_count}</TableCell>

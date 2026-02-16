@@ -53,6 +53,7 @@ export interface NichePerformance {
 export interface ScriptNicheCell {
   script_id: string
   script_title: string
+  is_active: boolean
   niche_id: string
   niche_name: string
   success_count: number
