@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Milestone: v1.4 Cold Calling Scripts
-Phase: 14 - Schema + Niche Taxonomy (1 of 2 plans complete)
-Plan: 14-01 complete, 14-02 pending
-Status: Phase 14 in progress
-Last activity: 2026-02-15 -- v1.3 milestone archived
+Phase: 15 - Script Library CRUD (not yet planned)
+Plan: —
+Status: Ready for Phase 15 planning
+Last activity: 2026-02-16 -- Phase 14 complete (NicheComboBox, leads integration, photo download leads)
 
-Progress v1.4: █░░░ (0/4 phases complete, Phase 14 in progress)
+Progress v1.4: ██░░ (1/4 phases complete)
 
 ## v1.4 Phases
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 14 | Schema + Niche Taxonomy | In Progress (1/2 plans) |
+| 14 | Schema + Niche Taxonomy | ✓ Complete |
 | 15 | Script Library CRUD | Pending |
 | 16 | Outcome Tracking | Pending |
 | 17 | Script Analytics | Pending |
@@ -72,15 +72,16 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-15
-Stopped at: v1.3 milestone archived, v1.4 Phase 14 in progress (14-01 done, 14-02 pending)
+Last session: 2026-02-16
+Stopped at: Phase 14 complete, ready for Phase 15
 Resume file: None
-Next: v1.4 Phase 14 plan 14-02 (NicheComboBox) — then Phase 15 (Script Library CRUD)
+Next: Phase 15 (Script Library CRUD) — discuss or plan
 
 ### Roadmap Evolution
 
 - v1.3 Analytics Deep Dive: shipped 2026-02-15 (5 phases, 6 plans)
 - v1.4 Cold Calling Scripts roadmap defined: schema + niche taxonomy, script CRUD, outcome tracking, script analytics
+- Phase 14 complete: NicheComboBox, leads integration, photo download → lead pipeline
 
 ---
-*Last updated: 2026-02-15*
+*Last updated: 2026-02-16*

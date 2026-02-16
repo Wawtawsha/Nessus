@@ -43,10 +43,10 @@
 
 ### v1.4 Cold Calling Scripts (Phases 14-17)
 
-- [ ] Phase 14: Schema + Niche Taxonomy (2 plans)
+- [x] Phase 14: Schema + Niche Taxonomy (2/2 plans)
   Plans:
   - [x] 14-01-PLAN.md — Database migration (niches, scripts, outcomes tables) + TypeScript types
-  - [ ] 14-02-PLAN.md — NicheComboBox component + leads page/detail integration
+  - [x] 14-02-PLAN.md — NicheComboBox component + leads page/detail integration
 - [ ] Phase 15: Script Library CRUD (0/1 plans)
 - [ ] Phase 16: Outcome Tracking (0/1 plans)
 - [ ] Phase 17: Script Analytics (0/1 plans)
@@ -128,7 +128,7 @@
 | 11. Referrer + Geo | v1.3 | 1/1 | Complete | 2026-02-15 |
 | 12. Scroll Depth | v1.3 | 2/2 | Complete | 2026-02-15 |
 | 13. Database Indexes | v1.3 | 1/1 | Complete | 2026-02-15 |
-| 14. Schema + Niche Taxonomy | v1.4 | 1/2 | In Progress | |
+| 14. Schema + Niche Taxonomy | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 15. Script Library CRUD | v1.4 | 0/1 | Pending | |
 | 16. Outcome Tracking | v1.4 | 0/1 | Pending | |
 | 17. Script Analytics | v1.4 | 0/1 | Pending | |
