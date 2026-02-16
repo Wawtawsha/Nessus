@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { Script } from '@/types/script'
+import type { ScriptWithStats, OutcomeStats } from '@/types/script'
 import { ScriptCard } from './ScriptCard'
 import { AddEditScriptDialog } from './AddEditScriptDialog'
+import { RecordOutcomeDialog } from './RecordOutcomeDialog'
 import {
   Dialog,
   DialogContent,
@@ -16,35 +17,57 @@ interface ScriptManagerProps {
   clientId: string
 }
 
-type DialogMode = 'closed' | 'add' | 'edit' | 'view'
+type DialogMode = 'closed' | 'add' | 'edit' | 'view' | 'record-outcome'
 
 export function ScriptManager({ clientId }: ScriptManagerProps) {
-  const [scripts, setScripts] = useState<Script[]>([])
+  const [scripts, setScripts] = useState<ScriptWithStats[]>([])
   const [loading, setLoading] = useState(true)
   const [dialogMode, setDialogMode] = useState<DialogMode>('closed')
-  const [selectedScript, setSelectedScript] = useState<Script | undefined>()
+  const [selectedScript, setSelectedScript] = useState<ScriptWithStats | undefined>()
   const supabase = createClient()
 
   useEffect(() => {
     if (clientId) {
-      fetchScripts()
+      fetchScriptsAndStats()
     }
   }, [clientId])
 
-  const fetchScripts = async () => {
+  const fetchScriptsAndStats = async () => {
     setLoading(true)
-    const { data, error } = await supabase
+
+    // Fetch scripts
+    const { data: scriptsData, error: scriptsError } = await supabase
       .from('scripts')
       .select('*')
       .eq('client_id', clientId)
       .eq('is_active', true)
       .order('created_at', { ascending: false })
 
-    if (error) {
-      console.error('Error fetching scripts:', error)
-    } else {
-      setScripts(data || [])
+    if (scriptsError) {
+      console.error('Error fetching scripts:', scriptsError)
+      setLoading(false)
+      return
     }
+
+    // Fetch stats via RPC
+    const { data: statsData } = await supabase
+      .rpc('get_script_outcome_stats', { p_client_id: clientId })
+
+    // Join scripts with stats
+    const defaultStats: OutcomeStats = {
+      script_id: '',
+      success_count: 0,
+      fail_count: 0,
+      total_count: 0,
+      win_rate: 0,
+    }
+
+    const scriptsWithStats: ScriptWithStats[] = (scriptsData || []).map(script => ({
+      ...script,
+      stats: statsData?.find((s: OutcomeStats) => s.script_id === script.id) || { ...defaultStats, script_id: script.id },
+    }))
+
+    setScripts(scriptsWithStats)
     setLoading(false)
   }
 
@@ -53,17 +76,22 @@ export function ScriptManager({ clientId }: ScriptManagerProps) {
     setSelectedScript(undefined)
   }
 
-  const handleEditScript = (script: Script) => {
+  const handleEditScript = (script: ScriptWithStats) => {
     setDialogMode('edit')
     setSelectedScript(script)
   }
 
-  const handleViewScript = (script: Script) => {
+  const handleViewScript = (script: ScriptWithStats) => {
     setDialogMode('view')
     setSelectedScript(script)
   }
 
-  const handleToggleActive = async (script: Script) => {
+  const handleRecordOutcome = (script: ScriptWithStats) => {
+    setDialogMode('record-outcome')
+    setSelectedScript(script)
+  }
+
+  const handleToggleActive = async (script: ScriptWithStats) => {
     if (
       window.confirm('Mark this script as inactive? It will be hidden from the list.')
     ) {
@@ -79,9 +107,14 @@ export function ScriptManager({ clientId }: ScriptManagerProps) {
         console.error('Error toggling script:', error)
         alert('Failed to update script: ' + error.message)
       } else {
-        fetchScripts()
+        fetchScriptsAndStats()
       }
     }
+  }
+
+  const handleOutcomeSaved = async () => {
+    await fetchScriptsAndStats()  // Refetch to update counters
+    handleCloseDialog()
   }
 
   const handleCloseDialog = () => {
@@ -126,6 +159,7 @@ export function ScriptManager({ clientId }: ScriptManagerProps) {
               onEdit={() => handleEditScript(script)}
               onView={() => handleViewScript(script)}
               onToggleActive={() => handleToggleActive(script)}
+              onRecordOutcome={() => handleRecordOutcome(script)}
             />
           ))}
         </div>
@@ -137,8 +171,19 @@ export function ScriptManager({ clientId }: ScriptManagerProps) {
         clientId={clientId}
         open={dialogMode === 'add' || dialogMode === 'edit'}
         onClose={handleCloseDialog}
-        onSaved={fetchScripts}
+        onSaved={fetchScriptsAndStats}
       />
+
+      {/* Record Outcome Dialog */}
+      {dialogMode === 'record-outcome' && selectedScript && (
+        <RecordOutcomeDialog
+          script={selectedScript}
+          clientId={clientId}
+          open={true}
+          onClose={handleCloseDialog}
+          onSaved={handleOutcomeSaved}
+        />
+      )}
 
       {/* View Dialog */}
       {dialogMode === 'view' && selectedScript && (

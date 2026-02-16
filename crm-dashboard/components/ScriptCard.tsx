@@ -1,16 +1,17 @@
 'use client'
 
-import { Pencil, EyeOff, Eye } from 'lucide-react'
-import type { Script } from '@/types/script'
+import { Pencil, EyeOff, Eye, Phone } from 'lucide-react'
+import type { ScriptWithStats } from '@/types/script'
 
 interface ScriptCardProps {
-  script: Script
+  script: ScriptWithStats
   onEdit: () => void
   onToggleActive: () => void
   onView: () => void
+  onRecordOutcome: () => void
 }
 
-export function ScriptCard({ script, onEdit, onToggleActive, onView }: ScriptCardProps) {
+export function ScriptCard({ script, onEdit, onToggleActive, onView, onRecordOutcome }: ScriptCardProps) {
   return (
     <div className="bg-white rounded-lg shadow">
       {/* Clickable card content area */}
@@ -23,6 +24,15 @@ export function ScriptCard({ script, onEdit, onToggleActive, onView }: ScriptCar
           {script.body}
         </div>
       </div>
+
+      {/* Stats row - only shown when outcomes exist */}
+      {script.stats.total_count > 0 && (
+        <div className="px-4 py-2 border-t border-gray-100 flex items-center gap-4 text-sm">
+          <span className="text-green-600 font-medium">{script.stats.success_count} won</span>
+          <span className="text-red-600 font-medium">{script.stats.fail_count} lost</span>
+          <span className="text-gray-500">{script.stats.win_rate}%</span>
+        </div>
+      )}
 
       {/* Status badge and actions */}
       <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between gap-2">
@@ -37,6 +47,13 @@ export function ScriptCard({ script, onEdit, onToggleActive, onView }: ScriptCar
         </span>
 
         <div className="flex gap-2">
+          <button
+            onClick={(e) => { e.stopPropagation(); onRecordOutcome(); }}
+            className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1 min-h-[44px] px-2"
+          >
+            <Phone className="h-4 w-4" />
+            Record Call
+          </button>
           <button
             onClick={onEdit}
             className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1 min-h-[44px] px-2"
