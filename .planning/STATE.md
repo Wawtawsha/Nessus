@@ -15,7 +15,7 @@ Plan: 14-01 complete
 Status: Phase 14 complete, ready for Phase 15
 Last activity: 2026-02-16 -- Completed 14-01-PLAN.md (Database schema for scripts, niches, outcomes)
 
-Note: v1.3 Analytics Deep Dive -- Phase 10 Plan 01 complete (SessionJourneys + TimeOnPage)
+Note: v1.3 Analytics Deep Dive -- Phase 11 Plan 01 complete (ReferrerAnalysis + GeoDistribution)
 
 Progress: █░░░ (1/4 phases = 25%)
 
@@ -50,6 +50,9 @@ See `.planning/milestones/` for archived details.
 | Time deltas calculated within sessions only (never across boundaries) | 10-01 | Prevents impossible cross-session durations |
 | Last page in each session excluded from time-on-page metrics | 10-01 | No exit timestamp available for final page |
 | 30-minute cap on page durations | 10-01 | Excludes abandoned tabs from averages |
+| fbclid tracking param checked FIRST in referrer categorization | 11-01 | Handles shrike.vercel.app?fbclid=... as Facebook traffic, not self-referral |
+| Engagement quality defined as avg events/session per referrer source | 11-01 | Identifies high-quality traffic sources producing most engaged visitors |
+| US state names mapped to 2-letter abbreviations for city display | 11-01 | Compact "Farmville, VA" format improves geo breakdown readability |
 | All 3 tables (scripts, niches, script_lead_outcomes) created in single migration | 14-01 | Single foundation, avoids fragmented migrations |
 | Niche names normalized to lowercase with UNIQUE constraint | 14-01 | Prevents "Restaurant" vs "restaurant" duplicates, enforced via CHECK constraint |
 | Soft delete for scripts (is_active flag) | 14-01 | Preserves outcome history when scripts retired |
@@ -80,9 +83,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 14-01-PLAN.md (Database schema for scripts, niches, outcomes)
+Stopped at: Completed 11-01-PLAN.md (ReferrerAnalysis + GeoDistribution sections)
 Resume file: None
-Next: v1.4 Phase 15 (Script Library CRUD) - or v1.3 continues with Phase 11 (Referrer + Geo) or Phase 12 (Scroll Depth)
+Next: v1.4 Phase 15 (Script Library CRUD) - or v1.3 continues with Phase 12 (Scroll Depth)
 
 ### Roadmap Evolution
 
