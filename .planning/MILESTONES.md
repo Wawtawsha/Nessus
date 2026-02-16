@@ -1,5 +1,32 @@
 # Project Milestones: Nessus CRM
 
+## v1.4 Cold Calling Scripts (Shipped: 2026-02-16)
+
+**Delivered:** Full cold calling toolkit with managed scripts, per-lead outcome tracking, niche taxonomy, and three-view analytics dashboard.
+
+**Phases completed:** 14-17 (7 plans total)
+
+**Key accomplishments:**
+
+- Database foundation with 3 tables (niches, scripts, script_lead_outcomes), soft-delete, normalized taxonomy, multi-tenant RLS
+- Script library CRUD with React Hook Form + Zod validation and dialog state machine pattern
+- Mobile-first outcome recording with 48px touch buttons, upsert logic, and relative-positioned dropdowns
+- Three PostgreSQL analytics RPCs with date-range filtering and LEFT JOIN zero-preservation
+- Three-view analytics UI (overall performance, niche breakdown, script-niche matrix) with date range selector
+- Verification-driven gap closure (is_active in ScriptNicheMatrix caught and fixed by verifier)
+
+**Stats:**
+
+- 29 commits, +2,059 LOC TypeScript/SQL
+- 4 phases, 7 plans
+- 1 day (2026-02-16)
+
+**Git range:** `docs(14)` to `docs(17)`
+
+**What's next:** TBD — `/gsd:new-milestone` for v1.5
+
+---
+
 ## v1.3 Analytics Deep Dive (Shipped: 2026-02-15)
 
 **Delivered:** Deep visitor analytics with session journeys, referrer analysis, geographic distribution, scroll depth tracking, and component architecture refactoring.

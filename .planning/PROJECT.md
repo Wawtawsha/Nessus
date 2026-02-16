@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A multi-tenant CRM for managing leads with Toast POS integration. Restaurants can track leads, sync orders from Toast, manually add and edit leads, and see which customers convert to paying guests. Includes a dedicated Cold Calling client for leads-only workflows. Built with Next.js 14, Supabase, and Tailwind.
+A multi-tenant CRM for managing leads with Toast POS integration. Restaurants can track leads, sync orders from Toast, manually add and edit leads, and see which customers convert to paying guests. Includes a dedicated Cold Calling client with managed call scripts, per-lead outcome tracking, niche taxonomy, and script performance analytics. Built with Next.js 14, Supabase, and Tailwind.
 
 ## Core Value
 
@@ -37,15 +37,16 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 - ✓ Time on page metrics from session timestamp deltas with last-page exclusion — v1.3
 - ✓ Component decomposition (606→130 line refactor) with section component pattern — v1.3
 - ✓ Database index audit confirming 100% FK coverage — v1.3
+- ✓ Call scripts CRUD on Cold Calling page — v1.4
+- ✓ Script-lead outcome tracking with success/fail per call — v1.4
+- ✓ User-defined lead niche taxonomy with persistent options — v1.4
+- ✓ Script performance analytics by niche and overall — v1.4
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] Call scripts CRUD on Cold Calling page (v1.4)
-- [ ] Script-lead outcome tracking with success/fail per call (v1.4)
-- [ ] User-defined lead niche taxonomy with persistent options (v1.4)
-- [ ] Script performance analytics by niche and overall (v1.4)
+(None — next milestone not yet defined)
 
 ### Out of Scope
 
@@ -96,6 +97,11 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 | IntersectionObserver for scroll tracking | Off-main-thread, 43% less CPU than scroll listeners | v1.3 — Shrike website |
 | fbclid checked FIRST in referrer categorization | Correct Facebook attribution over domain matching | v1.3 — ReferrerAnalysis |
 | Last-page exclusion from time-on-page | No exit timestamp available for final page in session | v1.3 — TimeOnPage |
+| Dialog state machine (single mode var) | Cleaner than multiple booleans for closed/add/edit/view/record-outcome | v1.4 — ScriptManager |
+| LEFT JOIN + COUNT(o.id) for RPCs | COUNT(*) returns 1 with zero outcomes; date filter in ON clause preserves zeros | v1.4 — Analytics RPCs |
+| DROP old RPC before CREATE OR REPLACE | Avoids PostgreSQL overload ambiguity with DEFAULT NULL params | v1.4 — Phase 17 |
+| Relative dropdown inside Dialog | Radix Popover portals behind native Dialog z-index | v1.4 — RecordOutcomeDialog |
+| Binary success/fail outcomes | Keep simple for MVP, expand categories based on user feedback | v1.4 — Outcome tracking |
 
 ## Milestones
 
@@ -105,18 +111,19 @@ Connect marketing leads to actual revenue — show which leads became paying cus
 | v1.1 | Toast Enhancements | Complete | 2026-02-13 |
 | v1.2 | Lead Management | Complete | 2026-02-15 |
 | v1.3 | Analytics Deep Dive | Complete | 2026-02-15 |
-| v1.4 | Cold Calling Scripts | Active | 2026-02-15 |
+| v1.4 | Cold Calling Scripts | Complete | 2026-02-16 |
 
-## Current Milestone: v1.4 Cold Calling Scripts
+## Current State
 
-**Goal:** Equip cold callers with managed call scripts, track per-lead outcomes (success/fail), and surface analytics on which scripts perform best overall and within business niches.
+v1.4 shipped. Full cold calling toolkit: script CRUD, outcome tracking, niche taxonomy, and three-view analytics.
 
-**Target features:**
-- Scripts CRUD (create, edit, delete call scripts on Cold Calling page)
-- Script-lead outcome tracking (assign script to lead, mark success/fail per call)
-- Aggregated script performance counters (derived from per-lead outcomes)
-- User-defined lead niche taxonomy (combo selector: pick existing or create new)
-- Script analytics by niche and overall performance ranking
+**Tech stack additions in v1.4:**
+- react-hook-form + zod (form validation)
+- shadcn Command, Dialog, Textarea, Table components
+- 3 PostgreSQL RPCs for analytics (SECURITY DEFINER)
+- recharts BarChart for niche performance visualization
+
+**Next milestone:** Not yet defined — run `/gsd:new-milestone`
 
 ---
-*Last updated: 2026-02-15 after v1.3 milestone completion*
+*Last updated: 2026-02-16 after v1.4 milestone completion*
