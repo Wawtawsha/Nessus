@@ -14,6 +14,7 @@ interface Stats {
   totalLeads: number
   newLeads: number
   contactedLeads: number
+  deniedLeads: number
   qualifiedLeads: number
   convertedLeads: number
   conversionRate: number
@@ -110,6 +111,7 @@ function DefaultAnalytics() {
       const total = statusData.length
       const newCount = statusData.filter((l) => l.status === 'new').length
       const contactedCount = statusData.filter((l) => l.status === 'contacted').length
+      const deniedCount = statusData.filter((l) => l.status === 'contacted_denied').length
       const qualifiedCount = statusData.filter((l) => l.status === 'qualified').length
       const convertedCount = statusData.filter((l) => l.status === 'converted').length
 
@@ -117,6 +119,7 @@ function DefaultAnalytics() {
         totalLeads: total,
         newLeads: newCount,
         contactedLeads: contactedCount,
+        deniedLeads: deniedCount,
         qualifiedLeads: qualifiedCount,
         convertedLeads: convertedCount,
         conversionRate: total > 0 ? (convertedCount / total) * 100 : 0,
@@ -395,10 +398,11 @@ function DefaultAnalytics() {
 
       {/* Lead Stats */}
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Lead Overview</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
         <StatCard label="Total Leads" value={stats?.totalLeads || 0} />
         <StatCard label="New" value={stats?.newLeads || 0} color="blue" />
         <StatCard label="Contacted" value={stats?.contactedLeads || 0} color="yellow" />
+        <StatCard label="Denied" value={stats?.deniedLeads || 0} color="orange" />
         <StatCard label="Qualified" value={stats?.qualifiedLeads || 0} color="green" />
         <StatCard label="Converted" value={stats?.convertedLeads || 0} color="purple" />
         <StatCard

@@ -16,7 +16,7 @@ export interface Lead {
   utm_term: string | null
   landing_page_url: string | null
   referrer: string | null
-  status: 'new' | 'contacted' | 'qualified' | 'converted' | 'unqualified'
+  status: 'new' | 'contacted' | 'contacted_denied' | 'qualified' | 'converted' | 'unqualified'
   notes: string | null
   has_website: boolean | null
   social_media_presence: number | null  // 1-5 scale

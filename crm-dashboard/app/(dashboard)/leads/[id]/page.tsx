@@ -7,7 +7,16 @@ import Link from 'next/link'
 import type { Lead, LeadEvent } from '@/types/lead'
 import { NicheComboBox } from '@/components/NicheComboBox'
 
-const STATUS_OPTIONS = ['new', 'contacted', 'qualified', 'converted', 'unqualified'] as const
+const STATUS_OPTIONS = ['new', 'contacted', 'contacted_denied', 'qualified', 'converted', 'unqualified'] as const
+
+const STATUS_LABELS: Record<string, string> = {
+  new: 'New',
+  contacted: 'Contacted',
+  contacted_denied: 'Contacted - Denied',
+  qualified: 'Qualified',
+  converted: 'Converted',
+  unqualified: 'Unqualified',
+}
 
 interface LeadOrder {
   id: string
@@ -508,7 +517,7 @@ export default function LeadDetailPage() {
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                  {STATUS_LABELS[status] || status}
                 </button>
               ))}
             </div>

@@ -12,9 +12,19 @@ import { ScriptManager } from '@/components/ScriptManager'
 const STATUS_COLORS: Record<string, string> = {
   new: 'bg-blue-100 text-blue-800',
   contacted: 'bg-yellow-100 text-yellow-800',
+  contacted_denied: 'bg-orange-100 text-orange-800',
   qualified: 'bg-green-100 text-green-800',
   converted: 'bg-purple-100 text-purple-800',
   unqualified: 'bg-gray-100 text-gray-800',
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  new: 'New',
+  contacted: 'Contacted',
+  contacted_denied: 'Contacted - Denied',
+  qualified: 'Qualified',
+  converted: 'Converted',
+  unqualified: 'Unqualified',
 }
 
 export default function LeadsPage() {
@@ -225,11 +235,9 @@ export default function LeadsPage() {
             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Statuses</option>
-            <option value="new">New</option>
-            <option value="contacted">Contacted</option>
-            <option value="qualified">Qualified</option>
-            <option value="converted">Converted</option>
-            <option value="unqualified">Unqualified</option>
+            {Object.entries(STATUS_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
           </select>
           <select
             value={campaignFilter}
@@ -347,7 +355,7 @@ export default function LeadsPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 text-xs rounded-full ${STATUS_COLORS[lead.status]}`}>
-                      {lead.status}
+                      {STATUS_LABELS[lead.status] || lead.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

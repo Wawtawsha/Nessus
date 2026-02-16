@@ -9,6 +9,7 @@ import { useUser } from '@/contexts/UserContext'
 const PIPELINE_STAGES = [
   { id: 'new', label: 'New', color: 'bg-blue-500' },
   { id: 'contacted', label: 'Contacted', color: 'bg-yellow-500' },
+  { id: 'contacted_denied', label: 'Contacted - Denied', color: 'bg-orange-500' },
   { id: 'qualified', label: 'Qualified', color: 'bg-green-500' },
   { id: 'converted', label: 'Converted', color: 'bg-purple-500' },
   { id: 'unqualified', label: 'Lost', color: 'bg-gray-500' },
