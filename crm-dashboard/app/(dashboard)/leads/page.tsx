@@ -4,7 +4,9 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import type { Lead } from '@/types/lead'
+import type { Niche } from '@/types/niche'
 import { useUser } from '@/contexts/UserContext'
+import { NicheComboBox } from '@/components/NicheComboBox'
 
 const STATUS_COLORS: Record<string, string> = {
   new: 'bg-blue-100 text-blue-800',
@@ -20,18 +22,21 @@ export default function LeadsPage() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('')
   const [campaignFilter, setCampaignFilter] = useState<string>('')
+  const [nicheFilter, setNicheFilter] = useState<string>('')
   const [campaigns, setCampaigns] = useState<string[]>([])
+  const [niches, setNiches] = useState<Niche[]>([])
   const supabase = createClient()
   const { isAdmin, currentClientId } = useUser()
 
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [submitting, setSubmitting] = useState(false)
   const [preferredContact, setPreferredContact] = useState('email')
+  const [selectedNiche, setSelectedNiche] = useState<string | null>(null)
 
   const fetchLeads = useCallback(async () => {
     let query = supabase
       .from('leads')
-      .select('*')
+      .select('*, niche:niches(name)')
       .order('created_at', { ascending: false })
 
     // Admin filtering by selected client (client users filtered by RLS automatically)
@@ -47,6 +52,10 @@ export default function LeadsPage() {
       query = query.eq('utm_campaign', campaignFilter)
     }
 
+    if (nicheFilter) {
+      query = query.eq('niche_id', nicheFilter)
+    }
+
     if (search) {
       query = query.or(`first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%`)
     }
@@ -59,7 +68,7 @@ export default function LeadsPage() {
       setLeads(data || [])
     }
     setLoading(false)
-  }, [supabase, statusFilter, campaignFilter, search, isAdmin, currentClientId])
+  }, [supabase, statusFilter, campaignFilter, nicheFilter, search, isAdmin, currentClientId])
 
   // Fetch unique campaigns for filter
   const fetchCampaigns = useCallback(async () => {
@@ -81,10 +90,25 @@ export default function LeadsPage() {
     }
   }, [supabase, isAdmin, currentClientId])
 
+  // Fetch all niches for filter dropdown
+  const fetchNiches = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('niches')
+      .select('*')
+      .order('name')
+
+    if (error) {
+      console.error('Error fetching niches:', error)
+    } else {
+      setNiches(data || [])
+    }
+  }, [supabase])
+
   useEffect(() => {
     fetchLeads()
     fetchCampaigns()
-  }, [fetchLeads, fetchCampaigns])
+    fetchNiches()
+  }, [fetchLeads, fetchCampaigns, fetchNiches])
 
   // Poll for updates every 30 seconds
   useEffect(() => {
@@ -140,6 +164,7 @@ export default function LeadsPage() {
       sms_consent_at: smsConsent ? new Date().toISOString() : null,
       has_website: hasWebsite || null,
       social_media_presence: socialMedia ? parseInt(socialMedia, 10) : null,
+      niche_id: selectedNiche,
       status: 'new',
       utm_source: 'manual-entry',
     })
@@ -154,8 +179,10 @@ export default function LeadsPage() {
 
     form.reset()
     setPreferredContact('email')
+    setSelectedNiche(null)
     dialogRef.current?.close()
     fetchLeads()
+    fetchNiches()
   }
 
   return (
@@ -182,7 +209,7 @@ export default function LeadsPage() {
 
       {/* Filters */}
       <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <input
             type="text"
             placeholder="Search by name or email..."
@@ -214,11 +241,24 @@ export default function LeadsPage() {
               </option>
             ))}
           </select>
+          <select
+            value={nicheFilter}
+            onChange={(e) => setNicheFilter(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">All Niches</option>
+            {niches.map((niche) => (
+              <option key={niche.id} value={niche.id}>
+                {niche.name}
+              </option>
+            ))}
+          </select>
           <button
             onClick={() => {
               setSearch('')
               setStatusFilter('')
               setCampaignFilter('')
+              setNicheFilter('')
             }}
             className="px-3 py-2 text-gray-600 hover:text-gray-900"
           >
@@ -248,6 +288,9 @@ export default function LeadsPage() {
                   Source
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Niche
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -274,6 +317,9 @@ export default function LeadsPage() {
                     {lead.utm_campaign && (
                       <div className="text-xs text-gray-400">{lead.utm_campaign}</div>
                     )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {(lead as any).niche?.name || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 text-xs rounded-full ${STATUS_COLORS[lead.status]}`}>
@@ -394,6 +440,12 @@ export default function LeadsPage() {
                 ))}
               </div>
               <p className="text-xs text-gray-400 mt-1">1 = minimal, 5 = strong presence</p>
+            </div>
+
+            {/* Business Niche */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Business Niche</label>
+              <NicheComboBox value={selectedNiche} onChange={setSelectedNiche} />
             </div>
           </div>
 
