@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Milestone: v1.4 Cold Calling Scripts
-Phase: 16 - Outcome Tracking (complete)
-Plan: 16-02 (complete)
-Status: Phase 16 complete - all 5 success criteria verified
-Last activity: 2026-02-16 -- Phase 16 verified (RecordOutcomeDialog, ScriptCard stats, upsert outcomes)
+Phase: 17 - Script Analytics (in progress)
+Plan: 17-01 (complete)
+Status: Plan 17-01 complete - analytics RPCs and TypeScript types
+Last activity: 2026-02-16 -- Completed 17-01-PLAN.md (analytics RPCs with date filtering)
 
-Progress v1.4: ██████░░ (3/4 phases complete)
+Progress v1.4: ███████░ (3/4 phases, 1/2 plans in phase 17 complete)
 
 ## v1.4 Phases
 
@@ -24,7 +24,7 @@ Progress v1.4: ██████░░ (3/4 phases complete)
 | 14 | Schema + Niche Taxonomy | ✓ Complete |
 | 15 | Script Library CRUD | ✓ Complete |
 | 16 | Outcome Tracking | ✓ Complete |
-| 17 | Script Analytics | Pending |
+| 17 | Script Analytics | In Progress (1/2 plans) |
 
 ## Completed Milestones
 
@@ -60,6 +60,10 @@ See `.planning/milestones/` for archived details.
 | Upsert with onConflict: 'script_id,lead_id' | 16-02 | Atomic update-or-insert using UNIQUE constraint, no spaces in column list |
 | Outcome buttons ABOVE notes textarea | 16-02 | Mobile keyboard won't cover action buttons |
 | Dialog state machine extended to 'record-outcome' | 16-02 | Single state var pattern continues from Phase 15 |
+| DROP old function signature before CREATE OR REPLACE with new params | 17-01 | Avoids PostgreSQL overload ambiguity when DEFAULT params let single-param calls work |
+| Date filter in LEFT JOIN ON clause (not WHERE) | 17-01 | Preserves zero-outcome entities when filtering by date range |
+| get_script_outcome_stats shows inactive scripts | 17-01 | Analytics needs historical view; is_active returned as column not filter |
+| HAVING COUNT(l.id) > 0 in script-niche matrix | 17-01 | Only show script-niche pairs where client has leads in that niche |
 
 ### Research Artifacts
 
@@ -83,9 +87,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Phase 16 complete and verified (5/5 success criteria)
+Stopped at: Completed 17-01-PLAN.md (Script Analytics RPCs and types)
 Resume file: None
-Next: Phase 17 (Script Analytics) — ready to plan
+Next: Plan 17-02 (Script Analytics UI)
 
 ### Roadmap Evolution
 
@@ -95,6 +99,7 @@ Next: Phase 17 (Script Analytics) — ready to plan
 - Phase 15 complete: ScriptManager, ScriptCard, AddEditScriptDialog with RHF+Zod validation
 - Phase 16 complete: RecordOutcomeDialog (relative dropdown, 48px buttons, upsert), ScriptCard stats, ScriptManager integration
 - Phase 16 verified: 5/5 success criteria passed (RPC LEFT JOIN, COUNT(o.id), mobile touch targets, upsert behavior, optional notes)
+- Phase 17 Plan 01 complete: Three analytics RPCs (get_script_outcome_stats upgraded, get_niche_performance_stats, get_script_niche_matrix) with date filtering + TypeScript types
 
 ---
 *Last updated: 2026-02-16*
