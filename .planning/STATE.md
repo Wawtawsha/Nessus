@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Milestone: v1.4 Cold Calling Scripts
-Phase: 16 - Outcome Tracking (in progress)
-Plan: 16-01 (complete)
-Status: Phase 16 Plan 01 complete - RPC + types + schema ready
-Last activity: 2026-02-16 -- Completed 16-01-PLAN.md (get_script_outcome_stats RPC, OutcomeStats types, outcomeSchema)
+Phase: 16 - Outcome Tracking (complete)
+Plan: 16-02 (complete)
+Status: Phase 16 complete - all 5 success criteria verified
+Last activity: 2026-02-16 -- Phase 16 verified (RecordOutcomeDialog, ScriptCard stats, upsert outcomes)
 
-Progress v1.4: ████░░ (2/4 phases complete, 16-01 done)
+Progress v1.4: ██████░░ (3/4 phases complete)
 
 ## v1.4 Phases
 
@@ -23,7 +23,7 @@ Progress v1.4: ████░░ (2/4 phases complete, 16-01 done)
 |-------|------|--------|
 | 14 | Schema + Niche Taxonomy | ✓ Complete |
 | 15 | Script Library CRUD | ✓ Complete |
-| 16 | Outcome Tracking | In Progress (16-01 complete) |
+| 16 | Outcome Tracking | ✓ Complete |
 | 17 | Script Analytics | Pending |
 
 ## Completed Milestones
@@ -56,6 +56,10 @@ See `.planning/milestones/` for archived details.
 | LEFT JOIN in get_script_outcome_stats RPC | 16-01 | Ensures scripts with zero outcomes appear with 0 counts (not hidden) |
 | COUNT(o.id) not COUNT(*) for total_count | 16-01 | With LEFT JOIN, COUNT(*) returns 1 even when no outcomes; COUNT(o.id) returns 0 correctly |
 | Win rate division by zero guard | 16-01 | Returns 0% when total_count = 0, prevents NaN/infinity in analytics |
+| Relative-positioned lead dropdown (NOT Radix Popover) | 16-02 | Avoids portal-behind-dialog z-index bug from Phase 14 |
+| Upsert with onConflict: 'script_id,lead_id' | 16-02 | Atomic update-or-insert using UNIQUE constraint, no spaces in column list |
+| Outcome buttons ABOVE notes textarea | 16-02 | Mobile keyboard won't cover action buttons |
+| Dialog state machine extended to 'record-outcome' | 16-02 | Single state var pattern continues from Phase 15 |
 
 ### Research Artifacts
 
@@ -79,9 +83,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 16-01-PLAN.md (RPC + types + schema)
+Stopped at: Phase 16 complete and verified (5/5 success criteria)
 Resume file: None
-Next: Phase 16 Plan 02 (Outcome Tracking UI) — ready to execute
+Next: Phase 17 (Script Analytics) — ready to plan
 
 ### Roadmap Evolution
 
@@ -89,7 +93,8 @@ Next: Phase 16 Plan 02 (Outcome Tracking UI) — ready to execute
 - v1.4 Cold Calling Scripts roadmap defined: schema + niche taxonomy, script CRUD, outcome tracking, script analytics
 - Phase 14 complete: NicheComboBox, leads integration, photo download → lead pipeline
 - Phase 15 complete: ScriptManager, ScriptCard, AddEditScriptDialog with RHF+Zod validation
-- Phase 16 Plan 01 complete: get_script_outcome_stats RPC, OutcomeStats/ScriptWithStats types, outcomeSchema
+- Phase 16 complete: RecordOutcomeDialog (relative dropdown, 48px buttons, upsert), ScriptCard stats, ScriptManager integration
+- Phase 16 verified: 5/5 success criteria passed (RPC LEFT JOIN, COUNT(o.id), mobile touch targets, upsert behavior, optional notes)
 
 ---
 *Last updated: 2026-02-16*

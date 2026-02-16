@@ -50,10 +50,10 @@
 - [x] Phase 15: Script Library CRUD (1/1 plans)
   Plans:
   - [x] 15-01-PLAN.md — Script CRUD components (ScriptManager, ScriptCard, AddEditScriptDialog) + leads page integration
-- [ ] Phase 16: Outcome Tracking (2 plans)
+- [x] Phase 16: Outcome Tracking (2/2 plans)
   Plans:
-  - [ ] 16-01-PLAN.md — RPC aggregation function + TypeScript types + Zod outcome schema
-  - [ ] 16-02-PLAN.md — RecordOutcomeDialog + ScriptCard stats + ScriptManager integration
+  - [x] 16-01-PLAN.md — RPC aggregation function + TypeScript types + Zod outcome schema
+  - [x] 16-02-PLAN.md — RecordOutcomeDialog + ScriptCard stats + ScriptManager integration
 - [ ] Phase 17: Script Analytics (0/1 plans)
 
 #### Phase 14: Schema + Niche Taxonomy
@@ -137,8 +137,8 @@
 | 13. Database Indexes | v1.3 | 1/1 | Complete | 2026-02-15 |
 | 14. Schema + Niche Taxonomy | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 15. Script Library CRUD | v1.4 | 1/1 | Complete | 2026-02-16 |
-| 16. Outcome Tracking | v1.4 | 0/2 | Planned | |
+| 16. Outcome Tracking | v1.4 | 2/2 | Complete | 2026-02-16 |
 | 17. Script Analytics | v1.4 | 0/1 | Pending | |
 
 ---
-*Last updated: 2026-02-16 -- Phase 16 planned (2 plans)*
+*Last updated: 2026-02-16 -- Phase 16 complete (2/2 plans executed, verified)*
