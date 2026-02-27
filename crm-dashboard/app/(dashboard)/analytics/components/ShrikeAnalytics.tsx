@@ -26,6 +26,7 @@ export function ShrikeAnalytics() {
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [loading, setLoading] = useState(true)
   const [visits, setVisits] = useState<Visit[]>([])
+  const [siteOptions, setSiteOptions] = useState<{ value: string; label: string }[]>([])
 
   const supabase = createClient()
 
@@ -46,6 +47,8 @@ export function ShrikeAnalytics() {
     let query = supabase
       .from('visits')
       .select('event_name, event_data, session_id, page_path, created_at, user_agent, referrer, country, city, region, latitude, longitude')
+      .order('created_at', { ascending: false })
+      .limit(10000)
     query = addFilters(query)
     const { data } = await query
 
@@ -57,6 +60,27 @@ export function ShrikeAnalytics() {
     fetchData()
   }, [fetchData])
 
+  // Discover available site labels
+  useEffect(() => {
+    async function fetchLabels() {
+      const { data } = await supabase
+        .from('visits')
+        .select('website_label')
+        .eq('client_id', SHRIKE_CLIENT_ID)
+        .not('website_label', 'is', null)
+      if (data) {
+        const unique = [...new Set(data.map((r) => r.website_label as string))].sort()
+        setSiteOptions(
+          unique.map((label) => ({
+            value: label,
+            label: label.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+          }))
+        )
+      }
+    }
+    fetchLabels()
+  }, [supabase])
+
   if (loading) {
     return <div className="text-center py-8">Loading...</div>
   }
@@ -66,12 +90,8 @@ export function ShrikeAnalytics() {
       {/* Header with site filter */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Website Analytics</h1>
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-          {[
-            { value: 'all', label: 'All Sites' },
-            { value: 'press-club', label: 'Press Club' },
-            { value: 'rosemont', label: 'Rosemont' },
-          ].map((option) => (
+        <div className="flex gap-1 bg-gray-100 rounded-lg p-1 flex-wrap">
+          {[{ value: 'all', label: 'All Sites' }, ...siteOptions].map((option) => (
             <button
               key={option.value}
               onClick={() => setSiteFilter(option.value)}
