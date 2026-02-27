@@ -4,10 +4,12 @@ import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useUser } from '@/contexts/UserContext'
 
-const WEBSITES = [
-  { label: 'press-club', name: '2016 Night at Press Club' },
-  { label: 'rosemont', name: 'Rosemont Vineyard' },
-] as const
+function formatLabel(label: string): string {
+  return label
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
 
 interface VisitStats {
   totalVisits: number
@@ -368,6 +370,28 @@ function WebsiteCard({
 export default function VisitsPage() {
   const supabase = createClient()
   const { isAdmin, currentClientId } = useUser()
+  const [websites, setWebsites] = useState<{ label: string; name: string }[]>([])
+  const [loadingLabels, setLoadingLabels] = useState(true)
+
+  useEffect(() => {
+    async function fetchLabels() {
+      let query = supabase
+        .from('visits')
+        .select('website_label')
+        .not('website_label', 'is', null)
+      if (currentClientId) {
+        query = query.eq('client_id', currentClientId)
+      }
+      const { data } = await query
+      if (data) {
+        const unique = [...new Set(data.map((r) => r.website_label as string))]
+        unique.sort()
+        setWebsites(unique.map((label) => ({ label, name: formatLabel(label) })))
+      }
+      setLoadingLabels(false)
+    }
+    fetchLabels()
+  }, [supabase, currentClientId])
 
   // Non-admin users must have a client selected
   if (!isAdmin && !currentClientId) {
@@ -382,17 +406,26 @@ export default function VisitsPage() {
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Visitor Analytics</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {WEBSITES.map((site) => (
-          <WebsiteCard
-            key={site.label}
-            websiteLabel={site.label}
-            websiteName={site.name}
-            currentClientId={currentClientId}
-            supabase={supabase}
-          />
-        ))}
-      </div>
+      {loadingLabels ? (
+        <div className="animate-pulse grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="h-64 bg-gray-200 rounded-lg" />
+          <div className="h-64 bg-gray-200 rounded-lg" />
+        </div>
+      ) : websites.length === 0 ? (
+        <p className="text-gray-500">No visit data found</p>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {websites.map((site) => (
+            <WebsiteCard
+              key={site.label}
+              websiteLabel={site.label}
+              websiteName={site.name}
+              currentClientId={currentClientId}
+              supabase={supabase}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
