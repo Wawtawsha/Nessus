@@ -44,15 +44,30 @@ export function ShrikeAnalytics() {
   const fetchData = useCallback(async () => {
     setLoading(true)
 
-    let query = supabase
-      .from('visits')
-      .select('event_name, event_data, session_id, page_path, created_at, user_agent, referrer, country, city, region, latitude, longitude')
-      .order('created_at', { ascending: false })
-      .limit(10000)
-    query = addFilters(query)
-    const { data } = await query
+    const PAGE_SIZE = 1000
+    const allVisits: Visit[] = []
+    let offset = 0
+    let done = false
 
-    setVisits(data || [])
+    while (!done) {
+      let query = supabase
+        .from('visits')
+        .select('event_name, event_data, session_id, page_path, created_at, user_agent, referrer, country, city, region, latitude, longitude')
+        .order('created_at', { ascending: true })
+        .range(offset, offset + PAGE_SIZE - 1)
+      query = addFilters(query)
+      const { data } = await query
+
+      if (data && data.length > 0) {
+        allVisits.push(...(data as Visit[]))
+        offset += data.length
+        if (data.length < PAGE_SIZE) done = true
+      } else {
+        done = true
+      }
+    }
+
+    setVisits(allVisits)
     setLoading(false)
   }, [supabase, addFilters])
 
