@@ -134,7 +134,7 @@ export default function LeadsPage() {
   }, [fetchLeads])
 
   const exportCSV = () => {
-    const headers = ['First Name', 'Last Name', 'Email', 'Phone', 'Status', 'Source', 'Campaign', 'Created']
+    const headers = ['First Name', 'Last Name', 'Email', 'Phone', 'Status', 'Source', 'Campaign', 'Notify', 'Created']
     const rows = leads.map((lead) => [
       lead.first_name || '',
       lead.last_name || '',
@@ -143,6 +143,7 @@ export default function LeadsPage() {
       lead.status,
       lead.utm_source || '',
       lead.utm_campaign || '',
+      lead.notify_events ? 'Yes' : 'No',
       new Date(lead.created_at).toLocaleDateString(),
     ])
 
@@ -346,6 +347,9 @@ export default function LeadsPage() {
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Notify
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Date
                 </th>
               </tr>
@@ -379,6 +383,30 @@ export default function LeadsPage() {
                     <span className={`px-2 py-1 text-xs rounded-full ${STATUS_COLORS[lead.status]}`}>
                       {STATUS_LABELS[lead.status] || lead.status}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <button
+                      onClick={async () => {
+                        const { error } = await supabase
+                          .from('leads')
+                          .update({ notify_events: !lead.notify_events })
+                          .eq('id', lead.id)
+                        if (!error) {
+                          setLeads((prev) =>
+                            prev.map((l) =>
+                              l.id === lead.id ? { ...l, notify_events: !l.notify_events } : l
+                            )
+                          )
+                        }
+                      }}
+                      className={`px-2 py-1 text-xs rounded-full ${
+                        lead.notify_events
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-500'
+                      }`}
+                    >
+                      {lead.notify_events ? 'On' : 'Off'}
+                    </button>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(lead.created_at).toLocaleDateString()}
