@@ -47,6 +47,22 @@ const addSiteFilters = <T,>(query: T, clientId: string | null, websiteLabel: str
   return filtered
 }
 
+async function fetchAllRows<T>(
+  buildQuery: (offset: number, limit: number) => any
+): Promise<T[]> {
+  const PAGE_SIZE = 1000
+  const all: T[] = []
+  let offset = 0
+  while (true) {
+    const { data } = await buildQuery(offset, PAGE_SIZE)
+    if (!data || data.length === 0) break
+    all.push(...data)
+    if (data.length < PAGE_SIZE) break
+    offset += data.length
+  }
+  return all
+}
+
 function WebsiteCard({
   websiteLabel,
   websiteName,
@@ -67,103 +83,106 @@ function WebsiteCard({
 
   const fetchStats = useCallback(async () => {
     // Total visits and unique counts
-    let visitsQuery = supabase.from('visits').select('ip_address, session_id')
-    visitsQuery = addSiteFilters(visitsQuery, currentClientId, websiteLabel)
-    const { data: visitsData } = await visitsQuery
+    const visitsData = await fetchAllRows<{ ip_address: string; session_id: string }>(
+      (offset, limit) => addSiteFilters(
+        supabase.from('visits').select('ip_address, session_id').range(offset, offset + limit - 1),
+        currentClientId, websiteLabel
+      )
+    )
 
-    if (visitsData) {
-      const uniqueIPs = new Set(visitsData.map((v) => v.ip_address).filter(Boolean))
-      const uniqueSessions = new Set(visitsData.map((v) => v.session_id).filter(Boolean))
-
-      setStats({
-        totalVisits: visitsData.length,
-        uniqueIPs: uniqueIPs.size,
-        uniqueSessions: uniqueSessions.size,
-      })
-    }
+    const uniqueIPs = new Set(visitsData.map((v) => v.ip_address).filter(Boolean))
+    const uniqueSessions = new Set(visitsData.map((v) => v.session_id).filter(Boolean))
+    setStats({
+      totalVisits: visitsData.length,
+      uniqueIPs: uniqueIPs.size,
+      uniqueSessions: uniqueSessions.size,
+    })
 
     // Visits by location
-    let locationQuery = supabase.from('visits').select('country, city')
-    locationQuery = addSiteFilters(locationQuery, currentClientId, websiteLabel)
-    const { data: locationData } = await locationQuery
-
-    if (locationData) {
-      const locationCounts: Record<string, { country: string; city: string | null; count: number }> = {}
-      locationData.forEach((v) => {
-        const key = `${v.country || 'Unknown'}|${v.city || ''}`
-        if (!locationCounts[key]) {
-          locationCounts[key] = { country: v.country || 'Unknown', city: v.city, count: 0 }
-        }
-        locationCounts[key].count++
-      })
-      setLocationStats(
-        Object.values(locationCounts)
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 10)
+    const locationData = await fetchAllRows<{ country: string; city: string | null }>(
+      (offset, limit) => addSiteFilters(
+        supabase.from('visits').select('country, city').range(offset, offset + limit - 1),
+        currentClientId, websiteLabel
       )
-    }
+    )
+
+    const locationCounts: Record<string, { country: string; city: string | null; count: number }> = {}
+    locationData.forEach((v) => {
+      const key = `${v.country || 'Unknown'}|${v.city || ''}`
+      if (!locationCounts[key]) {
+        locationCounts[key] = { country: v.country || 'Unknown', city: v.city, count: 0 }
+      }
+      locationCounts[key].count++
+    })
+    setLocationStats(
+      Object.values(locationCounts)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10)
+    )
 
     // Visits by page
-    let pageQuery = supabase.from('visits').select('page_path')
-    pageQuery = addSiteFilters(pageQuery, currentClientId, websiteLabel)
-    const { data: pageData } = await pageQuery
-
-    if (pageData) {
-      const pageCounts: Record<string, number> = {}
-      pageData.forEach((v) => {
-        const path = v.page_path || '/'
-        pageCounts[path] = (pageCounts[path] || 0) + 1
-      })
-      setPageStats(
-        Object.entries(pageCounts)
-          .map(([page_path, count]) => ({ page_path, count }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 10)
+    const pageData = await fetchAllRows<{ page_path: string }>(
+      (offset, limit) => addSiteFilters(
+        supabase.from('visits').select('page_path').range(offset, offset + limit - 1),
+        currentClientId, websiteLabel
       )
-    }
+    )
+
+    const pageCounts: Record<string, number> = {}
+    pageData.forEach((v) => {
+      const path = v.page_path || '/'
+      pageCounts[path] = (pageCounts[path] || 0) + 1
+    })
+    setPageStats(
+      Object.entries(pageCounts)
+        .map(([page_path, count]) => ({ page_path, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10)
+    )
 
     // Visits by referrer
-    let referrerQuery = supabase.from('visits').select('referrer')
-    referrerQuery = addSiteFilters(referrerQuery, currentClientId, websiteLabel)
-    const { data: referrerData } = await referrerQuery
-
-    if (referrerData) {
-      const referrerCounts: Record<string, number> = {}
-      referrerData.forEach((v) => {
-        const ref = v.referrer || 'Direct'
-        referrerCounts[ref] = (referrerCounts[ref] || 0) + 1
-      })
-      setReferrerStats(
-        Object.entries(referrerCounts)
-          .map(([referrer, count]) => ({ referrer, count }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 10)
+    const referrerData = await fetchAllRows<{ referrer: string }>(
+      (offset, limit) => addSiteFilters(
+        supabase.from('visits').select('referrer').range(offset, offset + limit - 1),
+        currentClientId, websiteLabel
       )
-    }
+    )
+
+    const referrerCounts: Record<string, number> = {}
+    referrerData.forEach((v) => {
+      const ref = v.referrer || 'Direct'
+      referrerCounts[ref] = (referrerCounts[ref] || 0) + 1
+    })
+    setReferrerStats(
+      Object.entries(referrerCounts)
+        .map(([referrer, count]) => ({ referrer, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10)
+    )
 
     // Visits over time (last 30 days)
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    let timeQuery = supabase
-      .from('visits')
-      .select('created_at')
-      .gte('created_at', thirtyDaysAgo.toISOString())
-    timeQuery = addSiteFilters(timeQuery, currentClientId, websiteLabel)
-    const { data: timeData } = await timeQuery
-
-    if (timeData) {
-      const dateCounts: Record<string, number> = {}
-      timeData.forEach((v) => {
-        const date = new Date(v.created_at).toLocaleDateString()
-        dateCounts[date] = (dateCounts[date] || 0) + 1
-      })
-      setDailyStats(
-        Object.entries(dateCounts)
-          .map(([date, count]) => ({ date, count }))
-          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    const timeData = await fetchAllRows<{ created_at: string }>(
+      (offset, limit) => addSiteFilters(
+        supabase.from('visits').select('created_at')
+          .gte('created_at', thirtyDaysAgo.toISOString())
+          .range(offset, offset + limit - 1),
+        currentClientId, websiteLabel
       )
-    }
+    )
+
+    const dateCounts: Record<string, number> = {}
+    timeData.forEach((v) => {
+      const date = new Date(v.created_at).toLocaleDateString()
+      dateCounts[date] = (dateCounts[date] || 0) + 1
+    })
+    setDailyStats(
+      Object.entries(dateCounts)
+        .map(([date, count]) => ({ date, count }))
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    )
 
     setLoading(false)
   }, [supabase, currentClientId, websiteLabel])
