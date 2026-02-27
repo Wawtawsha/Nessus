@@ -78,13 +78,23 @@ export function ShrikeAnalytics() {
   // Discover available site labels
   useEffect(() => {
     async function fetchLabels() {
-      const { data } = await supabase
-        .from('visits')
-        .select('website_label')
-        .eq('client_id', SHRIKE_CLIENT_ID)
-        .not('website_label', 'is', null)
-      if (data) {
-        const unique = [...new Set(data.map((r) => r.website_label as string))].sort()
+      const PAGE_SIZE = 1000
+      const allLabels: { website_label: string }[] = []
+      let offset = 0
+      while (true) {
+        const { data } = await supabase
+          .from('visits')
+          .select('website_label')
+          .eq('client_id', SHRIKE_CLIENT_ID)
+          .not('website_label', 'is', null)
+          .range(offset, offset + PAGE_SIZE - 1)
+        if (!data || data.length === 0) break
+        allLabels.push(...data)
+        if (data.length < PAGE_SIZE) break
+        offset += data.length
+      }
+      if (allLabels.length > 0) {
+        const unique = [...new Set(allLabels.map((r) => r.website_label as string))].sort()
         setSiteOptions(
           unique.map((label) => ({
             value: label,

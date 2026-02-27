@@ -394,19 +394,19 @@ export default function VisitsPage() {
 
   useEffect(() => {
     async function fetchLabels() {
-      let query = supabase
-        .from('visits')
-        .select('website_label')
-        .not('website_label', 'is', null)
-      if (currentClientId) {
-        query = query.eq('client_id', currentClientId)
-      }
-      const { data } = await query
-      if (data) {
-        const unique = [...new Set(data.map((r) => r.website_label as string))]
-        unique.sort()
-        setWebsites(unique.map((label) => ({ label, name: formatLabel(label) })))
-      }
+      const allLabels = await fetchAllRows<{ website_label: string }>(
+        (offset, limit) => {
+          let q = supabase
+            .from('visits')
+            .select('website_label')
+            .not('website_label', 'is', null)
+            .range(offset, offset + limit - 1)
+          if (currentClientId) q = q.eq('client_id', currentClientId)
+          return q
+        }
+      )
+      const unique = [...new Set(allLabels.map((r) => r.website_label))].sort()
+      setWebsites(unique.map((label) => ({ label, name: formatLabel(label) })))
       setLoadingLabels(false)
     }
     fetchLabels()
