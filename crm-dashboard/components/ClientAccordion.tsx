@@ -5,11 +5,16 @@ import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useUser } from '@/contexts/UserContext'
 
+interface ClientSettings {
+  enabled_pages?: string[]
+}
+
 interface Client {
   id: string
   name: string
   slug: string
   client_type: string  // 'full' | 'leads_only'
+  settings: ClientSettings | null
 }
 
 interface ClientAccordionProps {
@@ -30,7 +35,7 @@ export default function ClientAccordion({ newLeadCount, onLeadsClick, onNavigate
     const fetchClients = async () => {
       const { data } = await supabase
         .from('clients')
-        .select('id, name, slug, client_type')
+        .select('id, name, slug, client_type, settings')
         .eq('is_active', true)
         .order('name')
 
@@ -68,7 +73,7 @@ export default function ClientAccordion({ newLeadCount, onLeadsClick, onNavigate
     onNavigate?.()
   }
 
-  const getNavItems = (clientType: string) => {
+  const getNavItems = (client: Client) => {
     const allItems = [
       { path: '/leads', label: 'Leads', icon: '👥' },
       { path: '/orders', label: 'Orders', icon: '🧾' },
@@ -76,7 +81,12 @@ export default function ClientAccordion({ newLeadCount, onLeadsClick, onNavigate
       { path: '/analytics', label: 'Analytics', icon: '📊' },
       { path: '/visits', label: 'Visits', icon: '👁️' },
     ]
-    if (clientType === 'leads_only') {
+    // Per-client page visibility via settings takes precedence
+    if (client.settings?.enabled_pages) {
+      return allItems.filter(item => client.settings!.enabled_pages!.includes(item.path))
+    }
+    // Fall back to client_type
+    if (client.client_type === 'leads_only') {
       return allItems.filter(item => item.path === '/leads')
     }
     return allItems
@@ -90,7 +100,7 @@ export default function ClientAccordion({ newLeadCount, onLeadsClick, onNavigate
         <div className="px-4 py-2 text-xs text-gray-500 uppercase tracking-wider">
           {client.name}
         </div>
-        {getNavItems(client.client_type).map((item) => (
+        {getNavItems(client).map((item) => (
           <button
             key={item.path}
             onClick={() => handleNavClick(client.id, item.path)}
@@ -152,7 +162,7 @@ export default function ClientAccordion({ newLeadCount, onLeadsClick, onNavigate
                 isExpanded ? 'max-h-64' : 'max-h-0'
               }`}
             >
-              {getNavItems(client.client_type).map((item) => (
+              {getNavItems(client).map((item) => (
                 <button
                   key={item.path}
                   onClick={() => handleNavClick(client.id, item.path)}

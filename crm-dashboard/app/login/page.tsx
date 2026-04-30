@@ -17,8 +17,11 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
+    // Support username login: if no @ symbol, append @nessus.local
+    const loginEmail = email.includes('@') ? email : `${email}@nessus.local`
+
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: loginEmail,
       password,
     })
 
@@ -41,10 +44,10 @@ export default function LoginPage() {
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+              Email or Username
             </label>
             <input
-              type="email"
+              type="text"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}

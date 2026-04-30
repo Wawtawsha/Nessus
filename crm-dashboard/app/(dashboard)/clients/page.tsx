@@ -19,7 +19,14 @@ export default function ClientsPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingClient, setEditingClient] = useState<Client | null>(null)
-  const [formData, setFormData] = useState({ name: '', slug: '' })
+  const allPages = [
+    { path: '/leads', label: 'Leads' },
+    { path: '/orders', label: 'Orders' },
+    { path: '/pipeline', label: 'Pipeline' },
+    { path: '/analytics', label: 'Analytics' },
+    { path: '/visits', label: 'Visits' },
+  ]
+  const [formData, setFormData] = useState({ name: '', slug: '', enabledPages: [] as string[] })
   const [saving, setSaving] = useState(false)
   const supabase = createClient()
   const { isAdmin } = useUser()
@@ -56,10 +63,14 @@ export default function ClientsPage() {
 
     const slug = formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
 
+    const settings = formData.enabledPages.length > 0 && formData.enabledPages.length < allPages.length
+      ? { enabled_pages: formData.enabledPages }
+      : null
+
     if (editingClient) {
       const { error } = await supabase
         .from('clients')
-        .update({ name: formData.name, slug })
+        .update({ name: formData.name, slug, settings })
         .eq('id', editingClient.id)
 
       if (error) {
@@ -68,7 +79,7 @@ export default function ClientsPage() {
     } else {
       const { error } = await supabase
         .from('clients')
-        .insert({ name: formData.name, slug })
+        .insert({ name: formData.name, slug, settings })
 
       if (error) {
         alert('Error creating client: ' + error.message)
@@ -78,13 +89,14 @@ export default function ClientsPage() {
     setSaving(false)
     setShowForm(false)
     setEditingClient(null)
-    setFormData({ name: '', slug: '' })
+    setFormData({ name: '', slug: '', enabledPages: [] })
     fetchClients()
   }
 
   const handleEdit = (client: Client) => {
     setEditingClient(client)
-    setFormData({ name: client.name, slug: client.slug })
+    const existingPages = (client.settings as any)?.enabled_pages || []
+    setFormData({ name: client.name, slug: client.slug, enabledPages: existingPages })
     setShowForm(true)
   }
 
@@ -119,7 +131,7 @@ export default function ClientsPage() {
         <button
           onClick={() => {
             setEditingClient(null)
-            setFormData({ name: '', slug: '' })
+            setFormData({ name: '', slug: '', enabledPages: [] })
             setShowForm(true)
           }}
           className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
@@ -160,6 +172,32 @@ export default function ClientsPage() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="acme-corp (auto-generated if empty)"
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Visible Pages
+                  <span className="text-xs text-gray-400 ml-1">(leave empty for all)</span>
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {allPages.map((page) => (
+                    <label key={page.path} className="flex items-center gap-1.5 text-sm cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.enabledPages.includes(page.path)}
+                        onChange={(e) => {
+                          setFormData(prev => ({
+                            ...prev,
+                            enabledPages: e.target.checked
+                              ? [...prev.enabledPages, page.path]
+                              : prev.enabledPages.filter(p => p !== page.path),
+                          }))
+                        }}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded"
+                      />
+                      {page.label}
+                    </label>
+                  ))}
+                </div>
               </div>
               <div className="flex gap-3 pt-2">
                 <button
